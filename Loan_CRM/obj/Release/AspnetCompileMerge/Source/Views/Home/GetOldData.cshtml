@@ -1,0 +1,103 @@
+﻿@model Loan_CRM.Models.MainData
+@{
+    ViewBag.Title = "GetOldData";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+
+    List<Loan_CRM.Models.PaymentHistory> _Payment = new List<Loan_CRM.Models.PaymentHistory>();
+    if (Convert.ToString(TempData["invild"]) == "1")
+    {
+        <h2>Invalid Email Id</h2>
+    }
+}
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Applicant Old Data
+    </div>
+    <div class="panel-body">
+        <div class="col-md-12">
+            <table id="tblRecord" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>S.No.</th>
+                        <th>Contract No</th>
+                        <th>Date Disbursed</th>
+                        <th>Loan Amount</th>
+                        <th>Terms</th>
+                        <th>Ammortization Paid</th>
+                        <th>Late Penalties Paid</th>
+                        <th>Loan Status</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        int _Counter = 0;
+                        foreach (var item in Model.firstGridData)
+                        {
+                            _Counter++;
+                            <tr>
+                                <td>@_Counter</td>
+                                <td>@item.contractno</td>
+                                <td>@item.date_applied</td>
+                                <td><a href="#" onclick="GetPaymentHistory('@item.contractno')" data-bs-toggle="modal" data-bs-target="#exampleModal">@item.loan_amount</a></td>
+                                <td>@item.term_name</td>
+                                <td>@item.ammortization_payment</td>
+                                <td>@item.total_LatePenalties</td>
+                                <td>@item.account_status</td>
+                                <td>@item.Remarks</td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <br />
+    <div class="panel-body">
+        <div class="col-md-12">
+            <table id="tblRecord" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Due Date</th>
+                        <th>Ammortization</th>
+                        <th>Payment Date</th>
+                        <th>Amount Paid</th>
+                        <th>Late Payment Fee</th>
+                        <th>Daily Penalty Fee</th>
+                    </tr>
+                </thead>
+                <tbody id="historydata">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+    function GetPaymentHistory(email) {
+       $.ajax({
+           data: { contractno: email},
+           async: false,
+           type: 'POST',
+                    url: '@Url.Action("GetHistoryData", "Home")',
+           success: function (data) {
+               console.log(data);
+               $('#historydata').html("");
+                        if (data != "") {
+                            var _finaldata = "";
+                            $.each(data, function (key, value) {
+                                _finaldata += '<tr><td>' + value.Due_Date + '</td><td>' + value.Ammortization + '</td><td>' + value.PaymentDate + '</td><td>' + value.AmountPaid + '</td><td>' + value.LatePaymentFee + '</td><td>' + value.DailyPenalites + '</td></tr>';
+                            });
+                            $('#historydata').html(_finaldata);
+                        }
+               //ShowImageInModal();
+                    },
+                    error: function (data) {
+                        console.log(`Error :` + data);
+                    //    window.location.reload(1);
+                    }
+                });
+    }
+    
+</script>

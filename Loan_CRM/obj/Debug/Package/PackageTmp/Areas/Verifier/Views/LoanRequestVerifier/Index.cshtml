@@ -1,0 +1,133 @@
+﻿@using System.Configuration;
+@{
+    ViewBag.Title = "Get Loan Request For Verification";
+    Layout = "~/Views/Shared/_LayoutVerifer.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+
+@using (Html.BeginForm())
+{
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">Loan Request Verifier Bucket</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <input type="button" value="Re-Verification" class="btn btn-primary form-control" onclick="location.href='@Url.Action("GetLoanRequestForVerification","LoanRequestVerifier")'" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" value="KIV" class="btn btn-primary form-control" onclick="location.href='@Url.Action("KIVBucket","LoanRequestVerifier")'" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div>
+        <table id="tblVerify" class="data-verification table table-striped table-bordered dataTable no-footer">
+            <thead>
+                <tr>
+                    <th>Application No</th>
+                    <th>Name</th>
+                    <th>Date Applied</th>
+                    <th>Date Forwarded</th>
+                    <th>Best Call Morning</th>
+                    <th>Best Call Noon</th>
+                    <th>Checked By</th>
+                    <th>Details</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+
+}
+
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        GetData();
+    });
+
+    function GetData() {
+        var table =  $("#tblVerify").DataTable({
+            "processing": true, // for show progress bar
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false, // for disable multiple column at once
+            "pageLength": 10,
+            "lengthChange": false,
+            "bInfo": false,
+                "ajax": {
+                    "url": '@Url.Action("GetLoanVerifierData", "LoanRequestVerifier", new { Area = "Verifier" })',
+                    "type": "POST",
+                    "datatype": "json",
+
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                },
+                "columns": [
+                    { "data": "ApplicationNo", "name": "ApplicationNo" },
+                    {
+                        "render": function (data, type, full, meta) {
+                            return '' + full.First_Name + ' ' + full.Middle_Name + ' ' + full.Last_Name + '';
+                        }
+                    },
+                    { "data": "CreatedOn", "name": "CreatedOn" },
+                    { "data": "CheckedOn", "name": "CheckedOn"},
+                    { "data": "MorningTime", "name": "MorningTime" },
+                    { "data": "NoonTime", "name": "NoonTime" },
+                    { "data": "userfullname", "name": "userfullname" },
+                    {
+                        "render": function (data, type, full, meta) {
+                            if (full.ispickedchecker == true) {
+                                return '<span style="color:red;">In Process...</span>';
+                            }
+                            else {
+                                return '<input type="button" value="Detail" class="btn btn-primary" id="btnDetail" onclick="GetDetail(\'' + full.ApplicationNo + '\', \'' + full.PersonalContactNo + '\')"/>';
+                            }
+                        }
+                    }
+            ]
+        });
+
+        setInterval(function () {
+            table.ajax.reload();
+        }, @Convert.ToInt32(ConfigurationManager.AppSettings["GridRefreshTime"]));
+    }
+
+    function GetDetail(obj, ContactNumber) {
+        //
+        var KIVFlag = '@Session["VerifierKIVCount"]';
+        if (KIVFlag=="True") {
+            alert("KIV Bucket limit is Exceeded!");
+            return false;
+        }
+        else {
+            var url = '@Url.Action("VerificationWindow", "LoanRequestVerifier")?Id=' + obj + '&phoneNumber=' + ContactNumber + '&ActionName=Index';;
+            window.location.href = url;
+        }
+    }
+
+</script>
+<style>
+    .classname {
+        position: absolute;
+        z-index: 10;
+        top: 300px;
+        left: 600px;
+    }
+</style>

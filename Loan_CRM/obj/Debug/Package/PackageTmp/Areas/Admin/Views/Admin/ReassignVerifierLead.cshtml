@@ -1,0 +1,159 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+
+@{
+    ViewBag.Title = "Reassign Verifier Lead";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+@using (Html.BeginForm("ReassignVerifierLead", "Admin", FormMethod.Post))
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Reassign Verifier Leads</h3>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-2">
+                    <label>Assign From</label>
+                    @Html.DropDownListFor(x => x.userfrom, new SelectList(Model.UserList, "Id", "Userfullname"), new { @class = "form-control", @id = "ddluserlistfrom" })
+                    <input type="hidden" name="userfrom" value="@Model.userfrom" id="lblCheckerFrom" />
+                </div>
+                <div class="col-md-2">
+                    <label>Count</label>
+                    @Html.TextBoxFor(x => x.record_count, new { @class = "form-control", @id = "record_count", @type = "number", @min = "10" })
+                </div>
+                <div class="col-md-2">
+                    <label><span style="color: #ff0000;">*</span>From Date</label>
+                    @Html.TextBoxFor(x => x.FromDate, new { @id = "txtFromDate", @Class = "form-control", placeholder = "Enter From Date(dd/mm/yyyy)", onfocus = "RemoveValidation(this);", @readonly = true, @required = true })
+                </div>
+                <div class="col-md-2">
+                    <label><span style="color: #ff0000;">*</span>To Date</label>
+                    @Html.TextBoxFor(x => x.ToDate, new { @id = "txtToDate", @Class = "form-control", placeholder = "Enter To Date(dd/mm/yyyy)", onfocus = "RemoveValidation(this);", @readonly = true, @required = true })
+                </div>
+                <div class="col-md-2" id="ddluserlistto">
+                    <label>Assign To</label>
+                    @Html.DropDownListFor(x => x.userto, new SelectList(Model.UserList, "Id", "userfullname"), new { @class = "form-control" })
+                </div>
+                <div class="col-md-2" style="margin-top:21px">
+                    <input type="submit" id="btn_Search" class="btn btn-success btn-flat" value="Search" name="CommandName" />
+                    <input type="submit" id="btn_ReAssign" class="btn btn-success btn-flat" value="ReAssign" name="CommandName" />
+                    <input type="submit" onclick="window.location.href='@Url.Action("ReassignVerifierLead","Admin")'" id="btn_ReAssign" class="btn btn-danger pull-right" value="Back" name="CommandName" />
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="col-md-12">
+                <table id="tblRecord" class="table table-bordered table-responsive table-striped">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="ckbCheckAll" /></th>
+                            <th>Application No</th>
+                            <th>Contract No</th>
+                            <th>Reference No</th>
+                            <th>Full Name</th>
+                            <th>Contact No</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.ApplicationRecordList != null && Model.ApplicationRecordList.Count > 0)
+                            {
+                                foreach (var item in Model.ApplicationRecordList)
+                                {
+                                    Html.RenderPartial("_ApplicationModelList", item);
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#txtFromDate").datepicker({
+            dateFormat: 'dd-mm-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            maxDate: new Date()
+        });
+        $('#txtFromDate').change(function () {
+            var from = $('#txtFromDate').datepicker('getDate');
+            var date_diff = Math.ceil((from.getTime() - Date.parse(new Date())) / 86400000);
+            var maxDate_d = date_diff + 14 + 'd';
+            date_diff = date_diff + 'd';
+            $('#txtToDate').val('').removeAttr('disabled').removeClass('hasDatepicker').datepicker({
+                dateFormat: 'dd-mm-yy',
+                minDate: date_diff,
+                maxDate: maxDate_d
+            });
+        });
+        $("#txtToDate").datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0"
+        });
+        var view = '@Model.view';
+        if (view == 0) {
+            $("#btn_Search").show();
+            $("#btn_ReAssign").hide();
+            $("#ddluserlistto").hide();
+
+        }
+        else {
+            $("#ddluserlistfrom").attr("disabled", "disabled");
+            $("#record_count").attr("disabled", "disabled");
+            $("#btn_Search").hide();
+            $("#btn_ReAssign").show();
+            $("#ddluserlistto").show();
+        }
+        $("#ddluserlistfrom").change(function () {
+
+            var SelectedVal = $("#ddluserlistfrom :selected").val();
+            $("#lblCheckerFrom").val(SelectedVal);
+        });
+    });
+     $(document).ready(function () {
+    $("#ckbCheckAll").click(function () {
+        $(".checkBoxClass").prop('checked', $(this).prop('checked'));
+    });
+        
+});
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+</script>

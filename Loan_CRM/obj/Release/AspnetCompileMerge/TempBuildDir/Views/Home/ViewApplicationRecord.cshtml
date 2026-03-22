@@ -1,0 +1,1150 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+@{
+    ViewBag.Title = "ViewApplicationRecord";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+
+<div class="row" id="form-wizard">
+    @using (Html.BeginForm("ViewApplicationRecord", "Home", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div class="row">
+            <div class="col-md-12 banner-form">
+            </div>
+        </div>
+        <div id="divMsg">
+
+        </div>
+        <div class="col-md-10 center-block col-float-none form-bg form-bg-bottom">
+            @if (Convert.ToString(ViewData["NoRecordMsg"]) == "Record Found")
+            {
+                <div id="msgdiv"></div>
+                if (TempData["Result"] != null)
+                {
+                    <text>
+                        <script type="text/javascript">
+                $("#msgdiv").show();
+                $("#msgdiv").html("<div class='alert alert-danger' style='background-color: green;color:white;'>@Convert.ToString(TempData["Result"])</div>");
+                        </script>
+                    </text>
+                }
+                <div class="row">
+                    <a class="btn btn-primary" style="float:right;color: white;" href="@Url.Action("LogOut", "Home")">Log Out</a>
+                </div>
+
+                if (ViewBag.noneditable)
+                {
+                    <h2 class="text-center" style="font-size:27px">View Your Personal Information</h2>
+                }
+                else
+                {
+                    <h2 class="text-center" style="font-size:27px">Update Your Personal Information</h2>
+                }
+
+
+                <p class="text-center" style="margin-bottom:30px; margin-top:20px;"><span><img src="../../Content/img/secure-loan.png" style="width: 15px; margin-right: 10px;"></span>Cash Mart uses 256-bit verified encryption to keep your data safe.</p>
+
+                <div class="form-wrap row">
+                    <div class="form-wrapper-group">
+                        <div class="col-md-12">
+                            <h4 class="text-contrast form-label">Personal Information</h4>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>FIRST NAME</label>
+                                    <input type="text" id="txtFirstname" name="First_Name" class="form-control CharcaterTextBox" placeholder="FIRST NAME" value="@Model.First_Name" style="text-transform:uppercase" onfocus="RemoveValidation(this);" maxlength="50" disabled="disabled" readonly="@ViewBag.noneditable" />
+                                    @Html.ValidationMessageFor(x => x.First_Name, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast">MIDDLE NAME</label>
+                                    <input type="text" id="txtMiddlename" name="Middle_Name" class="form-control CharcaterTextBox" placeholder="MIDDLE NAME" value="@Model.Middle_Name" style="text-transform:uppercase" onfocus="RemoveValidation(this);" maxlength="50" disabled="disabled" readonly="@ViewBag.noneditable" />
+                                    @Html.ValidationMessageFor(x => x.Middle_Name, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>LAST NAME</label>
+                                    <input type="text" id="txtLastname" name="Last_Name" class="form-control CharcaterTextBox" placeholder="LAST NAME" value="@Model.Last_Name" style="text-transform:uppercase" onfocus="RemoveValidation(this);" maxlength="50" disabled="disabled" readonly="@ViewBag.noneditable" />
+                                    @Html.ValidationMessageFor(x => x.Last_Name, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Email Address</label>
+                                    <input type="text" id="txtpersonalemail" name="PersonalEmail" class="form-control EmailTextBox" placeholder="Email Address" disabled="disabled" onfocus="RemoveValidation(this);" value="@Model.PersonalEmail" maxlength="50" />
+                                    <input type="hidden" value="texens" id="hdnpersonalmail" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Mobile Phone No and Contact No.</label>
+                                    <input type="text" id="txtcontactno" name="PersonalContactNo" class="form-control NumericTextBox" placeholder="Mobile Phone No and Contact No." onfocus="RemoveValidation(this);" value="@Model.PersonalContactNo" maxlength="11" disabled="disabled" readonly="@ViewBag.noneditable" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Province</label>
+                                    <input type="text" id="txtProvince" name="Province" class="form-control" placeholder="Province" onfocus="RemoveValidation(this);" value="@Model.Province" maxlength="100" readonly="@ViewBag.noneditable" />
+                                    @Html.HiddenFor(x => x.province_id, new { @id = "province_id", @name = "province_id" })
+                                    @Html.ValidationMessageFor(x => x.Province, null, new { @class = "has-error", @id = "province_idValid", })
+                                    <label class="has-error" id="txtProvince_lbl"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Municipality or City</label>
+                                    <input type="text" id="txtCity" name="City_Name" class="form-control CharcaterTextBox" placeholder="Municipality or City" onfocus="RemoveValidation(this);" value="@Model.City_Name" maxlength="50" />
+                                    @Html.HiddenFor(x => x.City, new { @id = "txtcityId", @name = "City" })
+                                    @Html.ValidationMessageFor(x => x.City_Name, null, new { @class = "has-error" })
+                                    <label class="has-error" id="txtCity_lbl"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Barangay</label>
+                                    <input type="text" id="txtBarangay" name="Barangay" class="form-control" placeholder="Barangay" onfocus="RemoveValidation(this);" value="@Model.Barangay" maxlength="100" readonly="@ViewBag.noneditable" />
+                                    @Html.HiddenFor(x => x.Barangay_id, new { @id = "txtBarangay_id", @name = "Barangay_id" })
+                                    @Html.ValidationMessageFor(x => x.Barangay, null, new { @class = "has-error" })
+                                    <label class="has-error" id="txtBarangay_lbl"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Complete Address</label>
+                                    <input type="text" id="txtAddress" name="Address" class="form-control" placeholder="House #/ Apartment #/ Floor/Condo Unit/Blk, Lot, Phase, SubdivisionName/ Compound/ Street" onfocus="RemoveValidation(this);" value="@Model.Address" maxlength="100" readonly="@ViewBag.noneditable" />
+                                    @Html.ValidationMessageFor(x => x.Address, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Date of Birth </label>
+                                    <input type="text" id="txtdateofbirth" class="form-control" placeholder="dd-mm-yyyy" name="DOB" onfocus="RemoveValidation(this);" value="@Model.DOB" readonly="@ViewBag.noneditable" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Civil Status</label>
+                                    @if (ViewBag.noneditable)
+                                    {
+                                        @Html.DropDownListFor(Model => Model.CivilStatus, new SelectList(ViewBag.CivilStatusData, "civilid", "civilname"), new { @class = "form-control", @id = "ddlcivilstatus", @onfocus = "RemoveValidation(this);", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(Model => Model.CivilStatus, new SelectList(ViewBag.CivilStatusData, "civilid", "civilname"), new { @class = "form-control", @id = "ddlcivilstatus", @onfocus = "RemoveValidation(this);" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>SSS No </label>
+                                    <input type="text" id="txtSSS" class="form-control NumericTextBox" placeholder="SSS No" name="SSS_No" onfocus="RemoveValidation(this);" value="@Model.SSS_No" maxlength="10" readonly="@ViewBag.noneditable" />
+                                    @Html.ValidationMessageFor(x => x.SSS_No, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        <div class="col-md-12">
+                            <h4 class="text-contrast form-label">Employment Details</h4>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Company/Business Name/Source of Income</label>
+                                    <input type="text" id="txtcompanyname" class="form-control" placeholder="Name" name="CompanyName" onfocus="RemoveValidation(this);" value="@Model.CompanyName" readonly="@ViewBag.noneditable" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Company Address</label>
+                                    <input type="text" id="txtcompanybranchaddress" class="form-control" placeholder="Address" onfocus="RemoveValidation(this);" name="CompanyAddress" value="@Model.CompanyAddress" readonly="@ViewBag.noneditable" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Company Phone No</label>
+                                    <input type="text" id="txtcompanyphone" class="form-control NumericTextBox" placeholder="Company Phone No" maxlength="11" onfocus="RemoveValidation(this);" name="Company_Phoneno" value="@Model.Company_Phoneno" readonly="@ViewBag.noneditable" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Joining Date</label>
+                                    <input type="text" id="txtjoiningdate" onfocus="RemoveValidation(this);" class="form-control" placeholder="dd-mm-yyyy" name="JoinDate" value="@Model.JoinDate" readonly="@ViewBag.noneditable" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Industry</label>
+                                    @if (ViewBag.noneditable)
+                                    {
+                                        @Html.DropDownListFor(x => x.Occupation, new SelectList(ViewBag.OccupationData, "id", "occupation_name", "optionGroup", Model.Occupation), new { @id = "ddlIndustry", @class = "form-control", @style = "width: 60%;", @onfocus = "RemoveValidation(this);", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(x => x.Occupation, new SelectList(ViewBag.OccupationData, "id", "occupation_name", "optionGroup", Model.Occupation), new { @id = "ddlIndustry", @class = "form-control", @style = "width: 60%;", @onfocus = "RemoveValidation(this);" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Position in the Company</label>
+                                    <input type="text" id="txtposition" class="form-control CharcaterTextBox" placeholder="Position in your Company" name="Designation" value="@Model.Designation" readonly="@ViewBag.noneditable" onfocus="RemoveValidation(this);" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Gross Monthly Income</label>
+                                    <input type="text" id="txtgrossmonthlyincome" class="form-control NumericTextBox" placeholder="Gross Monthly Income" onfocus="RemoveValidation(this);" name="GrossIncome" value="@Model.GrossIncome" readonly="@ViewBag.noneditable" />
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Pay Date 1</label>
+                                    @if (ViewBag.noneditable)
+                                    {
+                                        @Html.DropDownListFor(x => x.PayDate1, new SelectList(Model.PayDateList, "Value", "Text"), new { @id = "ddlPayDate1", @class = "form-control", @style = "width: 60%;", @onfocus = "RemoveValidation(this);", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(x => x.PayDate1, new SelectList(Model.PayDateList, "Value", "Text"), new { @id = "ddlPayDate1", @class = "form-control", @style = "width: 60%;", @onfocus = "RemoveValidation(this);" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Pay Date 2</label>
+                                    @if (ViewBag.noneditable)
+                                    {
+                                        @Html.DropDownListFor(x => x.PayDate2, new SelectList(Model.PayDate2List, "Value", "Text"), new { @id = "ddlPayDate2", @class = "form-control", @style = "width: 60%;", @onfocus = "RemoveValidation(this);", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(x => x.PayDate2, new SelectList(Model.PayDate2List, "Value", "Text"), new { @id = "ddlPayDate2", @class = "form-control", @style = "width: 60%;", @onfocus = "RemoveValidation(this);" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        <div class="col-md-12">
+                            <h4 class="text-contrast form-label">Loan Details</h4>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Loan Amount</label>
+                                    <input type="text" id="txtloanamount" name="Loan_Amount" class="form-control NumericTextBox" placeholder="Loan Amount" onfocus="RemoveValidation(this);" value="@Model.Loan_Amount" readonly="@ViewBag.noneditable" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Term Type</label>
+                                    @if (ViewBag.noneditable)
+                                    {
+                                        @Html.DropDownListFor(Model => Model.TermType, new SelectList(ViewBag.TermTypeDate, "Id", "term_Type"), new { @class = "form-control", @id = "ddltermtype", @onfocus = "RemoveValidation(this);", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(Model => Model.TermType, new SelectList(ViewBag.TermTypeDate, "Id", "term_Type"), new { @class = "form-control", @id = "ddltermtype", @onfocus = "RemoveValidation(this);" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Terms</label>
+                                    @if (ViewBag.noneditable)
+                                    {
+                                        @Html.DropDownListFor(Model => Model.TermText, new SelectList(string.Empty, "Id", "term_Name"), "Select", new { @class = "form-control", @id = "ddlterm", @onfocus = "RemoveValidation(this);", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(Model => Model.TermText, new SelectList(string.Empty, "Id", "term_Name"), "Select", new { @class = "form-control", @id = "ddlterm", @onfocus = "RemoveValidation(this);" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="text-contrast"><span class="required-fields">*</span>Best Time to Call</label>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4 col-sm-6">
+                                <div class="form-group">
+                                    <label class="text-contrast text-center center-block">Morning</label>
+                                    @if (ViewBag.noneditable)
+                                    {
+                                        @Html.DropDownListFor(x => x.BestTimeToCallMorning_Id, new SelectList(Model.BestTimeToCallMorning, "Value", "Text"), new { @id = "ddl_BestTimeToCallMorning", @class = "form-control", @onfocus = "RemoveValidation(this);", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(x => x.BestTimeToCallMorning_Id, new SelectList(Model.BestTimeToCallMorning, "Value", "Text"), new { @id = "ddl_BestTimeToCallMorning", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                                    }
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="form-group">
+                                    <label class="text-contrast text-center center-block">Afternoon</label>
+                                    @if (ViewBag.noneditable)
+                                    {
+                                        @Html.DropDownListFor(x => x.BestTimeToCallNoon_Id, new SelectList(Model.BestTimeToCallNoon, "Value", "Text"), new { @id = "ddl_BestTimeToCallNoon", @class = "form-control", @onfocus = "RemoveValidation(this);", @disabled = "disabled" })
+                                    }
+                                    else
+                                    {
+                                        @Html.DropDownListFor(x => x.BestTimeToCallNoon_Id, new SelectList(Model.BestTimeToCallNoon, "Value", "Text"), new { @id = "ddl_BestTimeToCallNoon", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        <h4 class="text-contrast form-label">Documents</h4>
+                        <span class="accepted-file-block" style="color:red;">Max size  5mb(JPEG, JPG, PNG or PDF)</span>
+                        <div class="col-md-12">
+                            <div class="form-group file_upload_wrap">
+                                <label class="text-contrast"><span class="required-fields"></span>Attach Goverment ID</label>
+                                @if (ViewBag.noneditable)
+                                {
+                                    <input type="file" id="govidFile" name="GovIdFile" style="margin-top: 1%;" disabled="disabled" onchange="return ValidateFile(this);" />
+                                }
+                                else
+                                {
+                                    <input type="file" id="govidFile" name="GovIdFile" style="margin-top: 1%;" onchange="return ValidateFile(this);" />
+                                }
+                                @if (!String.IsNullOrWhiteSpace(Model.GovUrl))
+                                {
+                                    <a href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.GovUrl'>Download</a>
+                                }
+                            </div>
+                            <div class="form-group file_upload_wrap">
+
+                                <label class="text-contrast"><span class="required-fields"></span>Attach Company ID</label>
+                                @if (ViewBag.noneditable)
+                                {
+                                    <input type="file" id="companyidFile" style="margin-top: 1%;" name="CompanyIdFile" disabled="disabled" onchange="return ValidateFile(this);" />
+                                }
+                                else
+                                {
+                                    <input type="file" id="companyidFile" style="margin-top: 1%;" name="CompanyIdFile" onchange="return ValidateFile(this);" />
+                                }
+                                @if (!String.IsNullOrWhiteSpace(Model.CompUrl))
+                                {
+                                    <a href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.CompUrl'>Download</a>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group file_upload_wrap">
+                                <label class="text-contrast"><span class="required-fields"></span>Attach Proof of Income</label>
+                                @if (ViewBag.noneditable)
+                                {
+                                    <input type="file" id="incomeFile" name="IncomeIdFile" style="margin-top: 1%;" disabled="disabled" onchange="return ValidateFile(this);" />
+                                }
+                                else
+                                {
+                                    <input type="file" id="incomeFile" name="IncomeIdFile" style="margin-top: 1%;" onchange="return ValidateFile(this);" />
+                                }
+                                @if (!String.IsNullOrWhiteSpace(Model.IncomeUrl))
+                                {
+                                    <a href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.IncomeUrl'>Download</a>
+                                }
+                            </div>
+                            <div class="form-group file_upload_wrap">
+                                <label class="text-contrast"><span class="required-fields"></span>Attach Proof of Billing</label>
+                                @if (ViewBag.noneditable)
+                                {
+                                    <input type="file" id="billingFile" style="margin-top: 1%;" name="BillingIdFile" disabled="disabled" onchange="return ValidateFile(this);" />
+                                }
+                                else
+                                {
+                                    <input type="file" id="billingFile" style="margin-top: 1%;" name="BillingIdFile" onchange="return ValidateFile(this);" />
+                                }
+                                @if (!String.IsNullOrWhiteSpace(Model.BillUrl))
+                                {
+                                    <a href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.BillUrl'>Download</a>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group file_upload_wrap">
+                                <label class="text-contrast">ATM Details Attachment</label>
+                                @if (ViewBag.noneditable)
+                                {
+                                    <input type="file" id="ATMidFile" style="margin-top: 1%;" name="AtmIdFile" disabled="disabled" onchange="return ValidateFile(this);" />
+                                }
+                                else
+                                {
+                                    <input type="file" id="ATMidFile" style="margin-top: 1%;" name="AtmIdFile" onchange="return ValidateFile(this);" />
+                                }
+                                @if (!String.IsNullOrWhiteSpace(Model.AtmUrl))
+                                {
+                                    <a href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.AtmUrl'>Download</a>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group file_upload_wrap">
+                                <label class="text-contrast">Optional Attachment</label>
+                                @if (ViewBag.noneditable)
+                                {
+                                    <input type="file" id="otherfile" style="margin-top: 1%;" name="OtherIdFile" disabled="disabled" onchange="return ValidateFile(this);" />
+                                }
+                                else
+                                {
+                                    <input type="file" id="otherfile" style="margin-top: 1%;" name="OtherIdFile" onchange="return ValidateFile(this);" />
+                                }
+                                @if (!String.IsNullOrWhiteSpace(Model.OthUrl))
+                                {
+                                    <a href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.OthUrl'>Download</a>
+                                }
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        @if (Model.termAccepted == false)
+                        {
+                            <div class="col-md-4">
+                                <div class=" form-group">
+                                    <label class="text-contrast" id="lblcode"><span class="required-fields">*</span>Please Enter Code Received Via SMS</label>
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(x => x.code, new { id = "txtCode", @class = "form-control NumericTextBox", placeholder = "Code", @onfocus = "RemoveValidation(this);" })
+                                        <span class="input-group-btn">
+                                            <input type="button" class="btn btn-info btn-flat" id="btnVerify" value="Verify" />
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast" id="lblResend"><span class="required-fields">*</span>Did Not Received Code Via SMS</label>
+                                    <input type="button" class="btn btn-flat pull-right" id="btnResend" value="Resend" />
+                                </div>
+                            </div>
+                        }
+                    </div>
+                    <div class="form-wrapper-group">
+                        <div class="checkbox text-contrast center-block" style="float: none; width: 450px; margin-bottom: 30px; margin-top: 50px;">
+                            @if (ViewBag.noneditable)
+                            {
+
+
+                            }
+                            else
+                            {
+                                if (Model.termAccepted == false)
+                                {
+                                    <label>
+                                        <input type="checkbox" checked="checked" id="Term_CheckBox" required="" disabled>Yes. I accept the <a href="~/Content/Privacy policy CMA Final .pdf" target="_blank" style="color:#006599">Terms of Agreement</a>.
+                                    </label>
+                                }
+                                else
+                                {
+                                    <label>
+                                        <input type="checkbox" checked="checked" id="Term_CheckBox" required="">Yes. I accept the <a href="~/Content/Privacy policy CMA Final .pdf" target="_blank" style="color:#006599">Terms of Agreement</a>.
+                                    </label>
+                                }
+                            }
+
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group" style="margin-top: 30px">
+                        @if (ViewBag.noneditable)
+                        {
+                            <button type="submit" id="updatebtn" class="center-block submit-btn" onclick="return updateclick();">Update Application</button>
+                        }
+                        else
+                        {
+                            <button type="submit" id="updatebtn" class="center-block submit-btn" onclick="return updateclick();">Update Application</button>
+                        }
+                    </div>
+                </div>
+            }
+            else
+            {
+                <h2 class="text-center" style="font-size:27px">No Record Found . !</h2>
+            }
+        </div>
+    }
+</div>
+<link rel="stylesheet" href="~/Content/App/jquery-ui_App.css">
+<script src="~/Content/App/jquery-1.10.2_App.js"></script>
+<script src="~/Content/App/jquery-ui_App.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#updatebtn').hide();
+        $('#Term_CheckBox').attr('checked', false);
+        $('#Term_CheckBox').change(function () {
+            if (($(this).is(':checked'))) {
+                $('#updatebtn').show();
+            } else {
+                $('#updatebtn').hide();
+            }
+        });
+        //OTP Resend
+        $('#btnResend').click(function () {
+                                        var contactno = $("#txtcontactno").val();
+            $.ajax({
+                                            url: '@Url.Action("sendOTP", "Home")',
+                type: 'POST',
+                data: { mobno: contactno },
+                success: function (data) {
+                    if (data) {
+                        alert('OTP Sent');
+                        $("#" + code.id).focus();
+                    }
+                    else
+                    {
+                        alert('UnSuccessful');
+
+                    }
+                },
+                error: function (data) {
+                }
+           });
+        });
+
+
+
+         $("#txtCity").autocomplete({
+            source: function (request, response) {
+                console.log('%^&&^&', request.term);
+                console.log("ProvinceHidnId : "+ $("#province_id").val());
+                $.ajax({
+                    url: '@(Url.Action("City", "Home"))',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term, ProvinceID: $("#province_id").val()},
+                    success: function (data) {
+                        if (data != null) {
+                            response($.map(data, function (item) {
+                                console.log(item);
+                                $("#txtcityId").val(item.cityid);
+                                return { label: item.cityname, value: item.cityname, Id: item.cityid };
+                            }));
+                        }
+                        else {
+                        }
+                    },
+                    error: function (data) {
+                    }
+                });
+            },
+            select: function (event, ui) {
+                console.log("ui : " + ui);
+                console.log("ui.item : " + ui.item);
+                console.log("City_Id : " + ui.item.Id);
+                $("#txtcityId").val(ui.item.Id);
+                $("#txtBarangay_id").val('0');
+                $("#txtBarangay").val('');
+            }
+        });
+       $("#txtBarangay").autocomplete({
+            source: function (request, response) {
+                console.log('%^&&^&', request.term);
+                $.ajax({
+                    url: '@(Url.Action("Barangay", "Home"))',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term, CityID: $("#txtcityId").val()},
+                    success: function (data) {
+                        if (data != null) {
+                            response($.map(data, function (item) {
+                                console.log(item);
+                                $("#txtBarangay_id").val(item.Id);
+                                return { label: item.Barangay_Name, value: item.Barangay_Name, Id: item.Id };
+                            }));
+                        }
+                        else {
+                        }
+                    },
+                    error: function (data) {
+                    }
+                });
+            },
+        select: function (event, ui) {
+            console.log("ui : " + ui);
+            console.log("ui.item : " + ui.item);
+            console.log("Barangay_id : " + ui.item.Id);
+            $("#txtBarangay_id").val(ui.item.Id);
+        }
+       });
+     $("#txtProvince").autocomplete({
+            source: function (request, response) {
+                console.log('%^&&^&', request.term);
+                $.ajax({
+                    url: '@(Url.Action("Province", "Home"))',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term },
+                    success: function (data) {
+                        if (data != null) {
+                            response($.map(data, function (item) {
+                                $("#province_id").val(item.Id);
+                                return { label: item.Province_Name, value: item.Province_Name, Id: item.Id };
+                            }));
+                        }
+                        else {
+                        }
+                    },
+                    error: function (data) {
+                    }
+                });
+         },
+         select: function (event, ui) {
+             console.log("ui : "+ui);
+             console.log("ui.item : " + ui.item);
+             console.log("Province_Id : " + ui.item.Id);
+             $("#province_id").val(ui.item.Id);
+             $("#txtcityId").val('0');
+             $("#txtCity").val('');
+             $("#txtBarangay_id").val('0');
+             $("#txtBarangay").val('');
+         }
+     });
+         $('input[type="text"]').bind("cut copy paste", function (e) {
+                                            e.preventDefault();
+         });
+
+           @if (Model.TermType != -1)
+            {
+                 <text>
+                   var termTypeId = $("#ddltermtype").val();
+                    $.ajax({
+                                data: { id: termTypeId },
+                                url: '@Url.Action("GetTerm","Home")',
+                        success: function (terms) {
+                            if (terms != null) {
+                                $("#ddlterm").empty();
+                                $.each(terms, function (i, term) {
+                                    $("#ddlterm").append('<option value="' + term.Value + '">' + term.Text + '</option>');
+                                });
+                                $("#ddlterm").val(@Model.TermText);
+
+                            }
+                            else {
+                            }
+                        },
+                        error: function (terms) {
+                        }
+
+                    })
+               </text>
+            }
+        $("#ddltermtype").change(function () {
+                                            var termTypeId = $("#ddltermtype").val();
+            $.ajax({
+                                                data: { id: termTypeId },
+                url: '@Url.Action("GetTerm","Home")',
+                success: function (terms) {
+                    if (terms != null) {
+                        $("#ddlterm").empty();
+                        $.each(terms, function (i, term) {
+                            $("#ddlterm").append('<option value="' + term.Value + '">' +
+                                term.Text + '</option>');
+                        });
+                    }
+                    else {
+                    }
+                },
+                error: function (terms) {
+                }
+            })
+        });
+
+    ///OTP VERIFY
+        $('#btnVerify').click(function () {
+        var code = $('#txtCode').val();
+            var mobilecode = $("#ddlStateList").val();
+              var contactno = $("#txtcontactno").val();
+             if (code.length > 0) {
+                $.ajax({
+                    type: "POST",
+                                                url: '@(Url.Action("VerifyCode", "Home"))',
+                                                data: { code: code, PersonalNO: contactno },
+                    success: function (data) {
+                        if (data != null) {
+                            if (data) {
+                                alert('OTP Verified');
+                                $('#Term_CheckBox').removeAttr('disabled');
+                                $('#txtCode').hide();
+                                $('#btnVerify').hide();
+                                $('#lblcode').hide();
+                                $('#lblResend').hide();
+                                $('#btnResend').hide();
+                                $('#updatebtn').hide();
+
+                            }
+                            else {
+                                alert('OTP Invalid Please Enter Correct OTP Code');
+                                $('#txtCode').addClass('has-error');
+                                $('#txtCode').val('');
+                                $('#updatebtn').hide();
+                            }
+                        }
+                        },
+                    error: function (data) {
+                    }
+
+                                          });
+                                        }
+        });
+    });
+
+    function CheckExtension(e) {
+        if (e != "") {
+            var validFilesTypes = ["jpg", "png", "jpeg", "pdf"];
+            var file = e;
+            var path = file.value;
+            var ext = path.substring(path.lastIndexOf(".") + 1, path.length).toLowerCase();
+            var isValidFile = false;
+            for (var i = 0; i < validFilesTypes.length; i++) {
+                if (ext == validFilesTypes[i]) {
+                    isValidFile = true;
+                    break;
+                }
+            }
+            if (!isValidFile) {
+                alert("Upload Image types file only");
+                var id = e.id;
+                $("#" + id).val('');
+            }
+            return isValidFile;
+        }
+        else
+            return false;
+    }
+    function ValidateFile(e) {
+        //
+        if (e != "" || e != null) {
+            var IsValidExtension = false;
+            var file = e;
+            var fileSize = file.files[0].size;
+            var isValidFile = false;
+            IsValidExtension = CheckExtension(e);
+            if (IsValidExtension) {
+                if (fileSize !== 0 && fileSize <= (5 * 1024 * 1024)) {
+                    isValidFile = true;
+                }
+                else if (!isValidFile) {
+                    alert("File Size Should not exceed 5 MB");
+                    var id = e.id;
+                    $("#" + id).val('');
+                }
+            }
+        }
+        else
+            return false;
+    }
+    function updateclick()
+    {
+
+             var flag = true;
+             $("#hdnpersonalmail").val($("#txtpersonalemail").val());
+            var FirstName = $("#txtFirstname").val();
+            var MiddleName = $("#txtMiddlename").val();
+            var LastName = $("#txtLastname").val();
+            var ApplicantName = '';
+            ApplicantName = $("#txtFirstname").val() + ' ' + $("#txtMiddlename").val() + ' ' + $("#txtLastname").val();
+            var personalemail = $("#txtpersonalemail").val();
+            var contactno = $("#txtcontactno").val();
+            var flag = 0;
+            var Address = $("#txtAddress").val();
+            var city = $("#txtCity").val();
+            var dateofbirth = $("#txtdateofbirth").val();
+            var civilstatus = $("#ddlcivilstatus option:selected").val();
+            var companyname = $("#txtcompanyname").val();
+            var companybranchaddress = $("#txtcompanybranchaddress").val();
+            var companyphoneno = $("#txtcompanyphone").val();
+            var joiningdate = $("#txtjoiningdate").val();
+            var position = $("#txtposition").val();
+            var grossmonthlyincome = $("#txtgrossmonthlyincome").val();
+            var paydate1 = $("#ddlPayDate1").val();
+            var paydate2 = $("#ddlPayDate2").val();
+            var LoanAmount = $("#txtloanamount").val();
+            var termtext = $("#ddlterm option:selected").text();
+            var termtype = $("#ddltermtype option:selected").val();
+            var BestTimeToCallMorning = $("#ddl_BestTimeToCallMorning option:selected").val();
+            var BestTimeToCallNoon = $("#ddl_BestTimeToCallNoon option:selected").val();
+            var persoanlmailid = $("#hdnpersonalmail").val();
+            var Barangay = $("#txtBarangay").val();
+            var Province = $("#txtProvince").val();
+            var SSSNo = $("#txtSSS").val();
+            var Industry = $("#ddlIndustry").val();
+            var OtpCode = $("#txtCode").val();
+            var flag = 0;
+            var ScrollElementById = '';
+
+            if (Barangay == '') {
+                $("#txtBarangay").addClass('has-error');
+                $('#Term_CheckBox').attr('checked', false);
+                $('#updatebtn').hide();
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtBarangay";
+                }
+                flag++;
+            }
+            if (Province == '') {
+
+                $("#txtProvince").addClass('has-error');
+                $('#Term_CheckBox').attr('checked', false);
+                $('#updatebtn').hide();
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtProvince";
+                }
+                flag++;
+            }
+            if (Address == '') {
+                $("#txtAddress").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtAddress";
+                }
+                flag++;
+            }
+            if (city == '') {
+                $("#txtCity").addClass('has-error');
+                $('#Term_CheckBox').attr('checked', false);
+                $('#updatebtn').hide();
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtCity";
+                }
+                flag++;
+            }
+            if (dateofbirth == '') {
+                $("#txtdateofbirth").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtdateofbirth";
+                }
+                flag++;
+            }
+            if (civilstatus == '0') {
+                $("#ddlcivilstatus").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "ddlcivilstatus";
+                }
+                flag++;
+            }
+
+            if (SSSNo == '') {
+                $("#txtSSS").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtSSS";
+                }
+                flag++;
+            }
+            if (Industry == '-1') {
+                $("#ddlIndustry").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "ddlIndustry";
+                }
+                flag++;
+            }
+            if (companyname == '') {
+                $("#txtcompanyname").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtcompanyname";
+                }
+                flag++;
+            }
+            if (companybranchaddress == '') {
+                $("#txtcompanybranchaddress").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtcompanybranchaddress";
+                }
+                flag++;
+            }
+            if (joiningdate == '') {
+                $("#txtjoiningdate").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtjoiningdate";
+                }
+                flag++;
+            }
+            if (position == '') {
+                $("#txtposition").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtposition";
+                }
+                flag++;
+            }
+            if (grossmonthlyincome == '' || grossmonthlyincome == 0) {
+                $("#txtgrossmonthlyincome").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtgrossmonthlyincome";
+                }
+                flag++;
+            }
+            if (companyphoneno == '') {
+                $("#txtcompanyphone").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtcompanyphone";
+                }
+                flag++;
+            }
+          if (companyphoneno != '') {
+            if (companyphoneno.length <= 11 && companyphoneno.length >= 9) {
+            }
+            else {
+                alert("Company phone number is not valid.");
+                $("#txtcompanyphone").val('');
+                $("#txtcompanyphone").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtcompanyphone";
+                }
+                flag++;
+            }
+        }
+            if (paydate1 == '' || paydate1 == '0') {
+                $("#ddlPayDate1").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "ddlPayDate1";
+                }
+                flag++;
+            }
+            if (paydate2 == '' || paydate2 == '-1') {
+                $("#ddlPayDate2").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtAddress";
+                }
+                flag++;
+            }
+            if (LoanAmount == '' || LoanAmount == '0') {
+                $("#txtloanamount").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtloanamount";
+                }
+                flag++;
+            }
+            if (termtype == '' || termtype == '-1') {
+                $("#ddltermtype").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "ddltermtype";
+                }
+                flag++;
+            }
+            if (termtext == 'Select' || termtext == '') {
+                $("#ddlterm").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "ddlterm";
+                }
+                flag++;
+            }
+            if (BestTimeToCallMorning == '-1' || BestTimeToCallMorning == '') {
+                $("#ddl_BestTimeToCallMorning").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "ddl_BestTimeToCallMorning";
+                }
+                flag++;
+            }
+            if (BestTimeToCallNoon == '-1' || BestTimeToCallNoon == '') {
+                $("#ddl_BestTimeToCallNoon").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "ddl_BestTimeToCallNoon";
+                }
+                flag++;
+
+            }
+          var govidFile = $("#govidFile").val();
+          var incomeFile = $("#incomeFile").val();
+          var companyidFile = $("#companyidFile").val();
+          var billingFile = $("#billingFile").val();
+          var ATMidFile = $("#ATMidFile").val();
+            var lblgovfile = $("#lblGovUrl").text();
+            var lblincomefile = $("#lblIncomeUrl").text();
+            var lblcompanyfile = $("#lblCompanyUrl").text();
+          var lblbillingFile = $("#lblBillingUrl").text();
+          var lblATMidFile = $("#lblATMUrl").text();
+            if (govidFile == '' && lblgovfile == '' || companyidFile == '' && lblcompanyfile == '' || incomeFile == '' && lblincomefile == '' || billingFile == '' && lblbillingFile == '') {
+                alert("Incomplete attachment. Application with insufficient documents will be declined .");
+            }
+         if (OtpCode == '') {
+            $("#txtCode").addClass('has-error');
+            alert("please Enter Otp Code");
+            flag++;
+         }
+         if (flag > 0) {
+            var msg = '<div onclick="HideIt(this);" class="alert alert-danger"><label>Please Enter Mandatory Field</label><a class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a></div>'
+            $("#divMsg").html(msg);
+            $("#divMsg").show(500);
+            $('html,body').animate({ scrollTop: $("#" + ScrollElementById).offset().top }, 800);
+            return false;
+         }
+
+             SendMail();
+
+    }
+    function SendMail() {
+        var FirstName = $("#txtFirstname").val();
+        var MiddleName = $("#txtMiddlename").val();
+        var LastName = $("#txtLastname").val();
+        var ApplicantName = FirstName + ' ' + MiddleName + ' ' + LastName;
+        var contactno = $("#txtcontactno").val();
+        var personalemail = $("#txtpersonalemail").val();
+            $.ajax({
+                url: '@Url.Action("SendEmail", "Home")',
+                type: 'post',
+                data: { "personalMail": personalemail, "name": ApplicantName, "persoanlContactno": contactno},
+                success: function (data) {
+
+                },
+                error: function (data) {
+                    //window.location.reload(1);
+                }
+             });
+    }
+
+    function isValidEmailAddress(email) {
+        var pattern = new RegExp(".+\\@@.+\\..+");
+        return pattern.test(email);
+    }
+
+       function isContactNumberAvailable(MobileNo) {
+         var availability = true;
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("IsContactNumberAvailable", "Home", new { area = "" })',
+            dataType: 'json',
+            data: { ContactNumber: MobileNo },
+            success: function (result) {                              //To Chekc Contact NUmber is Duplicate
+                if (result) {
+                    availability = false;
+                }
+                else {
+                }
+               }
+         });
+
+           return availability;
+       }
+
+
+
+                                    //To Chekc Email Is Duplicate
+    function isEmailAvailable(email) {
+        var availability = true;
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("IsEmailAvailable", "Home", new { area = "" })',
+            dataType: 'json',
+            data: { emailid: email },
+            success: function (result) {
+
+                if (result) {
+                    availability = false;
+                }
+                else {
+                }
+            }
+        });
+
+        return availability;
+    }
+
+
+    //Remove Validation
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+        $("#" + id+"_lbl").text('');
+    }
+        //Datepicker
+        $("#txtdateofbirth").datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            maxDate: new Date()
+        });
+        $("#txtjoiningdate").datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            maxDate: new Date()
+        });
+
+    $(document).keypress(
+        function (event) {
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        });
+
+
+    function HideIt(id) {
+        $(id).hide();
+    }
+
+
+</script>
+<style>
+    .has-error {
+        border-color: red;
+        color: red;
+    }
+
+
+    .custom-file-input {
+        float: left;
+        background-color: #666;
+        padding: 10px;
+        width: 150px;
+        text-align: center;
+        border-radius: 3px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        color: #fff;
+        box-shadow: inset 3px 4px 3px -1px #909090;
+        -moz-box-shadow: inset 3px 4px 3px -1px #909090;
+        -webkit-box-shadow: inset 3px 4px 3px -1px #909090;
+        cursor: pointer;
+    }
+
+    .mixselect {
+        width: 20% !important;
+        border-top-right-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+    }
+
+    .mixinput {
+        width: 80% !important;
+        border-top-left-radius: 0px !important;
+        border-bottom-left-radius: 0px !important;
+    }
+</style>

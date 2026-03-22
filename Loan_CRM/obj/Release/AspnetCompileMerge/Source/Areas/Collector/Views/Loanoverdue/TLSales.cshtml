@@ -1,0 +1,621 @@
+﻿@model Loan_CRM.Models.AgingDataVM
+@{
+    ViewBag.Title = "TL Sales";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<style>
+    .pad {
+        margin-left: 2px !important;
+    }
+</style>
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+@using (Html.BeginForm())
+{
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">TL Sales</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <a class="btn btn-primary" href="@Url.Action("AgencyReport","Admin",new { Area="Admin"})">Agency Report</a>
+                    </td>
+                    <td style="text-align:center">
+                    </td>
+                    <td style="text-align:center">
+                        <input type="submit" class="btn btn-xs btn-primary" id="btnDaily" value="Daily" name="CommandName" onclick="" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="submit" class="btn btn-xs btn-primary" id="btnWeek" value="Week" name="CommandName" onclick="" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="submit" class="btn btn-xs btn-primary" id="btnMonth" value="Month" name="CommandName" onclick="" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="submit" class="btn btn-xs btn-primary" id="btnYear" value="Year" name="CommandName" onclick="" />
+                    </td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered table-striped">
+                @if (Model.ReportName == "Daily")
+                {
+                    <thead>
+                        <tr>
+                            <th colspan="11" style="text-align:center"><b class="btn btn-xs btn-danger">@Model.ReportName</b></th>
+                        </tr>
+                        <tr>
+                            <th colspan="3" style="text-align:center"><b></b></th>
+                            <th colspan="2" style="text-align:center"><b>Efficiency%</b></th>
+                            <th colspan="2" style="text-align:center"><b>Preterm</b></th>
+                            <th colspan="2" style="text-align:center"><b>Reloan</b></th>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <th>Day</th>
+                            <th>Officer Name</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @if (Model.AgingDataList != null && Model.AgingDataList.Count > 0)
+                        {
+                            int _RowCount = 0;
+                            foreach (var item in Model.AgingDataList.OrderBy(x => x.DueDate).ToList())
+                            {
+                                <tr>
+                                    @{
+                                        var _WeekCount = Model.AgingDataList.Count(x => x.DueDate == item.DueDate);
+                                        if (_WeekCount < 2)
+                                        {
+                                            <td>@item.DueDate<br />@item.DateRange</td>
+                                            <td>@item.DayName</td>
+                                            if (item.OfficerName != "")
+                                            {
+                                                <td>@item.OfficerName</td>
+                                                <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                <td>@item.Preterm</td>
+                                                <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                <td>@item.Reloan</td>
+                                                <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                            }
+                                            else
+                                            {
+                                                <td></td>
+                                                <td>0.00%</td>
+                                                <td>0.00%</td>
+                                                <td>0</td>
+                                                <td>0.00</td>
+                                                <td>0</td>
+                                                <td>0.00</td>
+                                            }
+                                            _RowCount = 0;
+                                        }
+                                        else
+                                        {
+                                            _RowCount++;
+                                            if (_RowCount == 1)
+                                            {
+                                <td rowspan="@_WeekCount">@item.DueDate</td>
+                                                <td rowspan="@_WeekCount">@item.DayName</td>
+                                                if (item.OfficerName != "")
+                                                {
+                                                    <td>@item.OfficerName</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                    <td>@item.Preterm</td>
+                                                    <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                    <td>@item.Reloan</td>
+                                                    <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                    <td>0.00%</td>
+                                                    <td>0.00%</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (item.OfficerName != "")
+                                                {
+                                                    <td>@item.OfficerName</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                    <td>@item.Preterm</td>
+                                                    <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                    <td>@item.Reloan</td>
+                                                    <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                    <td>0.00%</td>
+                                                    <td>0.00%</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                }
+                                            }
+
+                                        }
+                                        if (_RowCount == _WeekCount)
+                                        {
+                                            _RowCount = 0;
+                                        }
+                                    }
+                                </tr>
+                            }
+                            <tr>
+                                <th>Summary</th>
+                                <th></th>
+                                <th></th>
+                                <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumEffeciency_No)%</th>
+                                <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumEffeciency_Peso)%</th>
+                                <th>@Model.AgingDataList.FirstOrDefault().SumPreterm_No</th>
+                                <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumPreterm_Peso)</th>
+                                <th>@Model.AgingDataList.FirstOrDefault().SumReloan_No</th>
+                                <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumReloan_Peso)</th>
+                            </tr>
+                        }
+                    </tbody>
+                }
+                @if (Model.ReportName == "Weekly")
+                {
+                    <thead>
+                        <tr>
+                            <th colspan="11" style="text-align:center"><b class="btn btn-xs btn-danger">@Model.ReportName</b></th>
+                        </tr>
+                        <tr>
+                            <th colspan="2" style="text-align:center"><b></b></th>
+                            <th colspan="2" style="text-align:center"><b>Efficiency%</b></th>
+                            <th colspan="2" style="text-align:center"><b>Preterm</b></th>
+                            <th colspan="2" style="text-align:center"><b>Reloan</b></th>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <th>Officer Name</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @if (Model.AgingDataList != null && Model.AgingDataList.Count > 0)
+                        {
+                            int _RowCount = 0;
+                            foreach (var item in Model.AgingDataList)
+                            {
+                                <tr>
+                                    @{
+                                        var _WeekCount = Model.AgingDataList.Count(x => x.DueDate == item.DueDate);
+                                        if (_WeekCount < 2)
+                                        {
+                                                                        <td>@item.DueDate<br />@item.DateRange</td>
+                                            if (item.OfficerName != "")
+                                            {
+                                                <td>@item.OfficerName</td>
+                                                <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                <td>@item.Preterm</td>
+                                                <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                <td>@item.Reloan</td>
+                                                <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                            }
+                                            else
+                                            {
+                                                <td></td>
+                                                <td>0.00%</td>
+                                                <td>0.00%</td>
+                                                <td>0</td>
+                                                <td>0.00</td>
+                                                <td>0</td>
+                                                <td>0.00</td>
+                                            }
+                                            _RowCount = 0;
+                                        }
+                                        else
+                                        {
+                                            _RowCount++;
+                                            if (_RowCount == 1)
+                                            {
+                                <td rowspan="@_WeekCount">@item.DueDate<br />@item.DateRange</td>
+                                                if (item.OfficerName != "")
+                                                {
+                                                    <td>@item.OfficerName</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                    <td>@item.Preterm</td>
+                                                    <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                    <td>@item.Reloan</td>
+                                                    <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                    <td>0.00%</td>
+                                                    <td>0.00%</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (item.OfficerName != "")
+                                                {
+                                                    <td>@item.OfficerName</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                    <td>@item.Preterm</td>
+                                                    <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                    <td>@item.Reloan</td>
+                                                    <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                    <td>0.00%</td>
+                                                    <td>0.00%</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                }
+                                            }
+
+                                        }
+                                        if (_RowCount == _WeekCount)
+                                        {
+                                            _RowCount = 0;
+                                        }
+                                    }
+                                </tr>
+                            }
+                    <tr>
+                        <th>Summary</th>
+                        <th></th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumEffeciency_No)%</th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumEffeciency_Peso)%</th>
+                        <th>@Model.AgingDataList.FirstOrDefault().SumPreterm_No</th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumPreterm_Peso)</th>
+                        <th>@Model.AgingDataList.FirstOrDefault().SumReloan_No</th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumReloan_Peso)</th>
+                    </tr>
+                        }
+                    </tbody>
+                }
+                @if (Model.ReportName == "Monthly")
+                {
+                    <thead>
+                        <tr>
+                            <th colspan="11" style="text-align:center"><b class="btn btn-xs btn-danger">@Model.ReportName</b></th>
+                        </tr>
+                        <tr>
+                            <th colspan="2" style="text-align:center"><b></b></th>
+                            <th colspan="2" style="text-align:center"><b>Efficiency%</b></th>
+                            <th colspan="2" style="text-align:center"><b>Preterm</b></th>
+                            <th colspan="2" style="text-align:center"><b>Reloan</b></th>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <th>Officer Name</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @if (Model.AgingDataList != null && Model.AgingDataList.Count > 0)
+                        {
+                            int _RowCount = 0;
+                            foreach (var item in Model.AgingDataList)
+                            {
+                                <tr>
+                                    @{
+                                        var _WeekCount = Model.AgingDataList.Count(x => x.DueDate == item.DueDate);
+                                        if (_WeekCount < 2)
+                                        {
+                                            <td>@item.DueDate</td>
+                                            if (item.OfficerName != "")
+                                            {
+                                                <td>@item.OfficerName</td>
+                                                <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                <td>@item.Preterm</td>
+                                                <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                <td>@item.Reloan</td>
+                                                <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                            }
+                                            else
+                                            {
+                                                <td> </td>
+                                                <td>0.00%</td>
+                                                <td>0.00%</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                                <td>0</td>
+                                            }
+                                            _RowCount = 0;
+                                        }
+                                        else
+                                        {
+                                            _RowCount++;
+                                            if (_RowCount == 1)
+                                            {
+                                                <td rowspan="@_WeekCount">@item.DueDate</td>
+                                                if (item.OfficerName != "")
+                                                {
+                                                    <td>@item.OfficerName</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                    <td>@item.Preterm</td>
+                                                    <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                    <td>@item.Reloan</td>
+                                                    <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                    <td>0.00%</td>
+                                                    <td>0.00%</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                }
+                                            }
+                                            else
+                                            {
+
+                                                if (item.OfficerName != "")
+                                                {
+
+                                                    <td>@item.OfficerName</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                    <td>@item.Preterm</td>
+                                                    <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                    <td>@item.Reloan</td>
+                                                    <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                    <td>0.00%</td>
+                                                    <td>0.00%</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                }
+                                                if (_WeekCount == _RowCount)
+                                                {
+                                                    _RowCount = 0;
+                                                }
+                                            }
+
+                                        }
+                                        if (_RowCount == _WeekCount)
+                                        {
+                                            _RowCount = 0;
+                                        }
+                                    }
+                                </tr>
+                            }
+                    <tr>
+                        <th>Summary</th>
+                        <th></th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumEffeciency_No)%</th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumEffeciency_Peso)%</th>
+                        <th>@Model.AgingDataList.FirstOrDefault().SumPreterm_No</th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumPreterm_Peso)</th>
+                        <th>@Model.AgingDataList.FirstOrDefault().SumReloan_No</th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumReloan_Peso)</th>
+                    </tr>
+                        }
+                    </tbody>
+                }
+                @if (Model.ReportName == "Yearly")
+                {
+                    <thead>
+                        <tr>
+                            <th colspan="11" style="text-align:center"><b class="btn btn-xs btn-danger">@Model.ReportName</b></th>
+                        </tr>
+                        <tr>
+                            <th colspan="2" style="text-align:center"><b></b></th>
+                            <th colspan="2" style="text-align:center"><b>Efficiency%</b></th>
+                            <th colspan="2" style="text-align:center"><b>Preterm</b></th>
+                            <th colspan="2" style="text-align:center"><b>Reloan</b></th>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <th>Officer Name</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                            <th>Number</th>
+                            <th>Peso</th>
+                        </tr>
+
+                    </thead>
+                    <tbody>
+                        @if (Model.AgingDataList != null && Model.AgingDataList.Count > 0)
+                        {
+                            int _RowCount = 0;
+                            foreach (var item in Model.AgingDataList)
+                            {
+                                <tr>
+                                    @{
+                                        var _WeekCount = Model.AgingDataList.Count(x => x.DueDate == item.DueDate);
+                                        if (_WeekCount < 2)
+                                        {
+                                            <td>@item.DueDate</td>
+                                            if (item.OfficerName != "")
+                                            {
+                                                <td>@item.OfficerName</td>
+                                                <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                <td>@item.Preterm</td>
+                                                <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                <td>@item.Reloan</td>
+                                                <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                            }
+                                            else
+                                            {
+                                                <td></td>
+                                                <td>0.00%</td>
+                                                <td>0.00%</td>
+                                                <td>0</td>
+                                                <td>0.00</td>
+                                                <td>0</td>
+                                                <td>0.00</td>
+                                            }
+                                            _RowCount = 0;
+                                        }
+                                        else
+                                        {
+                                            _RowCount++;
+                                            if (_RowCount == 1)
+                                            {
+                                                <td rowspan="@_WeekCount">@item.DueDate</td>
+                                                if (item.OfficerName != "")
+                                                {
+                                                    <td>@item.OfficerName</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                    <td>@item.Preterm</td>
+                                                    <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                    <td>@item.Reloan</td>
+                                                    <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                    <td>0.00%</td>
+                                                    <td>0.00%</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                if (item.OfficerName != "")
+                                                {
+                                                    <td>@item.OfficerName</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                                    <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                                    <td>@item.Preterm</td>
+                                                    <td>@String.Format("{0:N2}", item.Preterm_Peso)</td>
+                                                    <td>@item.Reloan</td>
+                                                    <td>@String.Format("{0:N2}", item.Reloan_Peso)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td></td>
+                                                    <td>0.00%</td>
+                                                    <td>0.00%</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                    <td>0</td>
+                                                    <td>0.00</td>
+                                                }
+                                                if (_WeekCount == _RowCount)
+                                                {
+                                                    _RowCount = 0;
+                                                }
+                                            }
+
+                                        }
+                                    }
+
+
+
+                                </tr>
+                            }
+                    <tr>
+                        <th>Summary</th>
+                        <th></th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumEffeciency_No)%</th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumEffeciency_Peso)%</th>
+                        <th>@Model.AgingDataList.FirstOrDefault().SumPreterm_No</th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumPreterm_Peso)</th>
+                        <th>@Model.AgingDataList.FirstOrDefault().SumReloan_No</th>
+                        <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumReloan_Peso)</th>
+                    </tr>
+                        }
+                    </tbody>
+                }
+            </table>
+        </div>
+
+
+
+    </div>
+}

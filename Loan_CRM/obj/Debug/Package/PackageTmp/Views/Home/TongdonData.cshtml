@@ -1,0 +1,372 @@
+﻿@model Loan_CRM.Models.TongdunVM
+
+@{
+    ViewBag.Title = "Other Data";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Other Data</h2>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th colspan="27">
+              Greb Data :  @Model.ReferenceNo
+            </th>
+
+        </tr>
+        <tr>
+            <th>
+                ID
+            </th>
+            <th>
+                Order No
+            </th>
+            <th>
+                Date
+            </th>
+            <th>
+                Country
+            </th>
+            <th>
+                Distance
+            </th>
+            <th>
+                City
+            </th>
+            <th>
+                Evaluation
+            </th>
+            <th>
+                Car Driver
+            </th>
+            <th>
+                From Longitude
+            </th>
+            <th>
+                From
+            </th>
+            <th>
+                Pay Type
+            </th>
+            <th>
+                Tag
+            </th>
+            <th>
+                Phone Type
+            </th>
+            <th>
+                Vehicle Type
+            </th>
+            <th>
+                To Detail
+            </th>
+            <th>
+                Currency Unit
+            </th>
+            <th>
+                From Latitude
+            </th>
+            <th>
+                To Longitude
+            </th>
+            <th>
+                Car No
+            </th>
+            <th>
+                Intermediate
+            </th>
+            <th>
+                Order Fee
+            </th>
+            <th>
+                To Latitude
+            </th>
+            <th>
+                To
+            </th>
+            <th>
+                Time
+            </th>
+            <th>
+                From Detail
+            </th>
+            <th>
+                Status
+            </th>
+            <th>
+                Created On
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.tongdunModels)
+        {
+            <tr>
+                <td>
+                    @item.id
+                </td>
+                <td>
+                    @item.order_no
+                </td>
+                <td>
+                    @item.date
+                </td>
+                <td>
+                    @item.country
+                </td>
+                <td>
+                    @item.distance
+                </td>
+                <td>
+                    @item.city
+                </td>
+                <td>
+                    @item.evaluation
+                </td>
+                <td>
+                    @item.car_driver
+                </td>
+                <td>
+                    @item.from_longitude
+                </td>
+                <td>
+                    @item.from_
+                </td>
+                <td>
+                    @item.pay_type
+                </td>
+                <td>
+                    @item.tag
+                </td>
+                <td>
+                    @item.phone_type
+                </td>
+                <td>
+                    @item.vehicle_type
+                </td>
+                <td>
+                    @item.to_detail
+                </td>
+                <td>
+                    @item.currency_unit
+                </td>
+                <td>
+                    @item.from_latitude
+                </td>
+                <td>
+                    @item.to_longitude
+                </td>
+                <td>
+                    @item.car_no
+                </td>
+                <td>
+                    @item.intermediate
+                </td>
+                <td>
+                    @item.order_fee
+                </td>
+                <td>
+                    @item.to_latitude
+                </td>
+                <td>
+                    @item.to_
+                </td>
+                <td>
+                    @item.time_
+                </td>
+                <td>
+                    @item.from_detail
+                </td>
+                <td>
+                    @item.status
+                </td>
+                <td>
+                    @item.createdon
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th colspan="27">
+                Shopee Data :  @Model.ReferenceNo
+            </th>
+
+        </tr>
+        <tr>
+            <th>
+               ID
+            </th>
+            <th>
+                ORDER NO
+            </th>
+            <th>
+                SHIPPING
+            </th>
+            <th>
+                SOLD BY
+            </th>
+            <th>
+                SHOPPING COST
+            </th>
+            <th>
+                PAYMENT DATE
+            </th>
+            <th>
+                SUB TOTAL
+            </th>
+            <th>
+                PRODUCT NAME
+            </th>
+            <th>
+                GRAND TOTAL
+            </th>
+            <th>
+                SHIPPING ADDRESS
+            </th>
+            <th>
+                PHONE
+            </th>
+            <th>
+                CUSTOMER NAME
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.shoppeData)
+        {
+            <tr>
+                <td>
+                    @item.id
+                </td>
+                <td>
+                    @item.order_no
+                </td>
+                <td>
+                    @item.package_shipping
+                </td>
+                <td>
+                    @item.package_sold_by
+                </td>
+                <td>
+                    @item.shipping_cost
+                </td>
+                <td>
+                    @item.payment_time
+                </td>
+                <td>
+                    @item.sub_total
+                </td>
+                <td>
+                    @item.product_name
+                </td>
+                <td>
+                    @item.grand_total
+                </td>
+                <td>
+                    @item.shipping_address
+                </td>
+                <td>
+                    @item.phone
+                </td>
+                <td>
+                    @item.customername
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th colspan="27">
+                Lazada Data :  @Model.ReferenceNo
+            </th>
+
+        </tr>
+        <tr>
+            <td>
+                ID
+            </td>
+            <td>
+                ORDER NO
+            </td>
+            <td>
+               ORDER ON
+            </td>
+            <td>
+                BILLING ADDRESS
+            </td>
+            <td>
+                NAME
+            </td>
+            <td>
+                PHONE NO
+            </td>
+            <td>
+                SUB TOTAL
+            </td>
+            <td>
+                GRAND TOTAL
+            </td>
+            <td>
+                SHIPPING ADDRESS
+            </td>
+            <td>
+                NAME
+            </td>
+            <td>
+                CONTACT NO
+            </td>
+            <td>
+                SHIPPING COST
+            </td>
+            
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.lazadas)
+        {
+            <tr>
+                <td>
+                    @item.id
+                </td>
+                <td>
+                    @item.order_no
+                </td>
+                <td>
+                    @item.order_time
+                </td>
+                <td>
+                    @item.billing_address
+                </td>
+                <td>
+                    @item.billing_address_name
+                </td>
+                <td>
+                    @item.billing_address_phone
+                </td>
+                <td>
+                    @item.sub_total
+                </td>
+                <td>
+                    @item.grand_total
+                </td>
+                <td>
+                    @item.shipping_address
+                </td>
+                <td>
+                    @item.shipping_address_name
+                </td>
+                <td>
+                    @item.shipping_address_phone
+                </td>
+                <td>
+                    @item.shipping_cost
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

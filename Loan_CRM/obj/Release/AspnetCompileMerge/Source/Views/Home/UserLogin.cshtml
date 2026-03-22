@@ -1,0 +1,93 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+@{ 
+    ViewBag.Title = "UserLogin";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+@using (Html.BeginForm())
+{
+    <div class="login-page">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-12 banner-form">
+                </div>
+            </div>
+            <div class="row" id="form-wizard">
+
+                <div class="col-md-8 center-block col-float-none form-bg form-bg-bottom">
+                    <h2 class="text-center" style="font-size:27px">Welcome Back to Cash Mart Asia Lending!</h2>
+                    <p class="text-center" style="margin-bottom: 30px; margin-top: 20px;"><span><img src="../../Content/img/secure-loan.png" style="width: 15px; margin-right: 10px;"></span>Cash Mart uses 256-bit verified encryption to keep your data safe.</p>
+                    <div class="form-wrap">
+                        <div class="row">
+                            <div class="col-md-10 center-block" style="float:none;">
+                                <div class="form-group">
+                                    <div id="msgdiv"></div>
+                                    @if (ViewBag.Error != null)
+                                    {
+                                        <script type="text/javascript">
+                                            $("#msgdiv").show();
+                                            $("#msgdiv").html("<div class='alert alert-danger' style='background-color: #dd4b39;color:white;'>Invalid Username or Password.</div>");
+                                        </script>
+                                    }
+                                    <input type="text" class="form-control input-lg" id="txtUserName" name="PersonalEmail" placeholder="Enter Email Address" onfocus="RemoveValidation(this);">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" class="form-control input-lg" maxlength="50" id="txtPassword" name="Password" placeholder="Enter Password" onfocus="RemoveValidation(this);">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-10 center-block" style="float:none;">
+                                <button type="submit" class="submit-btn col-md-12" onclick="return submitclick();">Client Login</button>
+                                <div class="col-md-12 text-center">
+                                    <a href='@Url.Action("ForgotPassword","Home")' class="center-block padding-small text-center">Forgot your password? Click Here.</a>
+                                    <a href='@Url.Action("applicationrecord","Home")' class="center-block text-center">Don't have an account? Signup Now.</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#txtUserName").click(function () {
+            runEffect();
+            return false;
+        });
+        $("#txtPassword").click(function () {
+            runEffect();
+            return false;
+        });
+    });
+
+    function runEffect() {
+        $("#msgdiv").fadeOut(), 300;
+    }
+    function submitclick() {
+        //
+        var flag = true;
+        var username = $("#txtUserName").val().trim();
+        var Password = $("#txtPassword").val().trim();
+        if (username == "") {
+            $("#txtUserName").addClass("has-error");
+            flag = false;
+        }
+        if (Password == "") {
+            $("#txtPassword").addClass("has-error");
+            flag = false;
+        }
+        return flag;
+    }
+    //Remove Validation
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+</style>

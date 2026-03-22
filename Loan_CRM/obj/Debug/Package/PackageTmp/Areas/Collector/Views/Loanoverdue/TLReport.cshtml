@@ -1,0 +1,142 @@
+﻿@model Loan_CRM.Areas.Collector.Models.DefaulterReportModel
+@{
+    /**/
+
+    ViewBag.Title = "Defaulter Report";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+@using (Html.BeginForm("DefaulterReport", "Loanoverdue", FormMethod.Post))
+{
+    <div id="tableDiv">
+        <h3>Defaulter Report</h3>
+        <div class="col-md-12">
+
+            <table id="tblReport" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th colspan="2" style="text-align:center"><b>TL Defaulter Report</b></th>
+                        <th rowspan="2" style="text-align:center"><b>Number of Defaulters</b></th>
+                        <th rowspan="2" style="text-align:center"><b>Outstanding Loan Principle</b></th>
+                        <th rowspan="2" style="text-align:center"><b>Outstanding Payment</b></th>
+                        <th rowspan="2" style="text-align:center"><b>Number of Non-Starter</b></th>
+                        <th rowspan="2" style="text-align:center"><b>Number of Partial Payment</b></th>
+                        <th rowspan="2" style="text-align:center"><b>Defaulter Collection</b></th>
+                        <th rowspan="2" style="text-align:center"><b>Agency Collection</b></th>
+                        <th rowspan="2" style="text-align:center"><b>Total Number of Defaulters</b></th>
+                        <th rowspan="2" style="text-align:center"><b>Total Outstanding Principle</b></th>
+                    </tr>
+
+                    <tr>
+                        <th>Date</th>
+                        <th>Officer Name</th>
+                        <th colspan="9"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.date != null && Model.date.Count > 0)
+                    {
+                        for (int i = 0; i < Model.date.Count; i++)
+                        {
+                            var DefaultCount = Model.DefaulterCountList.Where(x => x.Date == Model.date[i]).ToList();
+                            var OutstandingPrinciple = Model.OutstandingLoanprincipalList.Where(x => x.Date == Model.date[i]).ToList();
+                            var OutstandingLoanAmount = Model.OutstandingLoanAmountList.Where(x => x.Date == Model.date[i]).ToList();
+                            var NonStarterNumber = Model.NonStarterNumberList.Where(x => x.Date == Model.date[i]).ToList();
+                            var PartialPaymentNumber = Model.PartialPaymentNumberList.Where(x => x.Date == Model.date[i]).ToList();
+                            var DefaulterCollection = Model.DefaulterCollectionList.Where(x => x.Date == Model.date[i]).ToList();
+
+                            var SumAgencyCollection = Model.SumOfAgencyList.Where(x => x.Date == Model.date[i]).ToList();
+                            var SumOfDefaulters = Model.SumOfDefaulterList.Where(x => x.Date == Model.date[i]).ToList();
+                            var SumOutstandingPrinciple = Model.SumOfOutstandingList.Where(x => x.Date == Model.date[i]).ToList();
+                            if (DefaultCount.Count < 2)
+                            {
+                                <tr>
+                                    <td>@Model.date[i]</td>
+                                    @if (DefaultCount.Count == 1)
+                                    {
+                                        <td>@DefaultCount[0].DefaulterName</td>
+                                        <td>@DefaultCount[0].Number_Defaulter</td>
+                                        <td>@OutstandingPrinciple[0].Outstanding_Loan_Principle</td>
+                                        <td>@OutstandingLoanAmount[0].Outstanding_amount</td>
+                                        <td>@NonStarterNumber[0].Non_Starter_Number</td>
+                                        <td>@PartialPaymentNumber[0].Partial_Payment_Number</td>
+                                        <td>@DefaulterCollection[0].Defaulter_Collection</td>
+                                        <td>@SumAgencyCollection[0].Sum_Of_Agency</td>
+                                        <td>@SumOfDefaulters[0].Sum_Of_Defaulter</td>
+                                        <td>@SumOutstandingPrinciple[0].Sum_Of_Outstanding</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                        <td>0</td>
+                                    }
+                                </tr>
+                            }
+                            else
+                            {
+                                for (int j = 0; j < DefaultCount.Count; j++)
+                                {
+                                    <tr>
+                                        @if (j == 0)
+                                        {
+                                            <td rowspan="@DefaultCount.Count"> @Model.date[i] </td>
+                                        }
+                                        <td>@DefaultCount[j].DefaulterName </td>
+                                        <td>@DefaultCount[j].Number_Defaulter</td>
+                                        <td>@OutstandingPrinciple[j].Outstanding_Loan_Principle </td>
+                                        <td>@OutstandingLoanAmount[j].Outstanding_amount </td>
+                                        <td>@NonStarterNumber[j].Non_Starter_Number </td>
+                                        <td>@PartialPaymentNumber[j].Partial_Payment_Number </td>
+                                        <td>@DefaulterCollection[j].Defaulter_Collection</td>
+                                        @if (j == 0)
+                                        {
+                                            <td rowspan="@DefaultCount.Count">@SumAgencyCollection[0].Sum_Of_Agency</td>
+                                            <td rowspan="@DefaultCount.Count">@SumOfDefaulters[0].Sum_Of_Defaulter</td>
+                                            <td rowspan="@DefaultCount.Count">@SumOutstandingPrinciple[0].Sum_Of_Outstanding</td>
+                                        }
+                                    </tr>
+                                }
+                            }
+
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+

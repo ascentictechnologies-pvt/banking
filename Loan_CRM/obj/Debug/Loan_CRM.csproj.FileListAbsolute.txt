@@ -1,0 +1,673 @@
+D:\Personal\cashmartweb\Loan_CRM\bin\ApplicationInsights.config
+D:\Personal\cashmartweb\Loan_CRM\bin\Loan_CRM.dll.config
+D:\Personal\cashmartweb\Loan_CRM\bin\Loan_CRM.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Loan_CRM.pdb
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\csc.exe
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\csc.exe.config
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\csc.rsp
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\csi.exe
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\csi.exe.config
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\csi.rsp
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CSharp.Core.targets
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Managed.Core.targets
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.VisualBasic.Core.targets
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\System.Buffers.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\System.Collections.Immutable.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\System.Memory.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\System.Numerics.Vectors.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\System.Reflection.Metadata.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\System.Runtime.CompilerServices.Unsafe.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\System.Text.Encoding.CodePages.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\System.Threading.Tasks.Extensions.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe.config
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\vbc.rsp
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe
+D:\Personal\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe.config
+D:\Personal\cashmartweb\Loan_CRM\bin\BouncyCastle.Crypto.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\DotNetZip.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\EntityFramework.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\itextsharp.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\itextsharp.pdfa.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\itextsharp.xtra.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Npgsql.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Serilog.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Serilog.Settings.AppSettings.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Buffers.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Memory.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Text.Json.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.ValueTuple.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Helpers.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Http.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Mvc.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Razor.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.WebPages.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\WebGrease.dll
+D:\Personal\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\DotNetZip.pdb
+D:\Personal\cashmartweb\Loan_CRM\bin\DotNetZip.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\EntityFramework.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\itextsharp.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Npgsql.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Serilog.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.pdb
+D:\Personal\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Buffers.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Memory.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Text.Json.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.ValueTuple.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Helpers.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Http.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Mvc.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.Razor.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.WebPages.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.xml
+D:\Personal\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.xml
+D:\Personal\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.AssemblyReference.cache
+D:\Personal\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.CoreCompileInputs.cache
+D:\Personal\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.CopyComplete
+D:\Personal\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.dll
+D:\Personal\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.pdb
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\ApplicationInsights.config
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Loan_CRM.dll.config
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Loan_CRM.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Loan_CRM.pdb
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csc.exe
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csc.exe.config
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csc.rsp
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csi.exe
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csi.exe.config
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csi.rsp
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Managed.Core.targets
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Buffers.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Memory.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Numerics.Vectors.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Text.Encoding.CodePages.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Threading.Tasks.Extensions.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe.config
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\vbc.rsp
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\BouncyCastle.Crypto.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DotNetZip.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\itextsharp.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\itextsharp.pdfa.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\itextsharp.xtra.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Npgsql.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.Settings.AppSettings.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Buffers.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Memory.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Text.Json.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.ValueTuple.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Helpers.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Http.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Mvc.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Razor.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\WebGrease.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DotNetZip.pdb
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DotNetZip.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\itextsharp.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Npgsql.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.pdb
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Buffers.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Memory.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Text.Json.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.ValueTuple.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Helpers.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Http.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Mvc.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Razor.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.xml
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.AssemblyReference.cache
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.CoreCompileInputs.cache
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.CopyComplete
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.dll
+C:\Users\nageshsrivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.pdb
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.AssemblyReference.cache
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.CoreCompileInputs.cache
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.pdb
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\ApplicationInsights.config
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Loan_CRM.dll.config
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Loan_CRM.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Loan_CRM.pdb
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csc.exe
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csc.exe.config
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csc.rsp
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csi.exe
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csi.exe.config
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\csi.rsp
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Managed.Core.targets
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Buffers.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Memory.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Numerics.Vectors.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Text.Encoding.CodePages.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\System.Threading.Tasks.Extensions.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe.config
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\vbc.rsp
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\BouncyCastle.Crypto.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DotNetZip.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\itextsharp.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\itextsharp.pdfa.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\itextsharp.xtra.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Npgsql.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.Settings.AppSettings.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Buffers.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Memory.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Text.Json.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.ValueTuple.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Helpers.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Http.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Mvc.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Razor.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\WebGrease.dll
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DotNetZip.pdb
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\DotNetZip.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\itextsharp.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Npgsql.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.pdb
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Buffers.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Memory.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Text.Json.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.ValueTuple.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Helpers.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Http.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Mvc.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.Razor.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.xml
+C:\Users\Nagesh Srivastava\Source\Repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.CopyComplete
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\ApplicationInsights.config
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Loan_CRM.dll.config
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Loan_CRM.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Loan_CRM.pdb
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\csc.exe
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\csc.exe.config
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\csc.rsp
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\csi.exe
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\csi.exe.config
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\csi.rsp
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CSharp.Core.targets
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Managed.Core.targets
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.VisualBasic.Core.targets
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\System.Buffers.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\System.Collections.Immutable.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\System.Memory.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\System.Numerics.Vectors.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\System.Reflection.Metadata.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\System.Text.Encoding.CodePages.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\System.Threading.Tasks.Extensions.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe.config
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\vbc.rsp
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe.config
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\BouncyCastle.Crypto.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\DotNetZip.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\EntityFramework.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\itextsharp.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\itextsharp.pdfa.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\itextsharp.xtra.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Npgsql.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Serilog.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Serilog.Settings.AppSettings.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Buffers.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Memory.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Text.Json.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.ValueTuple.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Helpers.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Http.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Mvc.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Razor.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\WebGrease.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\DotNetZip.pdb
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\DotNetZip.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\EntityFramework.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\itextsharp.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Npgsql.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Serilog.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.pdb
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Buffers.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Memory.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Text.Json.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.ValueTuple.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Helpers.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Http.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Mvc.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.Razor.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.AssemblyReference.cache
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.CoreCompileInputs.cache
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.pdb
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Web.Infrastructure.dll
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\bin\Microsoft.Web.Infrastructure.xml
+C:\Users\DevSys\source\repos\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.Up2Date
+D:\cashmartweb\Loan_CRM\bin\ApplicationInsights.config
+D:\cashmartweb\Loan_CRM\bin\Loan_CRM.dll.config
+D:\cashmartweb\Loan_CRM\bin\Loan_CRM.dll
+D:\cashmartweb\Loan_CRM\bin\Loan_CRM.pdb
+D:\cashmartweb\Loan_CRM\bin\roslyn\csc.exe
+D:\cashmartweb\Loan_CRM\bin\roslyn\csc.exe.config
+D:\cashmartweb\Loan_CRM\bin\roslyn\csc.rsp
+D:\cashmartweb\Loan_CRM\bin\roslyn\csi.exe
+D:\cashmartweb\Loan_CRM\bin\roslyn\csi.exe.config
+D:\cashmartweb\Loan_CRM\bin\roslyn\csi.rsp
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Build.Tasks.CodeAnalysis.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.CSharp.Scripting.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.Scripting.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CodeAnalysis.VisualBasic.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.CSharp.Core.targets
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.amd64.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.DiaSymReader.Native.x86.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.Managed.Core.targets
+D:\cashmartweb\Loan_CRM\bin\roslyn\Microsoft.VisualBasic.Core.targets
+D:\cashmartweb\Loan_CRM\bin\roslyn\System.Buffers.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\System.Collections.Immutable.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\System.Memory.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\System.Numerics.Vectors.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\System.Reflection.Metadata.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\System.Runtime.CompilerServices.Unsafe.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\System.Text.Encoding.CodePages.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\System.Threading.Tasks.Extensions.dll
+D:\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe
+D:\cashmartweb\Loan_CRM\bin\roslyn\vbc.exe.config
+D:\cashmartweb\Loan_CRM\bin\roslyn\vbc.rsp
+D:\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe
+D:\cashmartweb\Loan_CRM\bin\roslyn\VBCSCompiler.exe.config
+D:\cashmartweb\Loan_CRM\bin\BouncyCastle.Crypto.dll
+D:\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.dll
+D:\cashmartweb\Loan_CRM\bin\DotNetZip.dll
+D:\cashmartweb\Loan_CRM\bin\EntityFramework.dll
+D:\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.dll
+D:\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.dll
+D:\cashmartweb\Loan_CRM\bin\itextsharp.dll
+D:\cashmartweb\Loan_CRM\bin\itextsharp.pdfa.dll
+D:\cashmartweb\Loan_CRM\bin\itextsharp.xtra.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.dll
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.dll
+D:\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.dll
+D:\cashmartweb\Loan_CRM\bin\Npgsql.dll
+D:\cashmartweb\Loan_CRM\bin\Serilog.dll
+D:\cashmartweb\Loan_CRM\bin\Serilog.Settings.AppSettings.dll
+D:\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.dll
+D:\cashmartweb\Loan_CRM\bin\System.Buffers.dll
+D:\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.dll
+D:\cashmartweb\Loan_CRM\bin\System.Memory.dll
+D:\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.dll
+D:\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.dll
+D:\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.dll
+D:\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.dll
+D:\cashmartweb\Loan_CRM\bin\System.Text.Json.dll
+D:\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.dll
+D:\cashmartweb\Loan_CRM\bin\System.ValueTuple.dll
+D:\cashmartweb\Loan_CRM\bin\System.Web.Helpers.dll
+D:\cashmartweb\Loan_CRM\bin\System.Web.Http.dll
+D:\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.dll
+D:\cashmartweb\Loan_CRM\bin\System.Web.Mvc.dll
+D:\cashmartweb\Loan_CRM\bin\System.Web.Razor.dll
+D:\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.dll
+D:\cashmartweb\Loan_CRM\bin\System.Web.WebPages.dll
+D:\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.dll
+D:\cashmartweb\Loan_CRM\bin\WebGrease.dll
+D:\cashmartweb\Loan_CRM\bin\DocumentFormat.OpenXml.xml
+D:\cashmartweb\Loan_CRM\bin\DotNetZip.pdb
+D:\cashmartweb\Loan_CRM\bin\DotNetZip.xml
+D:\cashmartweb\Loan_CRM\bin\EntityFramework.xml
+D:\cashmartweb\Loan_CRM\bin\EntityFramework.SqlServer.xml
+D:\cashmartweb\Loan_CRM\bin\EntityFramework6.Npgsql.xml
+D:\cashmartweb\Loan_CRM\bin\itextsharp.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Core.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.EntityFramework.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.AspNet.Identity.Owin.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.AspNetCore.Http.Features.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Bcl.AsyncInterfaces.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Extensions.Primitives.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Host.SystemWeb.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Cookies.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Facebook.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Google.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.MicrosoftAccount.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.OAuth.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Owin.Security.Twitter.xml
+D:\cashmartweb\Loan_CRM\bin\Newtonsoft.Json.xml
+D:\cashmartweb\Loan_CRM\bin\Npgsql.xml
+D:\cashmartweb\Loan_CRM\bin\Serilog.xml
+D:\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.pdb
+D:\cashmartweb\Loan_CRM\bin\Serilog.Sinks.File.xml
+D:\cashmartweb\Loan_CRM\bin\System.Buffers.xml
+D:\cashmartweb\Loan_CRM\bin\System.IO.Pipelines.xml
+D:\cashmartweb\Loan_CRM\bin\System.Memory.xml
+D:\cashmartweb\Loan_CRM\bin\System.Net.Http.Formatting.xml
+D:\cashmartweb\Loan_CRM\bin\System.Numerics.Vectors.xml
+D:\cashmartweb\Loan_CRM\bin\System.Runtime.CompilerServices.Unsafe.xml
+D:\cashmartweb\Loan_CRM\bin\System.Text.Encodings.Web.xml
+D:\cashmartweb\Loan_CRM\bin\System.Text.Json.xml
+D:\cashmartweb\Loan_CRM\bin\System.Threading.Tasks.Extensions.xml
+D:\cashmartweb\Loan_CRM\bin\System.ValueTuple.xml
+D:\cashmartweb\Loan_CRM\bin\System.Web.Helpers.xml
+D:\cashmartweb\Loan_CRM\bin\System.Web.Http.xml
+D:\cashmartweb\Loan_CRM\bin\System.Web.Http.WebHost.xml
+D:\cashmartweb\Loan_CRM\bin\System.Web.Mvc.xml
+D:\cashmartweb\Loan_CRM\bin\System.Web.Razor.xml
+D:\cashmartweb\Loan_CRM\bin\System.Web.WebPages.xml
+D:\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Deployment.xml
+D:\cashmartweb\Loan_CRM\bin\System.Web.WebPages.Razor.xml
+D:\cashmartweb\Loan_CRM\bin\Microsoft.Web.Infrastructure.xml
+D:\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.AssemblyReference.cache
+D:\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.CoreCompileInputs.cache
+D:\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.csproj.Up2Date
+D:\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.dll
+D:\cashmartweb\Loan_CRM\obj\Debug\Loan_CRM.pdb

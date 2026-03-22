@@ -1,0 +1,347 @@
+﻿@using System.Configuration;
+@model IEnumerable<Loan_CRM.Models.FSBucket>
+
+@{
+    ViewBag.Title = "FS Bucket For Admin";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<style>
+    .pad {
+        margin-left: 2px !important;
+    }
+
+    .spc {
+        /*padding-top: 2px;*/
+    }
+</style>
+
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <center>
+        <div class="col-lg-12 alert alert-success">@TempData["Success"].ToString()</div>
+    </center>
+}
+<div class="row">
+    <div class="col-md-8">
+        <h3>Fully Settled Bucket Monitoring</h3>
+    </div>
+
+    <div class="col-md-3 pull-right" style="padding-top:1.75%;">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th colspan="2" style="text-align:center"><b>BROADCAST</b></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-xs btn-primary" id="btnEmail" value="EMAIL" onclick="EmailModal();" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-xs btn-primary" id="btnSMS" value="SMS" onclick="SMSModal();" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    @using (@Html.BeginForm("FSBucketForAdmin", "Admin", FormMethod.Get, new { enctype = "multipart/form-data" }))
+    {
+        <div id="modalSMS" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="RefreshSMSModel()">&times;</span>
+                    <h3>SMS Template</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>SMS Template Name</label>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.DropDownListFor(Model => Model.FirstOrDefault().template_name, new SelectList(ViewBag.SMSTemplate, "id", "sms_template_name"), new { @class = "form-control", @id = "ddlsmstemplate", @onchange = "GetSMSValue();" })
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>SMS Template Description</label>
+                        </div>
+                        <div class="col-md-6">
+                            <textarea class="form-control" id="txtsmsdescription" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>SMS Template Definition</label>
+                        </div>
+                        <div class="col-md-6">
+                            <textarea class="form-control" id="txtsmsdefinition" readonly></textarea>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-primary btn-flat" id="btnPaySubmit" value="Send" onclick="SendSMS()" />
+                    <input type="button" class="btn btn-danger btn-flat" id="btnPayCancel" value="Cancel" onclick="RefreshSMSModel()" />
+                </div>
+            </div>
+        </div>
+        <div id="modalEmail" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="RefreshEmailModel()">&times;</span>
+                    <h3>Email Template</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Email Template Name</label>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.DropDownListFor(Model => Model.FirstOrDefault().template_name, new SelectList(ViewBag.EmailTemplate, "id", "email_template_name"), new { @class = "form-control", @id = "ddlemailtemplate", @onchange = "GetEmailValue();" })
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Email Template Description</label>
+                        </div>
+                        <div class="col-md-6">
+                            <textarea class="form-control" id="txtemaildescription" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Email Template Definition</label>
+                        </div>
+                        <div class="col-md-6">
+                            <textarea class="form-control" id="txtemaildefinition" readonly></textarea>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-primary btn-flat" id="btnPaySubmit" value="Send" onclick="SendEmail()" />
+                    <input type="button" class="btn btn-danger btn-flat" id="btnPayCancel" value="Cancel" onclick="RefreshEmailModel()" />
+                </div>
+            </div>
+        </div>
+    }
+    @{
+        Loan_CRM.Models.FSBucket Data = new Loan_CRM.Models.FSBucket();
+    }
+</div>
+<div id="loadingDiv">
+    <img src="../../../Content/images/Loader.gif" class="classname" loop=infinite />
+</div>
+<div class="row" style="padding-top: 2%;">
+    <table id="tblFSBucket" class="data-verification table table-striped">
+        <thead>
+            <tr>
+                <th>FSDate</th>
+                <th>Name</th>
+                <th>Loan Term</th>
+                <th>Amount</th>
+                <th>Records</th>
+                <th>Reduce Loan</th>
+            </tr>
+        </thead>
+        <tbody id="tblBody">
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        GetData();
+    });
+    function RefreshSMSModel() {
+        $('#modalSMS').toggle();
+        $("#ddlsmstemplate").val('');
+        $("#txtsmsdefinition").val('');
+        $("#txtsmsdescription").val('');
+    }
+
+    function RefreshEmailModel() {
+        $('#modalEmail').toggle();
+        $("#ddlemailtemplate").val('');
+        $("#txtemaildescription").val('');
+        $("#txtemaildefinition").val('');
+    }
+
+    function GetData() {
+           $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetFSBucketData", "Admin")',
+            datatype: 'json',
+            beforeSend: function () {
+                $("#loadingDiv").show();
+            },
+               success: function (users) {
+
+                   $("#tblBody").empty();
+                var _data = '';
+                var status = '';
+                $.each(users, function (i, data) {
+
+                    _data += "<tr><td>" + data.FS_Date + "</td><td>" + data.Name + "</td><td>" + data.LoanTerm  + "</td><td>" + data.Amount + "</td><td>" + data.Records + "</td>";
+
+                    if (data.Is_Reduce_Loan == true) {
+                        _data += " <td>  Yes  </td></tr>";
+                    }
+                    else {
+                        _data += " <td>  No  </td></tr>";
+                    }
+                });
+
+                   $("#tblBody").html(_data);
+                 $("#tblFSBucket").DataTable().destroy();
+
+                $("#tblFSBucket").DataTable({
+                    "bProcessing": false,
+                    "bSort": false
+                });
+                $("#loadingDiv").hide();
+            }
+        });
+    }
+
+    function SMSModal() {
+
+        var modalEmail = document.getElementById('modalSMS');
+        modalEmail.style.display = "block";
+    }
+    function GetSMSValue() {
+
+        var Id = $('#ddlsmstemplate').val();
+        $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("GetSMSValues", "Admin", new { area = "Admin" })',
+                dataType: 'json',
+            data: { Id: Id },
+            success: function (sms) {
+                if (sms != null) {
+                    $("#txtsmsdefinition").val(sms.sms_template_definition);
+                    $("#txtsmsdescription").val(sms.sms_template_description);
+                }
+            }
+       });
+    }
+
+    function EmailModal() {
+
+        var modalEmail = document.getElementById('modalEmail');
+        modalEmail.style.display = "block";
+    }
+    function GetEmailValue() {
+
+        var Id = $('#ddlemailtemplate').val();
+        $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("GetEmailValues", "Admin", new { area = "Admin" })',
+                dataType: 'json',
+            data: { Id: Id },
+            success: function (email) {
+                if (email != null) {
+                    $("#txtemaildefinition").val(email.email_template_definition);
+                    $("#txtemaildescription").val(email.email_template_description);
+                }
+                else {
+                    window.location.reload(1);
+                }
+
+            },
+            error: function (email) {
+                window.location.reload(1);
+            }
+            });
+    };
+
+    function SendSMS() {
+
+        $.ajax({
+                async: false,
+                type: 'GET',
+            url: '@Url.Action("BroadcastSMS", "Admin", new { area = "Admin" })',
+            data: { SMSContent: $("#txtsmsdefinition").val() },
+                dataType: 'json',
+            success: function (result) {
+
+                if (result) {
+                    alert("Broadcasted Successfully");
+                }
+
+                 window.location.href = '@Url.Action("FSBucketForAdmin", "Admin", new { area = "Admin" })';
+                }
+            });
+    }
+    function SendEmail() {
+
+        $.ajax({
+                async: false,
+                type: 'GET',
+            url: '@Url.Action("BroadcastEmail", "Admin", new { area = "Admin" })',
+            data: { EmailContent: $("#txtemaildefinition").val() },
+                dataType: 'json',
+            success: function (result) {
+
+                if (result) {
+                    alert("Broadcasted Successfully");
+                    $('#modalEmail').toggle();
+                    $("#ddlemailtemplate").val('');
+                    $("#txtemaildescription").val('');
+                    $("#txtemaildefinition").val('');
+                }
+                else {
+                    alert("Unsuccessfully");
+                    $('#modalEmail').toggle();
+                    $("#ddlemailtemplate").val('');
+                    $("#txtemaildescription").val('');
+                    $("#txtemaildefinition").val('');
+                }
+                window.location.href = '@Url.Action("FSBucketForAdmin", "Admin", new { area = "Admin" })';
+                }
+            });
+    }
+</script>
+<style>
+    .classname {
+        position: absolute;
+        z-index: 10;
+        top: 300px;
+        left: 600px;
+    }
+</style>
+

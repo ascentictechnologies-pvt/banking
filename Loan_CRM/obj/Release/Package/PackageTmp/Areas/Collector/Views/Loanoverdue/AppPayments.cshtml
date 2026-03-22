@@ -1,0 +1,95 @@
+﻿@using System.Configuration;
+@model IEnumerable<Loan_CRM.Models.AppPaymentModel>
+@{
+    ViewBag.Title = "App Payments";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+    @Html.Raw(TempData["msg"])
+}
+<style>
+    .pad {
+        margin-left: 2px !important;
+    }
+</style>
+
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="pull-left">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <b style="font-size:20px;">App Payment Bucket</b>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pull-right">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <input type="button" class="btn btn-primary pull-right" id="btn_Back" value="BACK" onclick="location.href='@Url.Action("LoanPaymentBucket", "Loanoverdue")'" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    <table id="tblFSBucket" class="data-verification table table-bordered dataTable no-footer table-striped">
+        <thead>
+            <tr>
+                <th>Application No</th>
+                <th>Partner Name</th>
+                <th>Paid On</th>
+                <th>Image Url</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (var item in Model)
+                {
+                    <tr>
+                        <td>@item.ApplicationNo</td>
+                        <td>@item.PartnerName</td>
+                        <td>@item.PaidOn</td>
+                        <td><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@item.ImageUrl' title="GovermentID Document" target="_blank">Image</a></td>
+                        <td>@(item.ischecked == true ? "Checked" : "UnChecked")</td>
+                        <td><a href='@Url.Action("UpdateAppPayments","Loanoverdue",new {id=item.PaymentId })' class="btn btn-default">Punched</a></td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tblFSBucket").DataTable({ "bSort": false});
+    });
+</script>

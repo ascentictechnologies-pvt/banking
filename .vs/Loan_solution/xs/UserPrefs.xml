@@ -1,0 +1,41 @@
+﻿<Properties StartupConfiguration="{B7C79F6E-5048-42AA-BA1D-C277D723053A}|">
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/nageshsrivastava/Documents/Personal/cashmartweb/Loan_CRM/Controllers/HomeController.cs" relfile="Loan_CRM/Controllers/HomeController.cs" line="250" column="1" />
+      <Breakpoint file="/Users/nageshsrivastava/Documents/Personal/cashmartweb/Loan_CRM/Areas/Collector/Controllers/LoanoverdueController.cs" relfile="Loan_CRM/Areas/Collector/Controllers/LoanoverdueController.cs" line="2376" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.Workbench ActiveDocument="Loan_CRM/Areas/StatusUser/Controllers/StatusUserController.cs">
+    <Files>
+      <File FileName="Loan_CRM/Areas/StatusUser/Controllers/StatusUserController.cs" Line="208" Column="59" />
+      <File FileName="Loan_CRM/Areas/Checker/Controllers/LoanRequestBucketController.cs" Line="384" Column="52" />
+      <File FileName="Loan_CRM/Areas/Checker/Models/CommonOperation.cs" Line="3344" Column="73" />
+      <File FileName="Loan_CRM/HelperClass.cs" Line="468" Column="1983" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="Loan_solution">
+            <Node name="Loan_CRM">
+              <Node name="Areas">
+                <Node name="Checker" expanded="True">
+                  <Node name="Controllers" expanded="True" />
+                  <Node name="Models" expanded="True" />
+                </Node>
+                <Node name="StatusUser">
+                  <Node name="Controllers">
+                    <Node name="StatusUserController.cs" selected="True" />
+                  </Node>
+                </Node>
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MultiItemStartupConfigurations />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.Loan__CRM PreferredExecutionTarget="/System/Volumes/Preboot/Cryptexes/App/System/Applications/Safari.app" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>

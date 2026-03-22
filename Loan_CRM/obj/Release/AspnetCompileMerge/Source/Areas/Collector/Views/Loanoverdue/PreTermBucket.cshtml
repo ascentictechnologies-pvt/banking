@@ -1,0 +1,248 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+@{
+    ViewBag.Title = "PreTermBucket";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+@using (Html.BeginForm("PreTermBucket", "Loanoverdue", FormMethod.Post))
+{
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">PreTerm Bucket</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <a href="@Url.Action("LoanPaymentBucket", "Loanoverdue")" id="btnBack" class="btn btn-primary">Back</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div id="tableDiv" class="col-md-12">
+        <table id="tblRecord" class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Application No</th>
+                    <th>Name</th>
+                    <th>Purpose Of Loan</th>
+                    <th>Amount</th>
+                    <th>Term</th>
+                    <th>Remark</th>
+                    <th>Call</th>
+                    <th>SMS</th>
+                    <th>EMail</th>
+                    <th>Verification</th>
+                    <th>Cancel</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+}
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
+
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script>
+
+<script type="text/javascript">
+
+   $(document).ready(function () {
+       //
+
+       var _ApplicationNo = 0;
+       var _EmiId = 0;
+       var flag = true;
+       $("#tblRecord").DataTable({
+           "processing": true, // for show progress bar
+           "serverSide": true, // for process server side
+           "filter": true, // this is for disable filter (search box)
+           "orderMulti": false, // for disable multiple column at once
+           "pageLength": 10,
+
+           "ajax": {
+               "url": '@Url.Action("GetPreTermData", "Loanoverdue", new { Area = "Collector" })',
+               "type": "POST",
+               "datatype": "json",
+               error: function (data) {
+                   console.log(data);
+                   window.location.reload(1);
+               }
+           },
+
+
+           "columns": [
+               { "data": "DateApplied", "name": "DateApplied"},
+               { "data": "ApplicationNo", "name": "ApplicationNo"},
+               { "data": "Name",  "name": "Name"},
+               { "data": "PurposeOfLoan", "name": "PurposeOfLoan"},
+               { "data": "Loan_Amount", "name": "Loan_Amount" },
+               { "data": "Term", "name": "Term" },
+               { "data": "Remark", "name": "Remark" },
+               {
+                   "render": function (data, type, full, meta) {
+                       return '<input type="button" value="Call" class="btn btn-success" id="btnCall" onclick="CreateCall(' + full.PersonalContactNo + ');"/>';
+                   }
+               },
+               {
+                   "render": function (data, type, full, meta) {
+                       return '<input type = "button" value = "SMS" class="btn btn-primary" id = "btnSMS" onclick = "SendSMS(' + full.ApplicationNo + ',\'' + full.PersonalEmail + '\',' + full.PersonalContactNo + ');"/>';
+                   }
+               },
+               {
+                   "render": function (data, type, full, meta) {
+                       return '<input type="button" value="EMail" class="btn btn-success" id="btnEmail" onclick=" SendMail(' + full.ApplicationNo + ',\'' + full.PersonalEmail + '\',' + full.PersonalContactNo + ');"/>';
+                   }
+               },
+               {
+                   "render": function (data, type, full, meta) {
+                       return '<input type="button" value="Verification" class="btn btn-primary" id="btnVerification" onclick="VerificationWindow(' + full.ApplicationNo + ');"/>';
+                   }
+               },
+               {
+                   "render": function (data, type, full, meta) {
+                       return '<input type="button" value="Cancel" class="btn btn-danger id=" btnCancel" onclick="CancelPreTerm(' + full.ApplicationNo + ');" />';
+                   }
+               }
+           ]
+
+       })
+   });
+
+
+    function SendSMS(AppId,Email, ContactNo) {
+            //
+            var AppId = AppId;
+            var mobno = ContactNo;
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("ClickForSMSPreTerm", "Loanoverdue", new { area = "Collector" })',
+                dataType: 'json',
+                data: { AppId: AppId, mobno: mobno},
+                success: function (result) {
+                    console.log(result);
+                    if (result) {
+                        alert("SMS Sent in your Mobile Number");
+                    }
+                    else {
+                        alert("SMS not sent");
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+    }
+        function CreateCall(ContactNo)
+        {
+        var ContactNo = ContactNo;
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("ClickForCall", "Loanoverdue", new { area = "Collector" })',
+                dataType: 'json',
+                data: { ContactNo: ContactNo },
+                success: function (result) {
+                    console.log(result);
+                    if (result) {
+                        return true;
+                    }
+                    else
+                        return false;
+
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+
+    function CancelPreTerm(ApplicationNo) {
+
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("CancelPreTerm", "Loanoverdue", new { area = "Collector" })',
+                dataType: 'json',
+                data: { ApplicationNo: ApplicationNo },
+                success: function (result) {
+                    console.log(result);
+                    if (result) {
+                        alert("Successfully cancelled Preterm");
+                         window.location.href = '@Url.Action("PreTermBucket", "Loanoverdue")';
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+    }
+       function VerificationWindow(Id) {
+
+           var url = '@Url.Action("ViewDetailsForApproval", "Loanoverdue", new { Area = "Collector" })?Id=' + Id +'&ActionName=PreTermBucket' ;
+
+           window.location.href = url;
+       }
+    function SendMail(Id, PersonalEmail, PersonalContactNo, ActionName) {
+
+        ActionName = "PreTermBucket"
+            $.ajax({
+                url: '@Url.Action("SendEmailMessage", "Loanoverdue", new { area = "Collector" })',
+                type: 'post',
+                data: { AppId: Id, PersonalEmail: PersonalEmail, PersonalContactNo: PersonalContactNo, ActionName: ActionName},
+               success: function (data) {
+                    if (data) {
+                        alert("Email sent Successfully.");
+                        window.location.href = '@Url.Action("PreTermBucket", "Loanoverdue")';
+                    }
+                    else {
+                        alert("No Contract Found");
+                        window.location.href = '@Url.Action("PreTermBucket", "Loanoverdue")';
+                    }
+                },
+                error: function(data) {
+                    window.location.reload(1);
+                }
+            });
+     }
+</script>
+

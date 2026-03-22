@@ -1,0 +1,142 @@
+﻿@model Loan_CRM.Models.AgingDataVM
+@{
+    ViewBag.Title = "Sales Tab";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<style>
+    .pad {
+        margin-left: 2px !important;
+    }
+
+    .spc {
+        /*padding-top: 2px;*/
+    }
+</style>
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+@using (Html.BeginForm())
+{
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">Individual Sales</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <input type="submit" class="btn btn-xs btn-primary" id="btnDaily" value="Daily" name="CommandName" onclick="" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="submit" class="btn btn-xs btn-primary" id="btnWeek" value="Week" name="CommandName" onclick="" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="submit" class="btn btn-xs btn-primary" id="btnMonth" value="Month" name="CommandName" onclick="" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="submit" class="btn btn-xs btn-primary" id="btnYear" value="Year" name="CommandName" onclick="" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-xs btn-danger" id="btn_Back" value="Back" onclick="location.href='@Url.Action("LoanPaymentBucket","Loanoverdue")'" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row">
+        <div class="col-md-12">
+            <table class="table table-bordered dataTable no-footer table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="11" style="text-align:center"><b class="btn btn-xs btn-danger">@Model.ReportName</b></th>
+                    </tr>
+                    <tr>
+                        <th colspan="1" style="text-align:center"><b>Date</b></th>
+                        <th colspan="4" style="text-align:center"><b>Collection</b></th>
+                        <th colspan="2" style="text-align:center"><b>Efficiency%</b></th>
+                        <th colspan="2" style="text-align:center"><b>Preterm</b></th>
+                        <th colspan="2" style="text-align:center"><b>Reloan</b></th>
+                    </tr>
+                    <tr>
+                        <th>Date</th>
+                        <th>Maturities(No.)</th>
+                        <th>Maturities(Peso)</th>
+                        <th>Total Paid(No.)</th>
+                        <th>Total Paid(Peso)</th>
+                        <th>Number</th>
+                        <th>Peso</th>
+                        <th>Number</th>
+                        <th>Peso</th>
+                        <th>Number</th>
+                        <th>Peso</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.AgingDataList != null && Model.AgingDataList.Count > 0)
+                    {
+                        foreach (var item in Model.AgingDataList)
+                        {
+                            <tr>
+                                <td>@item.DueDate<br />@item.DateRange</td>
+                                <td>@item.TotalMaturities</td>
+                                <td>@item.TotalMaturities_Peso</td>
+                                <td>@item.TotalPaid</td>
+                                <td>@item.TotalPaid_Peso</td>
+                                <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                                <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                                <td>@item.Preterm</td>
+                                <td>@item.Preterm_Peso</td>
+                                <td>@item.Reloan</td>
+                                <td>@item.Reloan_Peso</td>
+                            </tr>
+                        }
+                        <tr>
+                            <th>Summary</th>
+                            <th>@Model.AgingDataList.FirstOrDefault().SumMaturity_No</th>
+                            <th>@Model.AgingDataList.FirstOrDefault().SumMaturity_Peso</th>
+                            <th>@Model.AgingDataList.FirstOrDefault().SumPaid_No</th>
+                            <th>@Model.AgingDataList.FirstOrDefault().SumPaid_Peso</th>
+                            <th>@String.Format("{0:N2}",Model.AgingDataList.FirstOrDefault().SumEffeciency_No)%</th>
+                            <th>@String.Format("{0:N2}", Model.AgingDataList.FirstOrDefault().SumEffeciency_Peso)%</th>
+                            <th>@Model.AgingDataList.FirstOrDefault().SumPreterm_No</th>
+                            <th>@Model.AgingDataList.FirstOrDefault().SumPreterm_Peso</th>
+                            <th>@Model.AgingDataList.FirstOrDefault().SumReloan_No</th>
+                            <th>@Model.AgingDataList.FirstOrDefault().SumReloan_Peso</th>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

@@ -1,0 +1,149 @@
+﻿@model Loan_CRM.Models.DisbursementCollection
+@{
+    ViewBag.Title = "CollectionDisbursementReport";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+
+@using (Html.BeginForm("CollectionDisbursementReport", "Admin", FormMethod.Post))
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <table>
+                <tr>
+                    <td style="width:40%"><h3>Admin Report for Collection (Yearly)</h3></td>
+                    <td style="width:40%">
+                        @Html.TextBoxFor(x => x.From_Date, new { @id = "txtFromDate", @Class = "form-control pull-right", placeholder = "Enter From Date(dd/mm/yyyy)", onfocus = "RemoveValidation(this);", @readonly = true })
+                    </td>
+                    <td style="width:10%"><input type="submit" id="btn_Search" class="btn btn-success btn-flat pull-right" value="Search" /></td>
+                    <td style="width:10%"><input type="button" onclick="window.location.href='@Url.Action("CollectionDisbursementReport","Admin")'" id="btn_Back" class="btn btn-danger pull-right" value="Back" name="CommandName" /></td>
+                </tr>
+            </table>
+            <div class="clearfix"></div>
+        </div>
+        <div class="panel-body">
+            <div class="row" style="overflow:auto">
+                <div class="col-md-12">
+                    <table id="tblReport" class="table table-bordered table-responsive table-striped">
+                        <thead>
+                            <tr>
+                                <th colspan="7" style="text-align:center"><b>Disbursement</b></th>
+                                <th colspan="8" style="text-align:center"><b>Collection</b></th>
+                            </tr>
+                            <tr>
+                                <th>Month</th>
+                                <th>New (Peso)</th>
+                                <th>Reloan (peso)</th>
+                                <th>Total (Peso)</th>
+                                <th>New (Number)</th>
+                                <th>Reloan (Number)</th>
+                                <th>Total (Number)</th>
+                                <th>Collected Amount Per Month</th>
+                                <th>Fully Paid New Loans Only (Peso)</th>
+                                <th>Fully Paid Reloan (Peso)</th>
+                                <th>Late Penalties</th>
+                                <th>Total (Peso)</th>
+                                <th>Fully Paid New Loans Only (Number)</th>
+                                <th>Fully Paid Reloan (Number)</th>
+                                <th>Total Numbers of loans paid Number (New+Reloan)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @if (Model.disbursementCollectionslist != null && Model.disbursementCollectionslist.Count > 0)
+                            {
+                                foreach (var item in Model.disbursementCollectionslist)
+                                {
+                                    <tr>
+                                        <td>@item.Month_Name</td>
+                                        <td>@String.Format("{0:N2}", item.New_Loan_Amount)</td>
+                                        <td>@String.Format("{0:N2}", item.Reloan_Amount)</td>
+                                        <td>@String.Format("{0:N2}", item.Total_Amount)</td>
+                                        <td>@item.New_Loan_Count</td>
+                                        <td>@item.Reloan_count</td>
+                                        <td>@item.Total_count</td>
+                                        <td>@String.Format("{0:N2}", item.Collected_Amount_Month)</td>
+                                        <td>@String.Format("{0:N2}", item.Fully_Paid_new_Loan_Amount)</td>
+                                        <td>@String.Format("{0:N2}", item.Fully_Paid_ReLoan_Amount)</td>
+                                        <td>@String.Format("{0:N2}", item.Late_Penalties)</td>
+                                        <td>@String.Format("{0:N2}", item.Total_Amount_New_Laon_Reloan)</td>
+                                        <td>@item.Fully_Paid_new_Loan_Count</td>
+                                        <td>@item.Fully_Paid_ReLoan_Count</td>
+                                        <td>@item.Total_Count_New_Loan_Reloan</td>
+                                    </tr>
+                                }
+                                <tr>
+                                    <th>Total</th>
+                                    <th>@String.Format("{0:N2}", Model.disbursementCollectionslist.FirstOrDefault().SumNewLoan_Peso)</th>
+                                    <th>@String.Format("{0:N2}", Model.disbursementCollectionslist.FirstOrDefault().SumReloan_Peso)</th>
+                                    <th>@String.Format("{0:N2}", Model.disbursementCollectionslist.FirstOrDefault().SumTotal_Peso)</th>
+                                    <th>@Model.disbursementCollectionslist.FirstOrDefault().SumNewLoan_No</th>
+                                    <th>@Model.disbursementCollectionslist.FirstOrDefault().SumReloan_No</th>
+                                    <th>@Model.disbursementCollectionslist.FirstOrDefault().SumTotal_No</th>
+                                    <th>@String.Format("{0:N2}", Model.disbursementCollectionslist.FirstOrDefault().SumCollect_Amount)</th>
+                                    <th>@String.Format("{0:N2}", Model.disbursementCollectionslist.FirstOrDefault().SumFullyPaid_NewLoan_Peso)</th>
+                                    <th>@String.Format("{0:N2}", Model.disbursementCollectionslist.FirstOrDefault().SumFullyPaid_Relaon_Peso)</th>
+                                    <th>@String.Format("{0:N2}", Model.disbursementCollectionslist.FirstOrDefault().SumLate_Penalties_Peso)</th>
+                                    <th>@String.Format("{0:N2}", Model.disbursementCollectionslist.FirstOrDefault().SumTotal_NewLoan_Reloan_Peso)</th>
+                                    <th>@Model.disbursementCollectionslist.FirstOrDefault().SumFullyPaid_NewLoan_No</th>
+                                    <th>@Model.disbursementCollectionslist.FirstOrDefault().SumFullyPaid_ReLoan_No</th>
+                                    <th>@Model.disbursementCollectionslist.FirstOrDefault().Sumtotal_newLoan_reloan_No</th>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#txtFromDate").datepicker({
+            //dateFormat: 'dd-mm-yy',
+            //changeMonth: true,
+            //changeYear: true,
+            //yearRange: "-100:+0",
+            //maxDate: new Date()
+            changeMonth: true,
+            changeYear: true,
+            showButtonPanel: true,
+            dateFormat: 'yy',
+            onClose: function (dateText, inst) {
+                //var month = $("#ui-datepicker-div .ui-datepicker-month :selected").val();
+                var year = $("#ui-datepicker-div .ui-datepicker-year :selected").val();
+                $(this).datepicker('setDate', new Date(year, 1, 1));
+            }
+        });
+    });
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+</script>

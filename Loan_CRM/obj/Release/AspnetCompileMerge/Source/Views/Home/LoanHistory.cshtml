@@ -1,0 +1,82 @@
+﻿@model Loan_CRM.Areas.Collector.Models.PaymentInformation
+@{
+    ViewBag.Title = "Loan History";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="~/Content/js/ValidateNumericText.js"></script>
+<script src="~/Content/js/ValidateCharcterText.js"></script>
+<script src="~/Content/js/emailvalidation.js"></script>
+<script src="~/Content/js/jquery.js"></script>
+<script src="~/Content/js/jquery-ui.js"></script>
+<link href="~/Content/jquery-ui.css" rel="stylesheet">
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+@using (Html.BeginForm("LoanHistory", "Loanoverdue", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+
+    <div id="tableDiv">
+        <h3>Online Loan History</h3>
+        <div class="col-md-12">
+            <table id="tblRecord" class="table table-bordered">
+                <thead>
+                    <tr>
+
+                        <th>S/No</th>
+                        <th>Contract Number</th>
+                        <th>Loan Date</th>
+                        <th>Loan Amount</th>
+                        <th>Terms</th>
+                        <th>Ammortization Paid</th>
+                        <th>Late Penalties Paid</th>
+                        <th>Completion Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.LoanHistory != null && Model.LoanHistory.Count > 0)
+                    {
+                        int i = 1;
+                        foreach (var item in Model.LoanHistory.OrderBy(x => x.applicationno).ToList())
+                        {
+                            <tr>
+                                <td>@i</td>
+                                <td>@item.Contractno</td>
+                                <td>@item.Dateofdistursement</td>
+                                <td>@item.LoanAmount</td>
+                                <td>@item.Termtype</td>
+                                <td>@item.AmmortizationPaid</td>
+                                <td>@item.penalty</td>
+                                <td>@item.completeon</td>
+                            </tr>
+                            i = i + 1;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

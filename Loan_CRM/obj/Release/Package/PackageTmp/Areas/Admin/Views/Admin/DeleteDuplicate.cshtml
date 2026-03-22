@@ -1,0 +1,91 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+@{
+    ViewBag.Title = "Delete Duplicate Application";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12">
+                <h5>Duplicate Records Window<input type="button" class="btn btn-danger btn-flat pull-right" value="Back" onclick="location.href='@Url.Action("AllRecordExport", "Admin") '" /></h5>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table id="tblDuplicateData" class="table table-bordered table-striped">
+        </table>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        GetRecord();
+    });
+    function GetRecord()
+    {
+        $.ajax({
+            url: '@Url.Action("GetDuplicateApplicationData","Admin")',
+            success: function (result) {
+                if (result != null) {
+                    var _data = '';
+                    $("#tblDuplicateData").empty;
+                    _data += "<thead><tr><th>Sr No.</th><th>Applicant No</th><th>Applicant Name</th><th>Email Id</th><th>Contact No</th><th>Date</th><th>Action</th> </tr></thead><tbody>";
+                    $.each(result, function (i, data) {
+                        _data += "<tr><td>" + (i + 1) + "</td><td>" + data.ApplicationNo + "</td><td>" + data.First_Name + "</td><td>" + data.PersonalEmail + "</td><td>" + data.PersonalContactNo + "</td><td>" + data.DateApplied + "</td><td><center><img src='../../../Content/images/Delete.png' title='Delete Application' style='width: 24%;cursor: pointer;' onclick='DeleteRecord(" + data.ApplicationNo + ")'></center></td></tr>";
+                    });
+                    _data += "</tbody>";
+                    $("#tblDuplicateData").html(_data);
+                    $("#tblDuplicateData").DataTable({
+                        "bProcessing": false,
+                        "bSort": false
+                    });
+                }
+                else {
+                    window.location.reload(1);
+                }
+            },
+            error: function (result) {
+                console.log(result);
+                window.location.reload(1);
+            }
+        });
+    }
+    function DeleteRecord(AppId) {
+        $.ajax({
+            data: { AppId: AppId },
+            url: '@Url.Action("DeleteDuplicateRecord","Admin")',
+            success: function (data) {
+                if (data) {
+                    alert("Deleted Successfully");
+                }
+                 window.location.href = '@Url.Action("DeleteDuplicate","Admin", new { area = "Admin" })';
+            }
+        });
+    }
+</script>

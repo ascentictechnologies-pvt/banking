@@ -1,0 +1,151 @@
+﻿@model Loan_CRM.Areas.Checker.Models.Chekerinformation
+@{
+    ViewBag.Title = "Checker Report";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+
+@using (Html.BeginForm("CheckerReport", "Admin", FormMethod.Post))
+{
+    <style>
+        .has-error {
+            border-color: red;
+        }
+    </style>
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+
+            <div class="row">
+                <div class="col-md-6">
+                    <h3>Checker Monitoring Report</h3>
+                </div>
+                <div class="col-md-2">
+                    <label style="color:white">Start Date</label>
+                    <input type="text" name="FromDate" id="txtFromDate" class="form-control" readonly placeholder="Enter Start Date" onclick="RemoveValidation(this);" />
+                </div>
+                <div class="col-md-2">
+                    <label style="color:white">End Date</label>
+                    <input type="text" name="EndDate" id="txtToDate" class="form-control" readonly placeholder="Enter End Date" onclick="RemoveValidation(this);" />
+                </div>
+                <div class="col-md-2">
+                    <input type="submit" name="name" style="margin-top: 20px;" id="btnSearch" value="Search" class="btn btn-success" />
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <table id="tblReport" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Team Member</th>
+                        <th>Total Number of Leads</th>
+                        <th>Total Number of  leads pushed to verification</th>
+                        <th>No of Leads Rejected by verification</th>
+                        <th>No of Leads Approved by verification</th>
+                    </tr>
+                </thead>
+                @{
+                    if (Model.UserForReportList != null && Model.UserForReportList.Count > 0)
+                    {
+                        for (int i = 0; i < Model.UserForReportList.Count; i++)
+                        {
+                            <tr>
+                                <td>@Model.UserForReportList[i].username</td>
+                                <td>@Model.LeadCount[i]</td>
+                                <td>@Model.LeadCount_VerifyPushed[i]</td>
+                                <td>@Model.LeadCount_VerifyReject[i]</td>
+                                <td>@Model.LeadCount_Approved[i]</td>
+                            </tr>
+                        }
+                    }
+                }
+            </table>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tblReport").DataTable();
+        $("#btnSearch").click(function () {
+            var flag = 0;
+            var StartDate = $("#txtFromDate").val();
+            var EndDate = $("#txtToDate").val();
+            if (StartDate == "") {
+                $("#txtFromDate").addClass('has-error');
+                flag++;
+            }
+            if (EndDate == "") {
+                $("#txtToDate").addClass('has-error');
+                flag++;
+            }
+            if (flag > 0) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        });
+
+
+
+        $("#txtFromDate").datepicker({
+            dateFormat: 'dd-mm-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            maxDate: new Date()
+        });
+        $('#txtFromDate').change(function () {
+            var from = $('#txtFromDate').datepicker('getDate');
+            var date_diff = Math.ceil((from.getTime() - Date.parse(new Date())) / 86400000);
+            var maxDate_d = date_diff + 29 + 'd';
+            date_diff = date_diff + 'd';
+            $('#txtToDate').val('').removeAttr('disabled').removeClass('hasDatepicker').datepicker({
+                dateFormat: 'dd-mm-yy',
+                minDate: date_diff,
+                maxDate: maxDate_d
+            });
+        });
+        $("#txtToDate").datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0"
+        });
+    });
+
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+
+
+</script>
+
+
+

@@ -1,0 +1,759 @@
+﻿@using System.Configuration;
+@model IEnumerable<Loan_CRM.Models.FSBucket>
+
+@{
+    ViewBag.Title = "FS Bucket";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<style>
+    .pad {
+        margin-left: 2px !important;
+    }
+</style>
+
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="pull-left">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <b style="font-size:20px;">Fully Settled Bucket</b>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pull-right">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <input type="button" class="btn btn-primary pull-right" id="btnEmail" value="BROADCAST EMAIL" onclick="EmailModal();" />
+                </td>
+                <td style="text-align:center">
+                    <input type="button" class="btn btn-primary pull-right" id="btnSMS" value="BROADCAST SMS" onclick="SMSModal()" />
+                </td>
+                <td style="text-align:center">
+                    <input type="button" class="btn btn-primary btn-flat" id="btnRefresh" value="Refresh" onclick="GetData()" />
+                </td>
+                <td style="text-align:center">
+                    <input type="button" class="btn btn-primary pull-right" id="btn_Back" value="BACK" onclick="location.href='@Url.Action("LoanPaymentBucket","Loanoverdue")'" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="clearfix"></div>
+<div class="row">
+
+    @using (@Html.BeginForm("FSBucket", "Loanoverdue", FormMethod.Get, new { enctype = "multipart/form-data" }))
+    {
+        <div id="modalReloan" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="RefreshReloanModel()">&times;</span>
+                    <h3>Reloan</h3>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Loan Amount</label>
+                                </td>
+                                <td style="text-align:center">
+                                    <input type="number" name="LoanAmount" id="txtLoanAmountReloan" onkeyup="CalculateReloan()" class="form-control" onfocus="RemoveValidation(this);" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Term</label>
+                                </td>
+                                <td style="text-align:center">
+                                    <select class="form-control" name="TermName" id="ddlTermNameReloan" onfocus="RemoveValidation(this);" onchange="GetDataAccToTermReloan()"><option value="-1">Select</option></select>
+                                    <input type="hidden" class="form-control" name="ApprovedTerm" id="txtTerm_ValueReloan" readonly />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Interest Rate</label>
+                                </td>
+                                <td style="text-align:center">
+                                    <input type="text" class="form-control" name="ApprovedInterestRate" id="txtInterestRateReloan" readonly />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Maturity Date</label>
+                                </td>
+                                <td style="text-align:center">
+                                    <input type="date" name="MaturityDate" id="txtMaturityDateReloan" class="form-control" onfocus="RemoveValidation(this);" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Reloan Deduction</label>
+                                </td>
+                                <td style="text-align:center">
+                                    <input type="hidden" name="ReloanDeduction" id="txtReloanDeduction" class="form-control" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Exact Loan Amount Perceived</label>
+                                </td>
+                                <td style="text-align:center">
+                                    <input type="text" name="ExactLoanAmountPerceived" id="txtExactLoanAmountPerceivedReloan" class="form-control" readonly />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Total Amount Due</label>
+                                </td>
+                                <td style="text-align:center">
+                                    <input type="text" name="TotalAmountDue" readonly id="txtTotalAmountDueReloan" class="form-control" />
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-primary btn-flat" id="btnPretermSubmit" value="Submit" onclick="InsertReloan()" />
+                    <input type="button" class="btn btn-danger btn-flat" id="btnPretermCancel" value="Cancel" onclick="RefreshReloanModel()" />
+                </div>
+            </div>
+        </div>
+        <div id="modalSMS" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="RefreshSMSModel()">&times;</span>
+                    <h3>SMS Template</h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>SMS Template Name</label>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.DropDownListFor(Model => Model.FirstOrDefault().template_name, new SelectList(ViewBag.SMSTemplate, "id", "sms_template_name"), new { @class = "form-control", @id = "ddlsmstemplate", @onchange = "GetSMSValue();" })
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>SMS Template Description</label>
+                        </div>
+                        <div class="col-md-6">
+                            <textarea class="form-control" id="txtsmsdescription" readonly></textarea>
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>SMS Template Definition</label>
+                        </div>
+                        <div class="col-md-6">
+                            <textarea class="form-control" id="txtsmsdefinition" readonly></textarea>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-primary btn-flat" id="btnSMSSubmit" value="Send" onclick="SendEmail()" />
+                    <input type="button" class="btn btn-danger btn-flat" id="btnSMSCancel" value="Cancel" onclick="RefreshSMSModel()" />
+                </div>
+            </div>
+        </div>
+        <div id="modalEmail" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="RefreshEmailModel()">&times;</span>
+                    <h3>Email Template</h3>
+                </div>
+                <div class="modal-body">
+                    <table class="table table-bordered table-striped">
+                        <tbody>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Email Template Name</label>
+                                </td>
+                                <td style="text-align:center">
+                                    @Html.DropDownListFor(Model => Model.FirstOrDefault().template_name, new SelectList(ViewBag.EmailTemplate, "id", "email_template_name"), new { @class = "form-control", @id = "ddlemailtemplate", @onchange = "GetEmailValue();" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Email Template Description</label>
+                                </td>
+                                <td style="text-align:center">
+                                    <textarea class="form-control" id="txtemaildescription" readonly></textarea>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="text-align:center">
+                                    <label>Email Template Definition</label>
+                                </td>
+                                <td style="text-align:center">
+                                    <textarea class="form-control" id="txtemaildefinition" readonly></textarea>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-primary btn-flat" id="btnEmailSubmit" value="Send" onclick="SendEmail()" />
+                    <input type="button" class="btn btn-danger btn-flat" id="btnEmailCancel" value="Cancel" onclick="RefreshEmailModel()" />
+                </div>
+            </div>
+        </div>
+    }
+    @{
+        Loan_CRM.Models.FSBucket Data = new Loan_CRM.Models.FSBucket();
+    }
+</div>
+<div id="loadingDiv">
+    <img src="../../../Content/images/Loader.gif" class="classname" loop=infinite />
+</div>
+<div class="row">
+    <table id="tblFSBucket" class="data-verification table table-bordered dataTable no-footer table-striped"></table>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        GetData();
+       BindTermNameReloan();
+    });
+
+    function GetData() {
+           $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetFSBucketData", "Loanoverdue")',
+            datatype: 'json',
+            beforeSend: function () {
+                $("#loadingDiv").show();
+            },
+               success: function (users) {
+                var _data = '';
+                var status = '';
+                   _data += "<thead><tr><th>Application No</th><th>FSDate</th><th>Name</th><th>Loan Term</th><th>Amount</th><th>Records</th><th>Reduce Loan</th><th>Reloan Offer</th><th>Action</th></tr></thead>";
+                   $.each(users, function (i, data) {
+                       _data += "<td>" + data.Application_No + "</td><td>" + data.FS_Date + "</td><td>" + data.Name + "</td><td>" + data.LoanTerm + "</td><td><input type='checkbox' style='margin-right: 10px !important;' id='rdb_old_" + data.Application_No + "' value=''/>" + data.Amount + "</td><td>" + data.RecordName + "</td>";
+                       if (data.Is_Reduce_Loan == true) {
+                           _data += " <td>  Yes  </td>";
+                       }
+                       else {
+                           _data += " <td>  No  </td>";
+                       }
+                       _data += "<td><input type='checkbox' style='margin-right: 10px !important;' id='rdb" + data.Application_No + "' value=''/><input type='number' id='txt" + data.Application_No + "' min='0' /></td>";
+                       _data += "<td><input type='button' value='Call' class='btn btn-success pad' style='margin-right: 10px !important;' id='btnCall' onclick='ClickCall(" + data.PersonalContactNumber + ")'/><input type='button' value='SMS' class='btn btn-warning' style='margin-right: 10px !important;' id='btnSMS' onclick='SendSMS(" + data.Application_No + "," + data.PersonalContactNumber + ")'/><input type='button' value='Reloan' class='btn btn-primary' style='margin-right: 10px !important;' id='btnReloan' onclick='GetReloan(" + data.Application_No + "," + data.Amount + ")'/><input type='button' value='Remove' class='btn btn-danger'  style='margin-right: 10px !important;'  id='btnRemove' onclick='RemoveApplication(" + data.Application_No + ")'/><input type='button' value='Notify' class='btn btn-primary' id='btnNotify' onclick='ClickNotify(" + data.Application_No + "," + data.Amount + ")' /></td></tr>";
+
+                   });
+
+                $("#tblFSBucket").html(_data);
+                $("#tblFSBucket").DataTable().destroy();
+
+                $("#tblFSBucket").DataTable({
+                    "bProcessing": false,
+                    "bSort": false
+                });
+                $("#loadingDiv").hide();
+               @*setTimeout(GetData, @Convert.ToInt32(ConfigurationManager.AppSettings["GridRefreshTime"]));*@
+               },
+               error: function (data) {
+                 //  window.location.reload(1);
+               }
+        });
+    }
+
+    function RefreshSMSModel() {
+        $('#modalSMS').toggle();
+        $("#ddlsmstemplate").val('0');
+        $("#txtsmsdescription").val('');
+        $("#txtsmsdefinition").val('');
+    }
+
+    function RefreshEmailModel() {
+        $('#modalEmail').toggle();
+        $("#ddlemailtemplate").val('0');
+        $("#txtemaildescription").val('');
+        $("#txtemaildefinition").val('');
+    }
+    function RefreshReloanModel() {
+        window.location.reload();
+    }
+    function RemoveApplication(AppNo)
+    {
+        var result = confirm("Are you sure to delete the application?");
+        if (result)
+        {
+            $.ajax
+                ({
+                    type: 'GET',
+                    data: { AppNo: AppNo },
+                    url: '@Url.Action("RemoveApplication", "Loanoverdue")',
+                    datatype: 'json',
+                    success: function (data)
+                    {
+                        if (data)
+                        {
+                            alert("Successfully Deleted");
+                            var url = '@Url.Action("FSBucket", "Loanoverdue", new { area = "Collector" })';
+                            window.location.href = url;
+                        }
+                        else
+                        {
+                            alert("Unsuccessful");
+                        }
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+
+                    }
+                });
+        }
+
+    }
+    function ClickNotify(ApplicationNo, Loan_Amount) {
+
+        var result = confirm("Are you sure to send the Notification?");
+        if (result)
+        {
+            var OfferAmount = $('#txt' + ApplicationNo).val();
+            
+            if ($("#rdb" + ApplicationNo).prop("checked") == false) {
+                OfferAmount = '';
+            }
+            if (OfferAmount == 0) {
+                OfferAmount = '';
+            }
+            if (Loan_Amount == 0) {
+                Loan_Amount = '';
+            }
+
+            if ($("#rdb" + ApplicationNo).prop("checked") == false) {
+                OfferAmount = '';
+            }
+
+            if ($("#rdb_old_" + ApplicationNo).prop("checked") == false) {
+                Loan_Amount = '';
+            }
+
+            $.ajax
+                ({
+                    type: 'POST',
+                    data: { Amount: Loan_Amount, OfferAmount: OfferAmount, ApplicationNo: ApplicationNo },
+                    url: '@Url.Action("SendReloanNotification", "Loanoverdue")',
+                    datatype: 'json',
+                    success: function (data)
+                    {
+                        if (data)
+                        {
+                            alert("Notification Sent Successfully");
+                        }
+                        else
+                        {
+                            alert("Notification Sending Failed");
+                        }
+                        window.location.reload(1);
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+        }
+    }
+    function ReloanApplication(AppNo)
+    {
+        var result = confirm("Are you sure you want to send for Reloan?");
+        if (result) {
+             $.ajax({
+                 type: 'GET',
+                 data: { AppNo: AppNo},
+
+            url: '@Url.Action("ReloanApplication", "Loanoverdue")',
+            datatype: 'json',
+                 success: function (data)
+                 {
+                     if (data)
+                     {
+                         alert("Successfully Deleted");
+                           var url = '@Url.Action("FSBucket", "Loanoverdue")';
+                            window.location.href = url;
+                     }
+                     else
+                     {
+                         alert("Unsuccessful");
+                         window.location.reload(1);
+                     }
+
+                 },
+                 error: function (data) {
+                     window.location.reload(1);
+
+                 }
+        });
+        }
+
+    }
+
+        function SendSMS(AppId, ContactNo) {
+            var AppId = AppId;
+            var ContactNo = ContactNo;
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("FSBucketSMS", "Loanoverdue", new { area = "Collector" })',
+                dataType: 'json',
+                data: { AppId: AppId, ContactNo: ContactNo},
+                success: function (result) {
+                    console.log(result);
+                    if (result) {
+                        alert("SMS sent successfully");
+                    }
+                    else
+                        return false;
+                    window.location.reload(1);
+                },
+                error: function (data) {
+                    window.location.reload(1);
+
+                }
+            });
+    }
+
+        function ClickCall(ContactNo) {
+            var number = ContactNo.toString();
+            var final = number.split(',');
+            var count = parseInt(final.length);
+            var mobno = final[count - 1];
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("ClicktoCall", "LoanRequestBucket", new { area = "Checker" })',
+                dataType: 'json',
+                data: { ContactNumber: mobno },
+                success: function (result) {
+                    console.log(result);
+                    if (result) {
+                        availability = false;
+                    }
+                    else {
+                        window.location.reload(1);
+                    }
+
+                }
+            });
+    }
+
+    function SMSModal() {
+        var modalEmail = document.getElementById('modalSMS');
+        modalEmail.style.display = "block";
+    }
+    function GetSMSValue() {
+        var Id = $('#ddlsmstemplate').val();
+        $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("GetSMSValues", "Loanoverdue", new { area = "Collector" })',
+                dataType: 'json',
+            data: { Id: Id },
+            success: function (sms) {
+                if (sms != null) {
+                    $("#txtsmsdefinition").val(sms.sms_template_definition);
+                    $("#txtsmsdescription").val(sms.sms_template_description);
+                }
+
+            },
+            error: function (data) {
+                window.location.reload(1);
+
+            }
+            });
+    }
+    function SendBroadcastSMS() {
+        var a = confirm("Are you sure to Broadcast the SMS?");
+        if (a) {
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("BroadcastSMS", "Loanoverdue")',
+                data: { SMSBody: $("#txtsmsdefinition").val() },
+                dataType: 'json',
+            success: function (result) {
+                if (result) {
+                    alert("Broadcasted Successfully");
+                    window.location.reload();
+                }
+                else {
+                    alert("Unsuccessfully");
+                }
+                var url = '@Url.Action("FSBucket", "Loanoverdue", new { area = "Collector" })';
+                window.url.location = url;
+                },
+                error: function (data) {
+                    window.location.reload(1);
+
+                }
+            });
+        }
+    }
+
+    function EmailModal() {
+        var modalEmail = document.getElementById('modalEmail');
+        modalEmail.style.display = "block";
+    }
+    function GetEmailValue() {
+        var Id = $('#ddlemailtemplate').val();
+        $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("GetEmailValues", "Loanoverdue", new { area = "Collector" })',
+                dataType: 'json',
+            data: { Id: Id },
+            success: function (email) {
+                if (email != null) {
+                    $("#txtemaildefinition").val(email.email_template_definition);
+                    $("#txtemaildescription").val(email.email_template_description);
+                }
+
+            },
+            error: function (data) {
+                window.location.reload(1);
+
+            }
+            });
+    }
+    function SendEmail() {
+        var EmailBody = $("#txtemaildefinition").val();
+        $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("BroadcastEmail", "Loanoverdue")',
+                data: { EmailBody: EmailBody},
+                dataType: 'json',
+            success: function (result) {
+                if (result) {
+                    alert("Broadcasted Successfully");
+                    window.location.reload();
+                }
+                else {
+                    alert("Unsuccessfully");
+                }
+                var url = '@Url.Action("FSBucket", "Loanoverdue", new { area = "Collector" })';
+                window.url.location = url;
+            },
+            error: function (data) {
+                window.location.reload(1);
+
+            }
+            });
+    }
+
+    function GetReloan(AppId, balance) {
+        var applicationno = AppId;
+        _ApplicationNo = AppId;
+        var BalanceAmount = balance;
+        var modalReloan = document.getElementById('modalReloan');
+        $("#txtReloanDeduction").val(BalanceAmount);
+
+        modalReloan.style.display = "block";
+    }
+    function GetDataAccToTermReloan() {
+        //
+        var termId = $("#ddlTermNameReloan option:selected").val();
+        if (termId != "-1" && termId.toLowerCase() != "select") {
+            var temVal = termId.split('_');
+            termId = temVal[0];
+            if (termId != undefined) {
+                $.ajax({
+                    url: '@Url.Action("GetDataAccToTerm", "LoanRequestVerifier", new { Area = "Verifier" })',
+                    type: "POST",
+                    data: { id: termId },
+                    success: function (data) {
+                        if (data != null) {
+                            $("#txtTermTypeReloan").val(data.TermTypeName);
+                            $("#txtInterestRateReloan").val(data.Rate);
+                            $("#txtTerm_ValueReloan").val(data.term_Value);
+                            CalculateTotalAmount(data.admin_fee);
+                            if ($("#ApprovedLoanAmountReloan").val() != 0) {
+
+                            }
+                        }
+                        else {
+                            window.location.reload(1);
+                        }
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+            }
+        }
+    }
+
+    function CalculateTotalAmount(adminfee) {
+        var loanAmount = $("#txtLoanAmountReloan").val().trim();
+        if (loanAmount == '') {
+            $("#txtTotalAmountDueReloan").val(0);
+        }
+        else {
+
+            var final = parseFloat(loanAmount) - (parseFloat(loanAmount) * parseFloat(adminfee) / 100);
+            var rate = $("#txtInterestRateReloan").val();
+            var amount = parseFloat(rate) / 100 * parseFloat(loanAmount);
+            var result = parseFloat(loanAmount) + parseFloat(amount);
+            $("#txtExactLoanAmountPerceivedReloan").val(final);
+            $("#txtTotalAmountDueReloan").val(Math.round(result * 100) / 100);
+        }
+    }
+
+    function BindTermNameReloan() {
+        //
+        $.ajax({
+            url: "/LoanRequestVerifier/Get_TermName",
+            type: "POST",
+            success: function (data) {
+                //
+                $('#ddlTermNameReloan').empty();
+                htmlText ='<option>Select</option>'
+                for (var i = 0; i < data.length; i++) {
+                    htmlText += '<option value="' + data[i].Id + '_' + data[i].term_Id+'">' + data[i].term_Name + '</option>'
+                     }
+                $('#ddlTermNameReloan').append(htmlText);
+            },
+            error: function (data) {
+                console.log(data);
+            //    window.location.reload(1);
+
+            },
+            complete: function (data) {
+                GetDataAccToTermReloan();
+            }
+        });
+    }
+
+    function CalculateReloan() {
+        var LoanAmount = $("#txtLoanAmountReloan").val();
+        var ReloanDeduction = $("#txtReloanDeduction").val();
+        if (LoanAmount == "" || LoanAmount == NaN) {
+            LoanAmount = 0;
+        }
+        if (ReloanDeduction == "" || ReloanDeduction == NaN) {
+            ReloanDeduction = 0;
+        }
+        var Total = parseFloat(LoanAmount) - parseFloat(ReloanDeduction);
+        //$("#txtExactLoanAmountPerceivedReloan").val(Math.round(Total * 100) / 100);
+        $("#txtTotalAmountDueReloan").val(LoanAmount);
+    }
+
+    function InsertReloan()
+    {
+        var LoanAmount = $("#txtLoanAmountReloan").val();
+        var InterestRate = $("#txtInterestRateReloan").val();
+        var TotalAmountDue = $("#txtTotalAmountDueReloan").val();
+        var ReloanDeduction = $("#txtReloanDeduction").val().trim();
+        var MaturityDate = $("#txtMaturityDateReloan").val();
+        var TermName = $("#ddlTermNameReloan option:selected").text();
+        var modalReloan = document.getElementById('modalReloan');
+        var TermId = 0;
+        var TermType = 0;
+        var flag = 0;
+        var TermValue = $("#txtTerm_ValueReloan").val();
+        var _termData = $("#ddlTermNameReloan option:selected").val();
+        console.log("_termData : " + _termData);
+        if (_termData != "-1") {
+            _termData = _termData.split('_');
+            TermId = _termData[0];
+            TermType = _termData[1];
+        }
+        if ( _termData=='Select') {
+            $("#ddlTermNameReloan").val('Select');
+            $("#ddlTermNameReloan").addClass('has-error');
+            flag++;
+        }
+        if (LoanAmount == "") {
+            //
+            $("#txtLoanAmountReloan").val('');
+            $("#txtLoanAmountReloan").addClass('has-error');
+            flag++;
+        }
+        if (MaturityDate == "") {
+            //
+            $("#txtMaturityDateReloan").val('');
+            $("#txtMaturityDateReloan").addClass('has-error');
+            flag++;
+        }
+        console.log("TermId : " + TermId);
+        console.log("TermType : " + TermType);
+        if (flag > 0) {
+            return false;
+        }
+        else {
+            modalReloan.style.display = "block";
+             $.ajax({
+            data: { ApplicationNo: _ApplicationNo, LoanAmount: LoanAmount, InterestRate: InterestRate, TotalAmountDue: TotalAmountDue, ReloanDeduction: ReloanDeduction, MaturityDate: MaturityDate, TermValue: TermValue, TermId: TermId, TermType: TermType },
+                async:false,
+                url:'@Url.Action("AddReloan", "Loanoverdue")',
+                success:function(data)
+                {
+                    if (data) {
+                        alert("Added successfull");
+                        window.location.reload();
+                        window.location.href = '@Url.Action("FSBucket", "Loanoverdue")';
+                    }
+                    else {
+                        alert("Unsuccessfull");
+                    }
+                 },
+                 error: function (data) {
+                     window.location.reload(1);
+
+                 }
+             });
+
+        }
+
+    }
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+</script>
+<style>
+    .classname {
+        position: absolute;
+        z-index: 10;
+        top: 300px;
+        left: 600px;
+    }
+
+    .has-error {
+        border-color: red;
+        color: red;
+    }
+</style>

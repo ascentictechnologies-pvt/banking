@@ -1,0 +1,204 @@
+﻿
+@using System.Configuration;
+@{
+    ViewBag.Title = "Loan Request";
+    Layout = "~/Views/Shared/_LayoutChecker.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+    Loan_CRM.Areas.Checker.Models.Checkerdetail product = new Loan_CRM.Areas.Checker.Models.Checkerdetail();
+}
+@using (Html.BeginForm())
+{
+    <div class="row">
+        <div class="pull-left">
+            <table class="table table-bordered table-striped">
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">
+                            <b style="font-size:20px;">Client Fresh Loan Request Bucket</b>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pull-right">
+            <table class="table table-bordered table-striped">
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">
+                            <select id="filter_text" class="form-control">
+                                <option value="All">All</option>
+                                <option value="Date Applied">Date Applied</option>
+                                <option value="Date Of Status Changed">Date Of Status Changed</option>
+                            </select>
+                        </td>
+                        <td style="text-align:center">
+                            <div id="reportrange" class="col-md-4" style="background: #fff; cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; width: 100%;">
+                                <i class="fa fa-calendar"></i>&nbsp;
+                                <span></span><i class="fa fa-caret-down"></i>
+                            </div>
+                        </td>
+                        <td style="text-align:center">
+                            <input type="button" style="float:right" class="btn btn-primary btn-flat" value="Filter" onclick="SetFilter();" />
+                        </td>
+                        <td style="text-align:center">
+                            <input type="button" style="float:right" class="btn btn-primary btn-flat" value="Remove Filter" onclick="RemoveFilter();" />
+                        </td>
+                        <td style="text-align:center">
+                            <input type="button" style="float:right;" class="btn btn-primary btn-flat" value="For Recheck" onclick="location.href='@Url.Action("RecheckRequestBucket", "LoanRequestBucket")'" />
+                        </td>
+                        @*<td style="text-align:center">
+                            <input type="button" style="float:right;" class="btn btn-primary btn-flat" value="Insufficient Doc" onclick="location.href='@Url.Action("InsufficientDocument", "LoanRequestBucket")'" />
+                        </td>*@
+                        <td style="text-align:center">
+                            <input type="button" value="KIV" style="float:right; margin-right: 10%;" class="btn btn-primary btn-flat" onclick="location.href='@Url.Action("CheckerKIVBucket", "LoanRequestBucket")'" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <table id="tblVerify" class="table table-bordered dataTable no-footer">
+        <thead>
+            <tr>
+                <th>Applicant No</th>
+                <th>Applicant Name</th>
+                <th>Request Date</th>
+                <th>Best Call Morning</th>
+                <th>Best Call Noon</th>
+                <th>Action</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+    </table>
+}
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script type="text/javascript">
+    $(document).ready(function () {
+        var start = moment().subtract(29, 'days');
+        var end = moment();
+        function cb(start, end) {
+            $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+        }
+        $('#reportrange').daterangepicker({
+            startDate: start,
+            endDate: end,
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            }
+        }, cb);
+        cb(start, end);
+
+        GetData();
+    });
+
+    function GetData() {
+
+        var filter_date = $('#reportrange span').text();
+        var filter_text = $('#filter_text :selected').val();
+        console.log(filter_text);
+       var table=  $("#tblVerify").DataTable({
+            "processing": true, // for show progress bar
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false, // for disable multiple column at once
+            "pageLength": 10,
+            "lengthChange": true,
+            "bInfo": false,
+                "ajax": {
+                    "url": '@Url.Action("GetUsersData", "LoanRequestBucket", new { Area = "Checker" })',
+                    "type": "POST",
+                    "data": { "filter_text": filter_text, "filter_date": filter_date },
+                    "datatype": "json",
+
+                    error: function (data) {
+                        //window.location.reload(1);
+                    }
+                },
+                "columns": [
+                    { "data": "applicationno", "name": "applicationno" },
+                    { "data": "applicationname", "name": "applicationname" },
+                    { "data": "RequestDate", "name": "RequestDate"},
+                    { "data": "MorningTime", "name": "MorningTime" },
+                    { "data": "NoonTime", "name": "NoonTime" },
+                    {
+                        "render": function (data, type, full, meta) {
+                            if (full.ispickedchecker == true) {
+                                return '<span style="color:red;">In Process...</span>';
+                            }
+                            else {
+                                return '<input type="button" value="Detail" class="btn btn-primary" id="btnDetail" onclick="Requestdetail(\''+full.applicationno+'\', \''+full.personalcontactno+'\')"/>';
+                            }
+                        }
+                    },
+                    {
+                        "render": function (data, type, full, meta) {
+                            if (full.term != 0) {
+                                return '<img src="../../Content/img/Circle_Green.png" style="margin-left: 8%;"/>';
+                            }
+                            else {
+                                return '<img src="../../Content/img/Circle_Yellow.png" style="margin-left: 8%;"/>';
+                            }
+                        }
+                    },
+                    {
+                        "render": function (data, type, full, meta) {
+                            if (full.companyid_url != '' && full.gov_id_url != '' && full.billing_url != '' && full.income_url != '') {
+                                return  '<img src="../../Content/img/Circle_Green.png" style="margin-left: 8%;"/>';
+                            }
+                            else {
+                                return  '<img src="../../Content/img/Circle_Yellow.png" style="margin-left: 8%;"/>';
+                            }
+                        }
+                    }
+            ]
+        });
+      setInterval(function () {
+            table.ajax.reload();
+        }, @Convert.ToInt32(ConfigurationManager.AppSettings["GridRefreshTime"]));
+    };
+
+    function Requestdetail(obj, obj1) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetCheckerKIV", "LoanRequestBucket")',
+            datatype: 'json',
+            data: { },
+            success: function (data) {
+                if (data == true) {
+                    alert("KIV Bucket limit is Exceeded!");
+                    return false;
+                }
+                else {
+                    window.location.href = '@Url.Action("RequestDetail", "LoanRequestBucket")?Id=' + obj + '&phoneNumber=' + obj1 + '&Actionname=LoanRequest';
+                }
+            }
+        });
+    };
+
+    function RemoveFilter() {
+        window.location.href='@Url.Action("LoanRequest", "LoanRequestBucket")';
+    };
+
+    function SetFilter() {
+        $("#tblVerify").DataTable().destroy();
+        GetData();
+    };
+</script>
+
+<style>
+    .classname {
+        position: absolute;
+        z-index: 10;
+        top: 300px;
+        left: 600px;
+    }
+</style>

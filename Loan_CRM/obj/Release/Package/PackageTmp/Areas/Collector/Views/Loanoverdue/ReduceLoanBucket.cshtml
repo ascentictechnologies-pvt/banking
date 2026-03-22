@@ -1,0 +1,102 @@
+﻿
+@model Loan_CRM.Areas.Collector.Models.PaymentInformation
+@{
+    ViewBag.Title = "Reduce Reloan Bucket";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+@using (Html.BeginForm("TransferToChecker", "Admin", FormMethod.Post))
+{
+    
+    <div id="tableDiv">
+        <h3>Reduce Loan Bucket</h3>
+        <div class="col-md-12" style="padding-bottom:2%">
+            <input type="button" style="float:right" class="btn btn-primary btn-flat" onclick="window.location.href='@Url.Action("LoanPaymentBucket","Loanoverdue")'" value="Back" />
+        </div>
+        <div class="col-md-12">
+            <table id="tblRecord" class="table table-bordered table-responsive table-striped">
+                <thead>
+                    <tr>
+
+                        <th>Application No</th>
+                        <th>Reference Number</th>
+                        <th>Full Name</th>
+
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model.paymentinformation != null && Model.paymentinformation.Count > 0)
+                        {
+                            foreach (var item in Model.paymentinformation)
+                            {
+                                <tr>
+                                    <td>
+                                        @item.applicationno
+                                    </td>
+                                    <td>
+                                        @item.Referenceno
+                                    </td>
+                                    <td>
+                                        @item.Name
+                                    </td>
+                                </tr>
+
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,741 @@
+﻿@model Loan_CRM.Areas.Account.Models.EmiInformation
+@{
+    ViewBag.Title = "Emi Info";
+    Layout = "~/Views/Shared/_LayoutAccount.cshtml";
+}
+@using (Html.BeginForm("AddEmiInfo", "SummeryDetail", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+    <div id="modalNotify" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="RefreshNotifyModel()">&times;</span>
+                <h3>Notification Template</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Name</label>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.DropDownListFor(Model => Model.templatename, new SelectList(ViewBag.NotificationTemplateList, "id", "NotificationTemplateName"), new { @class = "form-control", @id = "ddlNotificationtemplate", @onchange = "GetNotificationValue();" })
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Description</label>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea class="form-control" id="txtnotifydescription" readonly></textarea>
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Definition</label>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea class="form-control" id="txtnotifydefinition" readonly></textarea>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary btn-flat" id="btnPaySubmit" value="Send" onclick="SendNotify()" />
+                <input type="button" class="btn btn-danger btn-flat" id="btnPayCancel" value="Cancel" onclick="RefreshNotifyModel()" />
+            </div>
+        </div>
+    </div>
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">EMI for Application No: <span id="spanAppNo">@Model.applicationno</span></b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <input type="hidden" name="GovUrl" value="@ViewBag.govidurl" />
+        <input type="hidden" name="CompUrl" value="@ViewBag.companyidurl" />
+        <input type="hidden" name="IncomeUrl" value="@ViewBag.incom_url" />
+        <input type="hidden" name="BillUrl" value="@ViewBag.billingurl" />
+        <input type="hidden" name="OthUrl" value="@ViewBag.other_url" />
+        <input type="hidden" name="ATMUrl" value="@ViewBag.contract_url" />
+        <input type="hidden" name="applicationno" value="@Model.applicationno" />
+        @Html.HiddenFor(x => x.user_id)
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    @if (!String.IsNullOrWhiteSpace(Model.personalemail))
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("GetOldData", "Home", new { Area = "" })?Emailid=@Model.personalemail' title="Offline Loan History" target="_blank">Offline Loan History</a></td>
+                    }
+                    @if (Model.applicationno>0)
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("LoanHistory", "Home", new { Area = "" })?UserID=@Model.user_id&ActionName=@Request.QueryString["ActionName"]&ApplicationNo=@Model.applicationno' title="Loan History" target="_blank">Loan History</a></td>
+                    }
+                    @if (String.IsNullOrWhiteSpace(Model.gov_id_url))
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="GovermentID Document missing!">ID1</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.gov_id_url' title="GovermentID Document" target="_blank">ID1</a></td>
+                    }
+                    @if (String.IsNullOrWhiteSpace(Model.companyid_url))
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="Company Document missing!">ID2</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.companyid_url' title="Company Document" target="_blank">ID2</a></td>
+                    }
+                    @if (String.IsNullOrWhiteSpace(Model.income_url))
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="Income Document missing!">PI</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.income_url' title="Income Document" target="_blank">PI</a></td>
+                    }
+                    @if (String.IsNullOrWhiteSpace(Model.billing_url))
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="Bill Document missing!">PB</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.billing_url' title="Bill Document" target="_blank">PB</a></td>
+                    }
+                    @if (String.IsNullOrWhiteSpace(Model.other_url))
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="Other Document missing!">O</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.other_url' title="Other Document" target="_blank">O</a></td>
+                    }
+                    @if (String.IsNullOrWhiteSpace(Model.atm_url))
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="ATM Document missing!">A</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" title="ATM Document" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.atm_url' target="_blank">A</a></td>
+                    }
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div class="col-md-6">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <label>Reference No</label>
+                        <input type="text" class="form-control" id="txtreferenceno" name="new_referenceno" onfocus="RemoveValidation(this);" value="@Model.new_referenceno" placeholder="Reference No" />
+                        <input type="hidden" id="hdnreferenceno" name="referenceno" value="@Model.referenceno" />
+                    </td>
+                    <td style="text-align:center" colspan="2">
+                        <label>Disbursement Date</label>
+                        @{
+                            if (ViewBag.EMIFlag)
+                            {
+                                <label class="form-control">@Model.disbursement_date</label>
+                                <input type="hidden" name="disbursement_date" value="@Model.disbursement_date" />
+                            }
+                            else
+                            {
+                                <input type="text" class="form-control" id="txtdisbursementdate" name="disbursement_date" onchange="GetEmiDetails(this)" value="@Model.disbursement_date" placeholder="Disbursement Date" />
+                            }
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td style="text-align:center">
+                        <button type="button" class="btn btnCollapse btn-primary " id="btnSwitch">Click To Expand   EMI Table</button>
+                    </td>
+                    <td style="text-align:center">
+                        @{
+                            if (!Model.IsCompleted)
+                            {
+                                <button type="submit" class="btn btn-primary btn-flat" id="btn_save">Save</button>
+                            }
+                        }
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-primary btn-flat" value="Back" onclick="UpdateIsPickedAccount()" />
+                    </td>
+                    <td style="text-align:center"><button type="button" class="btn btn-primary btn-flat" id="btn_notification">Manual Notify</button></td>
+                </tr>
+            </tbody>
+        </table>
+        @if (ViewBag.TermRows != null)
+        {
+            <table id="collapseme" class="collapse out table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th style="text-align: center;">Date</th>
+                        <th style="text-align: center;">Principle</th>
+                        <th style="text-align: center;">Interest</th>
+                        <th style="text-align: center;">Emi Amount</th>
+                    </tr>
+                </thead>
+                <tbody id="tblEmi">
+                    @for (int i = 0; i < ViewBag.TermRows; i++)
+                    {
+                        if (ViewBag.rowcount > 0 && Model.Records.Count > i)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="text" id="@Html.IdFor(M=>M.Records[i].fourthweekdate)" name="@Html.NameFor(M=>M.Records[i].fourthweekdate)" value="@Model.Records[i].fourthweekdate" class="form-control " placeholder="Date" readonly="readonly" />
+                                </td>
+                                <td>
+                                    <input type="text" id="@Html.IdFor(M=>M.Records[i].fourthweekprinciple)" name="@Html.NameFor(M=>M.Records[i].fourthweekprinciple)" value="@Model.Records[i].fourthweekprinciple" class="form-control  txtreadoly" placeholder="Principle" readonly="readonly" />
+                                </td>
+                                <td>
+                                    <input type="text" id="@Html.IdFor(M=>M.Records[i].fourthweekrate)" name="@Html.NameFor(M=>M.Records[i].fourthweekrate)" value="@Model.Records[i].fourthweekrate" class="form-control  " placeholder="Rate" readonly="readonly" />
+                                </td>
+                                <td>
+                                    <input type="text" id="@Html.IdFor(M=>M.Records[i].fourthweekemiamount)" name="@Html.NameFor(M=>M.Records[i].fourthweekemiamount)" value="@Model.Records[i].fourthweekemiamount" class="form-control " placeholder="Emi Amount" readonly="readonly" />
+                                </td>
+                            </tr>
+                        }
+                        else if (Model.Records.Count > i)
+                        {
+                            <tr>
+                                <td>
+                                    <input type="text" id="@Html.IdFor(M=>M.Records[i].fourthweekdate)" name="@Html.NameFor(M=>M.Records[i].fourthweekdate)" value="@Model.Records[i].fourthweekdate" class="form-control textdate" placeholder="Date" readonly="readonly" />
+                                </td>
+                                <td>
+                                    <input type="text" id="@Html.IdFor(M=>M.Records[i].fourthweekprinciple)" name="@Html.NameFor(M=>M.Records[i].fourthweekprinciple)" value="@Model.Records[i].fourthweekprinciple" class="form-control  txtreadoly" placeholder="Principle" readonly="readonly" />
+                                </td>
+                                <td>
+                                    <input type="text" id="@Html.IdFor(M=>M.Records[i].fourthweekrate)" name="@Html.NameFor(M=>M.Records[i].fourthweekrate)" value="@Model.Records[i].fourthweekrate" class="form-control  " placeholder="Rate" readonly="readonly" />
+                                </td>
+                                <td>
+                                    <input type="text" id="@Html.IdFor(M=>M.Records[i].fourthweekemiamount)" name="@Html.NameFor(M=>M.Records[i].fourthweekemiamount)" value="@Model.Records[i].fourthweekemiamount" class="form-control " placeholder="Emi Amount" readonly="readonly" />
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        }
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <label>Balance Amt:</label>
+                        <input type="text" class="form-control" id="txtname" name="balanceamt" value="@Model.balanceamt" placeholder="Balance Amt" readonly="readonly" />
+                        <input type="hidden" name="ApprovedLoanAmt" value="@ViewBag.ApprovedLoan" />
+                    </td>
+                    <td style="text-align:center" colspan="2">
+                        <label>Total Amount Paid:</label>
+                        <input type="text" class="form-control" id="txtname" name="totalamountpaid" value="@Model.totalamountpaid" placeholder="Total Amount Paid" readonly="readonly" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <table id="tblEmiDetails" class="table table-bordered table-striped">
+            <tr>
+                <th style="text-align:center;width: 55px;">S.No</th>
+                <th style="width:238px;text-align: center;">Column Name</th>
+                <th style="width:281px;text-align: center;">Value</th>
+            </tr>
+            <tr>
+                <td>1.</td>
+                <td>Applicant Name</td>
+                <td><input type="text" class="form-control" id="txtApplicantName" placeholder="Name" readonly="readonly" value="@Model.ApplicantName" /></td>
+            </tr>
+            <tr>
+                <td>2.</td>
+                <td>Contract Ref. No.</td>
+                <td><input type="text" class="form-control" id="txtContractNo" placeholder="Contract No." readonly="readonly" value="@Model.contract_ref_no" /></td>
+            </tr>
+            <tr>
+                <td>3.</td>
+                <td>Best Time To Call</td>
+                <td><input type="text" class="form-control" id="txtname" placeholder="Best Time To Call" readonly="readonly" value="@Model.besttimetocall" /></td>
+            </tr>
+            <tr>
+                <td>4.</td>
+                <td>PTP</td>
+                <td>
+                    <input type="text" id="txtapplicationid" class="form-control" readonly="readonly"
+                           value="@Model.ptp" placeholder="PTP" />
+                </td>
+            </tr>
+            <tr>
+                <td>5.</td>
+                <td>Reason Of non-payment</td>
+                <td><input type="text" class="form-control" value="@Model.resonofnonpayment" placeholder="Reason Of non-payment" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td>6.</td>
+                <td>Other remarks</td>
+                <td><input type="text" class="form-control" value="@Model.otherremarks" placeholder="Other remarks" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td>7.</td>
+                <td>Notes</td>
+                <td><input type="text" class="form-control" value="@Model.notes" placeholder="Notes" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td>8.</td>
+                <td>Phone Status</td>
+                <td><input type="text" class="form-control" value="@Model.phonestatus" placeholder="Phone Status" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td>9.</td>
+                <td>No. of times dialed</td>
+                <td><input type="text" class="form-control" value="@Model.nooftimesdialed" readonly="readonly" placeholder="No. of times dialed" /></td>
+            </tr>
+            <tr>
+                <td>10.</td>
+                <td>Date Applied</td>
+                <td><input type="text" id="txtdatepaid" class="form-control" value="@Model.dateapplied" placeholder="Date Applied" readonly="readonly" /></td>
+            </tr>
+            <tr>
+                <td>11.</td>
+                <td>Personal Email</td>
+                <td><input type="text" id="txtamountpaid" class="form-control NumericTextBox" placeholder="Personal Email" readonly="readonly" value="@Model.personalemail" /></td>
+            </tr>
+            <tr>
+                <td>12:</td>
+                <td>Personal Contact No.1</td>
+                <td>
+                    <input type="text" id="txtpaymentchennel" class="form-control " placeholder="Personal Contact No.1" readonly="readonly" value="@Model.personalcontactnoone" />
+                </td>
+            </tr>
+            <tr>
+                <td>13.</td>
+                <td>Personal Contact No.2</td>
+                <td>
+                    <input type="text" id="txtproofofpayment" class="form-control " placeholder="Personal Contact No.2" readonly="readonly" value="@Model.personalcontactnotwo" />
+                </td>
+            </tr>
+            <tr>
+                <td>14.</td>
+                <td>Personal Contact No.3</td>
+                <td>
+                    <input type="text" id="txtbesttimetocallback" class="form-control " placeholder="Personal Contact No.3" readonly="readonly" value="@Model.personalcontactnothree" />
+                </td>
+            </tr>
+            <tr>
+                <td>15.</td>
+                <td>Address</td>
+                <td>
+                    @{
+                        var _Address = String.Empty;
+                        if (!String.IsNullOrWhiteSpace(Model.address))
+                        {
+                            _Address += Model.address.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.street))
+                        {
+                            _Address += Model.street.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.barangay))
+                        {
+                            _Address += Model.barangay.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.cityname))
+                        {
+                            _Address += Model.cityname.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.province_name))
+                        {
+                            _Address += Model.province_name.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.zipcode))
+                        {
+                            _Address += Model.zipcode.ToUpper();
+                        }
+                    }
+                    <input type="text" id="txtpromisetopay" class="form-control " placeholder="Address" readonly="readonly" value="@_Address" />
+                </td>
+            </tr>
+            <tr>
+                <td>16.</td>
+                <td>Home Phone No. (if any)</td>
+                <td>
+                    <input type="text" id="txtamountptp" class="form-control NumericTextBox" placeholder="Home Phone No. (if any)" readonly="readonly" value="@Model.homephonenoifany" />
+                </td>
+            </tr>
+            <tr>
+                <td>17.</td>
+                <td>Place of birth</td>
+                <td>
+                    <input type="text" id="txtreasonofnopayment" class="form-control " placeholder="Place of birth" readonly="readonly" value="@Model.placeofbirth" />
+                </td>
+            </tr>
+            <tr>
+                <td>18.</td>
+                <td>Date of birth</td>
+                <td>
+                    <input type="text" id="txtotherremarks" class="form-control CharcaterTextBox" placeholder="Date of birth" readonly="readonly" value="@Model.dateofbirth" />
+                </td>
+            </tr>
+            <tr>
+                <td>19.</td>
+                <td>Civil Status</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Civil Status" readonly="readonly" value="@Model.civilstatus" />
+                </td>
+            </tr>
+            <tr>
+                <td>20.</td>
+                <td>Mothers maiden Name</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Mothers maiden Name" readonly="readonly" value="@Model.mothermaidenname" />
+                </td>
+            </tr>
+            <tr>
+                <td>21.</td>
+                <td>Mother's Address</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Mother's Address" readonly="readonly" value="@Model.mothersaddress" />
+                </td>
+            </tr>
+            <tr>
+                <td>22.</td>
+                <td>Company Name</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Company Name" readonly="readonly" value="@Model.companyname" />
+                </td>
+            </tr>
+            <tr>
+                <td>23.</td>
+                <td>Company Address</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Company Address" readonly="readonly" value="@Model.companyaddress" />
+                </td>
+            </tr>
+            <tr>
+                <td>24.</td>
+                <td>Position</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Position" readonly="readonly" value="@Model.position" />
+                </td>
+            </tr>
+            <tr>
+                <td>25.</td>
+                <td>Gross Income</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Gross Income" readonly="readonly" value="@Model.grossincome" />
+                </td>
+            </tr>
+            <tr>
+                <td>26.</td>
+                <td>Reference Name</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Reference Name" readonly="readonly" value="@Model.referancename" />
+                </td>
+            </tr>
+            <tr>
+                <td>27.</td>
+                <td>Reference contact no.</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Reference contact no" readonly="readonly" value="@Model.referancecontactno" />
+                </td>
+            </tr>
+            <tr>
+                <td>28.</td>
+                <td>Bank name</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Bank name" readonly="readonly" value="@Model.bankname" />
+                </td>
+            </tr>
+            <tr>
+                <td>29.</td>
+                <td>Bank account no.(payroll)</td>
+                <td>
+                    <input type="text" id="txtcontactno" class="form-control NumericTextBox" placeholder="Bank account no.(payroll)" readonly="readonly" value="@Model.bankaccountno" />
+                </td>
+            </tr>
+        </table>
+    </div>
+
+}
+
+<script type="text/javascript">
+    var paidAmount = 0;
+    var IsChangePaidAmount = false;
+    $(document).ready(function () {
+        $("#btn_notification").click(function () {
+            NotifyModal();
+        });
+        $("#btn_save").click(function () {
+            var ReferenceNo = $("#txtreferenceno").val().trim();
+            var flag = 0;
+            if (ReferenceNo === "") {
+                flag++;
+                $("#txtreferenceno").addClass('has-error');
+            }
+            if (flag > 0) {
+                return false;
+            }
+        });
+         $('#txtdisbursementdate').datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            changeYear: true,
+             yearRange: "-100:+20",
+             maxDate: new Date()
+        });
+
+        $(".btnCollapse").click(function () {
+            if ($("#collapseme").hasClass("out")) {
+                $("#collapseme").addClass("in");
+                $("#collapseme").removeClass("out");
+                $("#btnSwitch").text('Click To Collapse EMI Table');
+            } else {
+                $("#collapseme").addClass("out");
+                $("#collapseme").removeClass("in");
+                $("#btnSwitch").text('Click To Expand   EMI Table');
+            }
+        });
+
+        BindPendingPaymentHistory();
+
+        $("#txtthirdweekfirstdate").focusin(function () {
+            $("#txtthirdweekfirstprinciple").prop("disabled", false);
+            $("#txtthirdweekfirstrate").prop("disabled", false);
+            $("#txtthirdweekfirstemiamount").prop("disabled", false);
+
+        });
+        $("#txtthirdweeksecounddate").focusin(function () {
+            $("#txtthirdweeksecoundprinciple").prop("disabled", false);
+            $("#txtthirdweeksecoundrate").prop("disabled", false);
+            $("#txtthirdweeksecoundemiamount").prop("disabled", false);
+
+        });
+        $("#txtthirdweekthirddate").focusin(function () {
+            $("#txtthirdweekthirdprinciple").prop("disabled", false);
+            $("#txtthirdweekthirdrate").prop("disabled", false);
+            $("#txtthirdweekthirdemiamount").prop("disabled", false);
+
+        });
+
+        $("#txtfourthweekdate").focusin(function () {
+            $("#txtfourthweekprinciple").prop("disabled", false);
+            $("#txtfourthweekrate").prop("disabled", false);
+            $("#txtfourthweekemiamount").prop("disabled", false);
+        });
+
+        $("#txtfiveweekdate").focusin(function () {
+            $("#txtfiveweekprinciple").prop("disabled", false);
+            $("#txtfiveweekrate").prop("disabled", false);
+            $("#txtfiveweekrateemiamount").prop("disabled", false);
+        });
+
+        $("#txtbifirstweekdate").focusin(function () {
+            $("#txtbifirstweekprinciple").prop("disabled", false);
+            $("#txtbifirstweekrate").prop("disabled", false);
+            $("#txtbifirstweekemiamount").prop("disabled", false);
+        });
+
+        $("#txtbisecoundweekdate").focusin(function () {
+            $("#txtbisecoundweekprinciple").prop("disabled", false);
+            $("#txtbisecoundweekrate").prop("disabled", false);
+            $("#txtbisecoundweekemiamount").prop("disabled", false);
+        });
+
+        $("#txtmonthlydate").focusin(function () {
+            $("#txtmonthlyprinciple").prop("disabled", false);
+            $("#txtmonthlyrate").prop("disabled", false);
+            $("#txtmonthlyemiamount").prop("disabled", false);
+        });
+    });
+
+    function EditPendingPayments(payId) {
+        paidAmount = $("#txtPaidAmount").val().trim();
+        IsChangePaidAmount = true;
+
+        $("#txtPaidAmount").prop("readonly", false);
+        $("#imgEdit").remove();
+ }
+    function GetTotal() {
+
+        var penaltyAmt = $("#txtPenalty").val();
+        var paidAmount = $("#txtPaidAmount").val();
+        var total = parseFloat(penaltyAmt) + parseFloat(paidAmount);
+        $("#txtTotal").val(Math.round(total * 100) / 100);
+        $("#tdTotal").html(total);
+        $("#tdPenalty").html(penaltyAmt);
+    }
+    function BindPendingPaymentHistory() {
+        var appNo = $("#spanAppNo").html();
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetApprovedPendingPaymentInfo", "SummeryDetail")',
+            data: { appNo: appNo },
+            datatype: 'json',
+            success: function (result) {
+                if (result != null) {
+                    $("#tblPendingPaymentsHistory tbody").empty();
+                    for (var i in result) {
+                        $("#tblPendingPaymentsHistory tbody").append(
+                            "<tr><td>" + result[i].DateOfPayment + "</td>" +
+                            "<td>" + result[i].PaidAmount + "</td>" +
+                            "<td id='tdPenalty'>" + result[i].LatePenalty + "</td>" +
+                            "<td id='tdTotal'>" + Math.round((parseFloat(result[i].PaidAmount) + parseFloat(result[i].LatePenalty))*100)/100 + "</td>" +
+                            "<td>" + result[i].PaymentChannel + "</td>" +
+                            "<td>" + result[i].ProofOfPayment + "</td>" +
+                            "<td id='tdRemark'>" + result[i].Remarks + "</td></tr>"
+                        );
+                    }
+                }
+                else {
+                    window.location.reload();
+                }
+            },
+            error: function (data) {
+                console.log(`Error :` + data);
+            //    window.location.reload();
+            }
+
+        });
+    }
+
+    function UpdateIsPickedAccount() {
+        var appNo = $("#spanAppNo").text();
+        $.ajax({
+            url: '@Url.Action("UpdateIsPickedAccount", "SummeryDetail")',
+            type: "POST",
+            data: { appNo: appNo },
+            success: function (result) {
+
+                if (result == "True") {
+                    window.location.href = '@Url.Action("AccountSummery", "SummeryDetail")';
+                }
+                else {
+                    window.location.reload(1);
+                }
+            }
+        })
+    }
+
+    $('#txtPaidAmount').on('input', function () {
+
+        var newPaidAmount = $("#txtPaidAmount").val();
+        if (paidAmount != "") {
+            if (newPaidAmount != paidAmount) {
+                if ($("#txtRemarks").val() == "") {
+                    $("#txtRemarks").addClass('has-error');
+                }
+            }
+        }
+    });
+
+    function Validate() {
+        var isValidate = true;
+        if ($("#txtRemarks").val() == "") {
+            $("#txtRemarks").addClass('has-error');
+            isValidate = false;
+        }
+        return isValidate;
+    }
+
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+
+    function GetEmiDetails(obj) {
+
+        var id = $("#spanAppNo").html();
+        var DisbursementDate = obj.value;
+        window.location.href = "EmiInfo?Id=" + id + "&_DisbursementDate=" + DisbursementDate + "";
+    }
+     function NotifyModal() {
+        var modalNotify = document.getElementById('modalNotify');
+        modalNotify.style.display = "block";
+    }
+    function SendNotify() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: { notificationtoken: '@Model.notificationtoken', message: $("#txtnotifydefinition").val(), UserName: '@Convert.ToString(Request.Cookies["AgentName"].Value)', PanelName: '@Convert.ToString(Request.Cookies["RoleType"].Value)', MobileNo: '@Model.personalcontactnoone', ApplicationNo: '@Model.applicationno' },
+            url: '@Url.Action("SendManulNotification", "Home", new { Area = "" })',
+            success: function (data)
+            {
+                if (data) {
+                    alert("Notification Send Succussfully..");
+                    $('#modalNotify').toggle();
+                }
+            }
+        });
+    };
+    function GetNotificationValue() {
+        var Id = $('#ddlNotificationtemplate').val();
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("GetNotificationValues", "LoanRequestBucket", new { area = "Checker" })',
+            dataType: 'json',
+            data: { Id: Id },
+            success: function (sms) {
+                if (sms != null) {
+                    $("#txtnotifydefinition").val(sms.NotificationTemplateDefinition);
+                    $("#txtnotifydescription").val(sms.NotificationTemplateDesc);
+                }
+            },
+            error: function (data) {
+                console.log(`Error :` + data);
+            //    window.location.reload(1);
+
+            }
+            });
+    };
+    function RefreshNotifyModel() {
+        $('#modalNotify').toggle();
+        $("#ddlNotificationtemplate").val('');
+        $("#txtnotifydefinition").val('');
+        $("#txtnotifydescription").val('');
+    }
+
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+
+    .hide {
+        display: none;
+    }
+</style>

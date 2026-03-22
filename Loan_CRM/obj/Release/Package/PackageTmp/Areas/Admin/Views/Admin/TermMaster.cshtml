@@ -1,0 +1,296 @@
+﻿@{
+    ViewBag.Title = "TermMaster";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<form id="frmTerm">
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Add Repayment Plan
+        </div>
+        <div class="panel-body">
+            <div class="col-md-12">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Term Name</lable>
+                            <input type="number" class="form-control CharcaterTextBox" placeholder="Enter Term Name" name="term_Name" id="txtTermName" />
+                        </div>
+                    </div>
+
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Term Type</lable>
+                            <select class="form-control" name="term_Id" id="ddlTermType" onfocus="RemoveValidation(this)"><option value="-1">Select</option></select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Interest Rate(%)</lable>
+                            <input type="number" class="form-control NumericTextBox" placeholder="Enter Rate" name="rate" id="txtRate" onfocus="RemoveValidation(this)" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Admin Fee(%)</lable>
+                            <input type="number" class="form-control NumericTextBox" placeholder="Enter Admin Fee" name="admin_fee" id="txtAdminFee" onfocus="RemoveValidation(this)" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Daily Penalty (%)</lable>
+                            <input type="number" class="form-control NumericTextBox" placeholder="Enter Daily Penalty" name="late_fee" id="txtLateFee" onfocus="RemoveValidation(this)" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Late Fee (Peso)</lable>
+                            <input type="number" class="form-control NumericTextBox" placeholder="Enter Late Fee (Peso)" name="late_penalty" id="txtLatePenalty" onfocus="RemoveValidation(this)" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Applicable Till (*leave blank for No date)</lable>
+                            <input type="date" class="form-control" placeholder="Enter Applied From" name="applicabletill" id="txtApplicableTill" min='@DateTime.Now.AddDays(1).ToString("yyyy-MM-dd")' onfocus="RemoveValidation(this)" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Suffix</lable>
+                            <input type="text" class="form-control" placeholder="Enter Suffix" name="suffix" id="txtsuffix" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Is Public</lable>
+                            <select name="isPublic" class="form-control">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <lable>Up to 10k</lable>
+                            <select name="upto10k" class="form-control">
+                                <option value="false">No</option>
+                                <option value="true">Yes</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel-footer">
+            <input type="button" class="btn btn-primary" id="btnSubmit" value="Submit" onclick="AddTerm()" />
+        </div>
+    </div>
+</form>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        Existing Repayment Plan
+    </div>
+    <div class="panel-body">
+        <div class="col-md-12">
+            <table id="tblTerms" class="table table-bordered"></table>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        BindTermType();
+        BindTermTable();
+    });
+
+    $("#txtTermName").keyup(function (event) {
+        if (event.keyCode == 46 || event.keyCode == 8) {
+            // let it happen, don't do anything
+        } else if (/\D/g.test(this.value)) {
+            // Filter non-digits from input value.
+            this.value = this.value.replace(/\D/g, '');
+        }
+    });
+
+    function BindTermType() {
+        $.ajax({
+            url: "/LoanRequestVerifier/GetTermType",
+            type: "POST",
+            success: function (data) {
+                if (data != null) {
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].term_Type, data[i].Id);
+                        $('#ddlTermType').append(opt);
+                    }
+                }
+                else {
+                    window.location.reload(1);
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    }
+
+    function AddTerm() {
+        if (Validate()) {
+            var termData = $("#frmTerm").serialize();
+            $.ajax({
+                url: '@Url.Action("AddTerm", "Admin")',
+                type: "POST",
+                data: termData,
+                success: function (data) {
+                    console.log(data);
+                    if (data === "True") {
+                        alert("Term added successfully.");
+                        window.location.reload(1);
+                    }
+                    else {
+                        alert("Term added Unsuccessful.");
+					}
+                }
+            })
+        }
+    }
+
+    function BindTermTable() {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetAllTerms", "Admin")',
+            success: function (term) {
+                if (term != null) {
+                    var data = '';
+                    var count = 1;
+                    data += "<thead><tr><th>Sr No.</th><th>Term Name</th><th>Interest Rate</th><th>Admin Fee</th><th>Daily Penalty</th><th>Late Fee</th><th>Term Type</th><th>Applicable Till</th><th>Action</th><th>Is Public</th><th>Up to 10K</th></tr></thead><tbody>";
+                    $.each(term, function (i, terms) {
+                        data += "<tr><td>" + count + "</td><td>" + terms.term_Name + "</td><td>" + terms.Rate + "</td><td>" + terms.admin_fee + "</td><td>" + terms.late_fee + "</td><td>" + terms.late_penalty + "</td><td>" + terms.TermTypeName + "</td><td>" + terms.applicabletill + "</td>" +
+                            "<td><input type='button' value='Delete' class='btn btn-primary' id='btnDelete' onclick='DeleteTerm(" + terms.Id + ")'/>";
+
+                        if (terms.isPublic) {
+                            data += "<td><a class='anchor' onclick='IsPublicTerm(" + terms.Id + ")' title='Click to Disable'><img src='../../Content/img/Circle_Green.png' alt='Enable' height='18' width='18' /></a></td>";
+                        }
+                        else {
+                            data += "<td><a class='anchor' onclick='IsPublicTerm(" + terms.Id + ")' title='Click to Enable'><img src='../../Content/img/Circle_Red.png' alt='Enable' height='18' width='18' /></a></td>";
+                        }
+                        if (terms.upto10k) {
+                            data += "<td>Yes</td>";
+                        }
+                        else {
+                            data += "<td>No</td>";
+                        }
+                        count++;
+                    });
+                    data += "</tbody>";
+                    $("#tblTerms").html(data);
+                    $("#tblTerms").DataTable().destroy();
+                    $("#tblTerms").DataTable({
+                        "bProcessing": false,
+                        "bSort": true
+                    });
+                }
+                else {
+                    window.location.reload(1);
+                }
+            }
+        })
+
+    }
+
+    function DeleteTerm(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("DeleteTerm", "Admin")',
+            data: { id: id },
+            success: function (result) {
+                if (result == "True") {
+                    alert("Term Deleted Successfully.");
+                    BindTermTable();
+                }
+            }
+        })
+    }
+    function IsPublicTerm(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("IsPublicTerm", "Admin")',
+            data: { id: id },
+            success: function (result) {
+                if (result) {
+                    alert("IsPublic Changes Successfully.");
+                    BindTermTable();
+                }
+            }
+        })
+    }
+
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+    function ValidateTextBox(term) {
+        if (term.value !== "") {
+            if (/^(?=.*\d.*\d.*\d)(?=.*[a-zA-Z].*[a-zA-Z].*[a-zA-Z].*[a-zA-Z].*[a-zA-Z].*[a-zA-Z].*[a-zA-Z].*[a-zA-Z].*[a-zA-Z]).{15}$/.test(term.value.trim())) {
+            }
+            else {
+                alert("Enter Correct Format [E.g 3 term (3x7days)]");
+                $("#txtTermName").addClass('has-error');
+                $("#txtTermName").val("");
+                $("#" + term.id).focus();
+            }
+        }
+
+    }
+
+    function Validate() {
+        var isValidate = true;
+        if ($("#txtTermName").val() == "") {
+            $("#txtTermName").addClass('has-error');
+            isValidate = false;
+        }
+        if ($("#ddlTermType option:selected").val() == -1) {
+            $("#ddlTermType").addClass('has-error');
+            isValidate = false;
+        }
+        if ($("#txt_TermValue").val() == "") {
+            $("#txt_TermValue").addClass('has-error');
+            isValidate = false;
+        }
+        if ($("#txtRate").val() == "") {
+            $("#txtRate").addClass('has-error');
+            isValidate = false;
+        }
+
+        return isValidate;
+    }
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+</style>

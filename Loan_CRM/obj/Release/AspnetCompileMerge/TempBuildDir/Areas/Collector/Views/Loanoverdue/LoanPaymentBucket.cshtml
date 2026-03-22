@@ -1,0 +1,924 @@
+﻿@using System.Configuration;
+@model IEnumerable<Loan_CRM.Areas.Collector.Models.PaymentBucket>
+
+@{
+    ViewBag.Title = "Loan Payment Bucket";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+<style>
+    .pad {
+        margin-left: 2px !important;
+    }
+</style>
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="pull-left">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <b style="font-size:20px;">Loan Payment Bucket</b>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pull-right">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <input type="button" id="btnReport" class="btn btn-primary" value="Today's Report" />
+                </td>
+                <td style="text-align:center">
+                    <button id="btnRefresh" class="btn btn-primary" onclick="GetData();">Refresh</button>
+                    <input type="button" class="btn btn-primary" style="display:none;" id="btn_Defaulter" value="Defaulter" onclick="location.href='@Url.Action("DefaulterBucket","Loanoverdue")'" />
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="clearfix"></div>
+<div class="pull-left">
+    <table class="table table-bordered dataTable no-footer">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <a href="@Url.Action("LoanPaymentBucket", "Loanoverdue",new { Area="Collector"})" button type="button" id="btnCollection" class="btn btn-primary">COLLECTION</a>
+                </td>
+                <td style="text-align:center">
+                    <a href="@Url.Action("ReLoanBucket", "Loanoverdue",new { Area="Collector"})" button type="button" id="btnReLoan" class="btn btn-primary">RELOAN</a>
+                </td>
+                <td style="text-align:center">
+                    <a href="@Url.Action("PreTermBucket", "Loanoverdue",new { Area="Collector"})" button type="button" id="btnPreterm" class="btn btn-primary">PRETERM</a>
+                </td>
+                <td style="text-align:center">
+                    <a href="@Url.Action("SalesTab", "Loanoverdue",new { Area="Collector"})" button type="button" id="btnSales" class="btn btn-primary">SALES</a>
+                </td>
+                <td style="text-align:center">
+                    <a href="@Url.Action("DefaulterReportBucket", "Loanoverdue", new { area = "Collector" })" button type="button" id="btnDefault" class="btn btn-primary">DEFAULT</a>
+                </td>
+                <td style="text-align:center">
+                    <a href="@Url.Action("FSBucket", "Loanoverdue",new { Area="Collector"})" button type="button" id="btnFS" class="btn btn-primary">FS BUCKET</a>
+                </td>
+                <td style="text-align:center">
+                    <a href="@Url.Action("AppPayments", "Loanoverdue",new { Area="Collector"})" button type="button" class="btn btn-primary" target="_blank">APP PAYMENTS</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pull-right">
+    <table class="table table-bordered dataTable no-footer">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <select id="ddlSearchApplicant" class="form-control mixselect">
+                        <option value="0">Select</option>
+                        <option value="1">Application No.</option>
+                        <option value="2">Applicant Name</option>
+                        <option value="3">Reference No.</option>
+                    </select>
+                </td>
+                <td style="text-align:center">
+                    <input type="text" class="form-control" id="txtApplicationNo" placeholder="Search">
+                </td>
+                <td style="text-align:center">
+                    <button type="submit" onclick="GetData();" class="searchButton btn" title="Search"><i class="fa fa-search"></i></button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="clearfix"></div>
+
+
+
+
+
+<div class="row">
+    @using (@Html.BeginForm("LoanPaymentBucket", "Loanoverdue", FormMethod.Post, new { enctype = "multipart/form-data" }))
+    {
+        <div id="modalPay" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="RefreshPayModel()">&times;</span>
+                    <h3>Pay : Application No : <span id="payapplicationno"></span></h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Date</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="hidden" id="txtEmiDetailId_Pay" value="" />
+                            <input type="text" id="txtPayDate" value="@DateTime.Now.ToString("dd-MM-yyyy")" class="form-control" onchange='GetCalculatedAmountPay();' />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Amortization</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" name="amortization" id="txtPayAmortization" onkeyup="CalculatePayModal()" class="form-control NumericTextBox" />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Late Penalties</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" name="latepenalties" onkeyup="CalculatePayModal()" id="txtPayLatepenalties" class="form-control NumericTextBox" />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Total</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" name="total" id="txtPayTotal" readonly="readonly" class="form-control NumericTextBox" />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Payment Channel</label>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.DropDownListFor(Model => Model.FirstOrDefault().reason_text, new SelectList(ViewBag.PaymentChannel, "payment_channel", "payment_channel"), new { @class = "form-control", @id = "txtPayPaymentChannel" })
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Proof of Payment</label>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.DropDownListFor(Model => Model.FirstOrDefault().reason_text, new SelectList(ViewBag.ProofOfPayment, "proof_of_payment", "proof_of_payment"), new { @class = "form-control", @id = "txtPayProofOfPayment" })
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Deferment</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="checkbox" name="deferment" id="deferment" class="" />
+                        </div>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="modal-footer">
+                    <input type="button" class="btn btn-primary btn-flat" id="btnPaySubmit" value="Submit" onclick="InsertPay()" />
+                    <input type="button" class="btn btn-danger btn-flat" id="btnPayCancel" value="Cancel" onclick="RefreshPayModel()" />
+                </div>
+            </div>
+        </div>
+
+        <div id="modalPTP" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="RefreshPTPModel()">&times;</span>
+                    <h3>PTP : Application No : <span id="ptpapplicationno"></span></h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Date</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input name="text" id="txtPtpDate" value="@DateTime.Now.ToString("dd-MM-yyyy")" class="form-control" onchange="GetCalculatedAmountPTP(this);" />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Amortization</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="amortization" id="txtPtpAmortization" onkeyup="CalculatePTPModal()" class="form-control NumericTextBox" />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Late Penalties</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="latepenalties" onkeyup="CalculatePTPModal()" id="txtPtpLatepenalties" class="form-control NumericTextBox" />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Total</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" name="total" id="txtPtpTotal" readonly="readonly" class="form-control NumericTextBox" />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Reason of non payment</label>
+                        </div>
+                        <div class="col-md-6">
+                            @Html.DropDownListFor(Model => Model.FirstOrDefault().reason_text, new SelectList(ViewBag.Reason, "reason_text", "reason_text"), new { @class = "form-control", @id = "ddlptpreason" })
+                        </div>
+                    </div>
+
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Remarks</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" name="remarks" id="txtptpremarks" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-primary btn-flat" id="btnPtpSubmit" value="Submit" onclick="InsertPTP()" />
+                        <input type="button" class="btn btn-danger btn-flat" id="btnPtpCancel" value="Cancel" onclick="RefreshPTPModel()" />
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="modalPartial" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="RefreshPartialModel()">&times;</span>
+                    <h3>Partial : Application No : <span id="partialapplicationno"></span></h3>
+                </div>
+                <div class="modal-body">
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Date</label>
+                            <input type="hidden" id="txtEmailDetailId_Partial" value="" />
+                            <input type="text" name="date" id="txtPartialDate" value="@DateTime.Now.ToString("dd-MM-yyyy")" class="form-control" onchange='GetCalculatedAmountPartial(this);' />
+                        </div>
+                        <div class="col-md-6">
+                            <label>Amortization</label>
+                            <input type="number" name="amortization" id="txtPartialAmortization" onkeyup="CalculatePartialModal()" class="form-control NumericTextBox" />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+
+                        <div class="col-md-6">
+                            <label>Late Penalties</label>
+                            <input type="number" name="latepenalties" onkeyup="CalculatePartialModal()" id="txtPartialLatepenalties" class="form-control NumericTextBox" />
+                        </div>
+                        <div class="col-md-6">
+                            <label>Total</label>
+                            <input type="text" name="total" id="txtPartialTotal" readonly="readonly" class="form-control NumericTextBox" />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Payment Channel</label>
+                            @Html.DropDownListFor(Model => Model.FirstOrDefault().reason_text, new SelectList(ViewBag.PaymentChannel, "payment_channel", "payment_channel"), new { @class = "form-control", @id = "paymentchannel" })
+                        </div>
+                        <div class="col-md-6">
+                            <label>Proof Of Payment</label>
+                            @Html.DropDownListFor(Model => Model.FirstOrDefault().reason_text, new SelectList(ViewBag.ProofOfPayment, "proof_of_payment", "proof_of_payment"), new { @class = "form-control", @id = "proofofpayment" })
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Balance Payment</label>
+                            <input type="text" name="balancepayment" id="balancepayment" class="form-control NumericTextBox" readonly />
+                        </div>
+                    </div>
+                    <div class="row form-group spc">
+                        <div class="col-md-6">
+                            <label>Reason of non payment</label>
+                            @Html.DropDownListFor(Model => Model.FirstOrDefault().reason_text, new SelectList(ViewBag.Reason, "reason_text", "reason_text"), new { @class = "form-control", @id = "ddlpartialreason" })
+                        </div>
+                        <div class="col-md-6">
+                            <label>Remarks</label>
+                            <input type="text" name="remarks" id="txtpartialremarks" class="form-control" />
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="button" class="btn btn-primary btn-flat" id="btnPartialSubmit" value="Submit" onclick="InsertPartial()" />
+                        <input type="button" class="btn btn-danger btn-flat" id="btnPartialCancel" value="Cancel" onclick="RefreshPartialModel()" />
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+    }
+    @{
+        Loan_CRM.Areas.Collector.Models.PaymentBucket product = new Loan_CRM.Areas.Collector.Models.PaymentBucket();
+    }
+</div>
+<div class="row" style="padding-top: 2%;">
+
+    <table id="tblVerify" class="data-verification table table-bordered dataTable no-footer">
+        <thead>
+            <tr>
+                <th>Aging</th>
+                <th>Applicant No</th>
+                <th>Applicant Name</th>
+                <th>Reference No.</th>
+                <th>Outstanding</th>
+                <th>Call</th>
+                <th>Partial</th>
+                <th>Pay</th>
+                <th>PTP</th>
+                <th>SMS</th>
+                <th>Details</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+    </table>
+</div>
+<div id="divTable" style="display:none">
+    <table id="tblExport" class="data-verification table table-bordered dataTable no-footer"></table>
+</div>
+<script type="text/javascript">
+    var _ApplicationNo = 0;
+    var _ActualAmortization = 0;
+    var _EmiId = 0;
+    var Emi_Amount = 0;
+    var Outstanding_Amount = 0;
+    var _PartialTotalAmount = 0;
+    var flag = false;
+    var table = $("#tblVerify").DataTable();
+    $(document).ready(function () {
+        GetData();
+        $("#deferment").prop('checked', false);
+        $("#deferment").change(function () {
+            if ($('#deferment').prop("checked")) {
+                console.log('deferment checked');
+                $("#txtPayAmortization").attr('readonly', 'readonly');
+                var EmiAmortization = parseFloat($("#txtPayAmortization").val()) / 2;
+                $("#txtPayAmortization").val(0);
+                $("#txtPayLatepenalties").attr('readonly', 'readonly');
+                $("#txtPayLatepenalties").val(EmiAmortization);
+                var Total = parseFloat(EmiAmortization);
+                $("#txtPayTotal").val(Math.round(Total * 100) / 100);
+            }
+            else {
+                console.log('deferment Unchecked');
+                GetCalculatedAmountPay();
+            }
+        });
+        $('#txtPtpDate').datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            minDate: 0,
+            changeYear: true,
+            yearRange: "-100:+20",
+        });
+        $('#txtPayDate').datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            maxDate: 0,
+            changeYear: true,
+        });
+        $('#txtPartialDate').datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            maxDate: 0,
+            changeYear: true,
+        });
+    });
+    function SendSMS(AppId, ContactNo, referenceNo, amount) {
+        var AppId = AppId;
+        var mobno = ContactNo;
+        var amount = amount;
+        var referenceNo = referenceNo;
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("ClickToSMS", "Loanoverdue", new { area = "Collector" })',
+            dataType: 'json',
+            data: { AppId: AppId, mobno: mobno, amount: amount, referenceNo: referenceNo },
+            success: function (result) {
+                console.log(result);
+                if (result) {
+                    availability = false;
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    };
+    function ClickCall(ContactNo) {
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("ClicktoCall", "LoanRequestBucket", new { area = "Checker" })',
+            dataType: 'json',
+            data: { ContactNumber: ContactNo },
+            success: function (result) {
+                console.log(result);
+                if (result) {
+                    availability = false;
+                }
+                else {
+                    window.location.reload(1);
+                }
+            }
+        });
+    };
+    function GetData() {
+        table.destroy();
+        var number = $("#ddlSearchApplicant").val();
+        var applicationno = $("#txtApplicationNo").val();
+        console.log(applicationno);
+        table = $("#tblVerify").DataTable({
+        "processing": true, // for show progress bar
+        "serverSide": true,
+        "filter": false,
+        "orderMulti": false, // for disabkle multiple column at once
+        "pageLength": 10,
+        "lengthChange": true,
+        "bInfo": false,
+            "ajax": {
+                "url": '@Url.Action("GetLoanData", "Loanoverdue", new { Area = "Collector" })',
+                "type": "POST",
+                "data": { "applicationno": applicationno, "number": number },
+                "datatype": "json",
+                error: function (data) {
+                    console.log(data);
+                }
+            },
+            "columns": [
+                {
+                    "render": function (data, type, full, meta) {
+                        if (full.Aging > 0) {
+                            return '<span style="color:red;">+' + full.Aging + '</span>';
+                        }
+                        else {
+                            return '<span style="color:red;">' + full.Aging + '</span>';
+                        }
+                    }
+                },
+                { "data": "applicationno", "name": "applicationno" },
+                { "data": "Name", "name": "Name" },
+                { "data": "Referenceno", "name": "Referenceno"},
+                { "data": "_DueAmount", "name": "_DueAmount" },
+               {
+                    "render": function (data, type, full, meta) {
+                        return '<input type="button" value="Call" class="btn btn-danger" id="btnCall" onclick="ClickCall(\''+full.personalcontactno + '\')"/>';
+                    }
+                },
+                {
+                    "render": function (data, type, full, meta) {
+                        return "<input type='button' value='Partial' class='btn btn-warning pad' id='btnPartial' onclick='getpartial(" + full.applicationno + "," + full._DueAmount + "," + (parseFloat(full._Penality) + parseFloat(full.LateFee)) + ");'/>";
+                    }
+                },
+                {
+                    "render": function (data, type, full, meta) {
+                        return "<input type='button' value='Pay' class='btn btn-info pad' id='btnPay' onclick='getpay(" + full.emiid + "," + full.applicationno + "," + full._DueAmount + "," + full.emiamount + "," + (parseFloat(full._Penality) + parseFloat(full.LateFee)) + "); '/>";
+
+                    }
+                },
+                {
+                    "render": function (data, type, full, meta) {
+                        return "<input type='button' value='PTP' class='btn btn-warning pad' id='btnPTP' onclick='getptp(" + full.applicationno + "," + full._DueAmount + "," + (parseFloat(full._Penality) + parseFloat(full.LateFee)) + ");'/>";
+
+                    }
+                },
+                {
+                    "render": function (data, type, full, meta) {
+                        return "<input type='button' value='SMS' class='btn btn-success pad' id='btnSMS' onclick='SendSMS(" + full.applicationno + "," + full.personalcontactno + ",\"" + full.Referenceno + "\"," + full._DueAmount + ")'/>";
+
+                    }
+                },
+                {
+                    "render": function (data, type, full, meta) {
+                        return "<input type='button' value='Detail' class='btn btn-primary pad' id='btnDetail' onclick='Requestdetail(" + full.applicationno + ")'/>";
+
+                    }
+                },
+                {
+                    "render": function (data, type, full, meta) {
+                        if (full.Priority ==1) {
+                            return "<img src='../../Content/img/Circle_Black.png' style='width:18px;margin-left:10%;' title='' />";
+                        }
+                        if (full.Priority ==2) {
+                            return "<img src='../../Content/img/Circle_Blue.png' style='width:18px;margin-left:10%;' title='' />";
+                        }
+                        if (full.Priority ==3) {
+                            return "<img src='../../Content/img/Circle_Red.png' style='width:18px;margin-left:10%;' title='' />";
+                        }
+                        else {
+                            return '';
+                        }
+                    }
+                }
+        ]
+        });
+    
+        setInterval(function () {
+            table.ajax.reload();
+        }, @Convert.ToInt32(ConfigurationManager.AppSettings["GridRefreshTime"]));
+    }
+    function GetTodayData() {
+        var d = new Date();
+        var month = d.getMonth() + 1;
+        var day = d.getDate();
+        var currentDate = d.getFullYear() + '/' +
+            (month < 10 ? '0' : '') + month + '/' +
+            (day < 10 ? '0' : '') + day;
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetPaymentBucketReport", "Loanoverdue")',
+            datatype: 'json',
+            data: { currentDate: currentDate },
+            success: function (users) {
+                var _data = '';
+                _data += "<thead><tr><th>Sr No.</th><th> Applicant No</th><th>Applicant Name</th><th>Request Date</th><th>Contract No.</th><th>EMI Date</th><th>PTP Date</th></tr></thead><tbody>";
+                $.each(users, function (i, data) {
+                    flag = true;
+                    _data += "<tr><td>" + parseInt(i + 1) + "</td><td>" + data.applicationno + "</td><td>" + data.applicationname + "</td><td>" + data.RequestDate + "</td><td>" + data.ContractNo + "</td><td>" + data.EmiDate + "</td><td>" + data.PTPDate + "</td></tr>";
+                });
+                _data += "</tbody>";
+                $("#tblExport").html(_data);
+
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    }
+    function Requestdetail(obj, ) {
+        var url = '@Url.Action("LoanDetail", "Loanoverdue")?Id=' + obj + '&ActionName=LoanPaymentBucket';;
+        window.location.href = url;
+    }
+
+    function getpay(EmiId,AppId,OutstandingAmt, EmiAmount, Penalty) {
+
+        _EmiId = EmiId;
+        _ApplicationNo = AppId;
+        var AmortizationAmount = OutstandingAmt;
+        var PenaltyAmount = Penalty;
+        $("#txtEmiDetailId_Pay").val('');
+        $("#payapplicationno").val(_ApplicationNo);
+        var modalPay = document.getElementById('modalPay');
+        $("#txtPayAmortization").val(parseFloat(AmortizationAmount).toFixed(2));
+        $("#txtPayLatepenalties").val(parseFloat(PenaltyAmount).toFixed(2));
+        var Panalties = $("#txtPayLatepenalties").val();
+        Emi_Amount = EmiAmount;
+        Outstanding_Amount = OutstandingAmt;
+        var Total = parseFloat(AmortizationAmount) + parseFloat(Panalties);
+        $("#txtPayTotal").val(parseFloat(Math.round(Total * 100) / 100).toFixed(2));
+        modalPay.style.display = "block";
+    }
+
+    function getptp(AppId, OutstandingAmt, Penalty) {
+
+        _ApplicationNo = AppId;
+        console.log("View Button of PTP : " + _ApplicationNo);
+        var PenaltyAmount = Penalty;
+        var AmortizationAmount = OutstandingAmt;
+        var modalPtp = document.getElementById('modalPTP');
+        $("#txtPtpAmortization").val(parseFloat(AmortizationAmount).toFixed(2));
+        $("#ptpapplicationno").val(_ApplicationNo);
+        $("#txtPtpLatepenalties").val(parseFloat(PenaltyAmount).toFixed(2));
+        var Panalties = $("#txtPtpLatepenalties").val();
+        var Total = parseFloat(AmortizationAmount) + parseFloat(Panalties);
+        $("#txtPtpTotal").val(parseFloat(Math.round(Total * 100) / 100).toFixed(2));
+        modalPtp.style.display = "block";
+    }
+
+    function getpartial(AppId, OutstandingAmt, Penalty) {
+        _ApplicationNo = AppId;
+        var AmortizationAmount = OutstandingAmt;
+        var PenaltyAmount = Penalty;
+        var modalPartial = document.getElementById('modalPartial');
+        $("#partialapplicationno").val(_ApplicationNo);
+        $("#paidamount").val(0);
+        var Paid = $("#paidamount").val();
+        $("#txtPartialAmortization").val(parseFloat(AmortizationAmount).toFixed(2));
+        _ActualAmortization = AmortizationAmount;
+        $("#txtPartialLatepenalties").val(parseFloat(PenaltyAmount).toFixed(2));
+        var Panalties = $("#txtPartialLatepenalties").val();
+        var Total = parseFloat(AmortizationAmount) + parseFloat(Panalties);
+        var Balance = parseFloat(Total) - parseFloat(Paid);
+        $("#balancepayment").val(parseFloat(Math.round(Balance * 100) / 100).toFixed(2));
+        $("#txtPartialTotal").val(parseFloat(Math.round(Total * 100) / 100).toFixed(2));
+        _PartialTotalAmount=parseFloat(Math.round(Total * 100) / 100).toFixed(2);
+        $("#balancepayment").val(0.00);
+        modalPartial.style.display = "block";
+    }
+
+    function CalculatePayModal() {
+        //
+        var AmortizationAmount = $("#txtPayAmortization").val();
+        var Panalties = $("#txtPayLatepenalties").val();
+        if (AmortizationAmount == "" || AmortizationAmount == NaN) {
+            AmortizationAmount = 0;
+        }
+        if (Panalties == "" || Panalties == NaN) {
+            Panalties = 0;
+        }
+        var Total = parseFloat(AmortizationAmount) + parseFloat(Panalties);
+        $("#txtPayTotal").val(parseFloat(Math.round(Total * 100) / 100).toFixed(2));
+    }
+
+    function CalculatePTPModal() {
+        var AmortizationAmount = $("#txtPtpAmortization").val();
+        var Panalties = $("#txtPtpLatepenalties").val();
+        if (AmortizationAmount == "" || AmortizationAmount == NaN) {
+            AmortizationAmount = 0;
+        }
+        if (Panalties == "" || Panalties == NaN) {
+            Panalties = 0;
+        }
+        var Total = parseFloat(AmortizationAmount) + parseFloat(Panalties);
+        $("#txtPtpTotal").val(parseFloat(Math.round(Total * 100) / 100).toFixed(2));
+    }
+
+    function CalculatePartialModal() {
+        var AmortizationAmount = $("#txtPartialAmortization").val();
+        var Panalties = $("#txtPartialLatepenalties").val();
+        if (AmortizationAmount == "" || AmortizationAmount == NaN) {
+            AmortizationAmount = 0;
+        }
+        if (Panalties == "" || Panalties == NaN) {
+            Panalties = 0;
+        }
+        var Total = parseFloat(AmortizationAmount) + parseFloat(Panalties);
+        var BalanceAmount = parseFloat(_PartialTotalAmount) - parseFloat(Total);
+        $("#balancepayment").val(parseFloat(Math.round(BalanceAmount * 100) / 100).toFixed(2));
+        $("#txtPartialTotal").val(parseFloat(Math.round(Total * 100) / 100).toFixed(2));
+    }
+
+    function CalculatePartialBalance() {
+        var AmortizationAmount = $("#txtPartialAmortization").val();
+        var Panalties = $("#txtPartialLatepenalties").val();
+        if (AmortizationAmount == "" || AmortizationAmount == NaN) {
+            AmortizationAmount = 0;
+        }
+        if (Panalties == "" || Panalties == NaN) {
+            Panalties = 0;
+        }
+        var Total = parseFloat(AmortizationAmount) + parseFloat(Panalties);
+        var Paid = $("#paidamount").val();
+        if (Paid == "" || Paid == NaN) {
+            Paid = 0;
+        }
+        var Balance = parseFloat(Total) - parseFloat(Paid);
+        $("#balancepayment").val(parseFloat(Math.round(Balance * 100) / 100).toFixed(2));
+    }
+
+
+    $("#btnReport").click(function (e) {
+        if(flag==true)
+        {
+            //getting values of current time for generating the file name
+            var dt = new Date();
+            var day = dt.getDate();
+            var month = dt.getMonth() + 1;
+            var year = dt.getFullYear();
+            var hour = dt.getHours();
+            var mins = dt.getMinutes();
+            var postfix = day + "." + month + "." + year + "_" + hour + "." + mins;
+            //creating a temporary HTML link element (they support setting file names)
+            var a = document.createElement('a');
+            //getting data from our div that contains the HTML table
+            var data_type = 'data:application/vnd.ms-excel';
+            var table_div = document.getElementById('divTable');
+            var table_html = table_div.outerHTML.replace(/ /g, '%20');
+            a.href = data_type + ', ' + table_html;
+            //setting the file name
+            a.download = 'LoanPaymentReport' + postfix + '.xls';
+            //triggering the function
+            a.click();
+            //just in case, prevent default behaviour
+            e.preventDefault();
+        }
+        else
+        {
+            alert("No Record Available to Export");
+        }
+
+    });
+
+
+
+    function InsertPay()
+    {
+
+        var isChecked = false;
+        if ($('#deferment').prop("checked")) {
+            isChecked = true;
+        }
+        else {
+            isChecked = false;
+        }
+        var AmortizationAmount = $("#txtPayAmortization").val();
+        var EmiDetailID = $("#txtEmiDetailId_Pay").val();
+        var penalty = $("#txtPayLatepenalties").val();
+        var total = $("#txtPayTotal").val();
+        var proofofpayment = $("#txtPayProofOfPayment").val();
+        var paymentchannel = $("#txtPayPaymentChannel").val();
+        var txtPayDate = $("#txtPayDate").val();
+
+        $.ajax({
+            data: {EmiId: _EmiId, ApplicationId: _ApplicationNo, total: total, proofofpayment: proofofpayment, paymentchannel: paymentchannel, penalty: penalty, isChecked: isChecked, EmiDetailID: EmiDetailID, AmortizationAmount: AmortizationAmount, PayDate: txtPayDate },
+                async:false,
+                url:'@Url.Action("AddPay", "Loanoverdue")',
+                success:function(data)
+                {
+
+                    if (data) {
+                        alert("Added successfull");
+                        var url = '@Url.Action("LoanPaymentBucket", "Loanoverdue")';
+                        window.location.href = url;
+
+                    }
+                    else {
+                        alert("Unsuccessfull");
+                    }
+
+                },
+            error: function (data) {
+                window.location.reload(1);
+            }
+});
+          $("#modalPay").toggle();
+    }
+
+
+
+    function InsertPTP()
+{
+_ApplicationNo;
+    var total = $("#txtPtpTotal").val();
+    var penality_amount = $("#txtPtpLatepenalties").val();
+    var reason = $("#ddlptpreason").val();
+    var remarks = $("#txtptpremarks").val();
+    var date = $("#txtPtpDate").val();
+
+        $.ajax({
+            data: { ApplicationId: _ApplicationNo, total: total, reason: reason, penality_amount: penality_amount, date: date, remarks: remarks },
+                async:false,
+                url:'@Url.Action("AddPTP", "Loanoverdue")',
+                success:function(data)
+                {
+
+                    if (data) {
+                        alert("Added successfull");
+                        var url = '@Url.Action("LoanPaymentBucket", "Loanoverdue")';
+                        window.location.href = url;
+                    }
+                    else {
+                        alert("Unsuccessfull");
+                    }
+
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+            $("#modalPTP").toggle();
+    }
+
+
+    function InsertPartial()
+    {
+        _ApplicationNo;
+        var ammortization = $("#txtPartialAmortization").val();
+        var penality_amount = $("#txtPartialLatepenalties").val();
+        var reason = $("#ddlpartialreason").val();
+        var remarks = $("#txtpartialremarks").val();
+        var balancepayment = $("#balancepayment").val();
+        var paidamount = $("#paidamount").val();
+        var paymentchannel = $("#paymentchannel").val();
+        var proofofpayment = $("#proofofpayment").val();
+        var date = $("#txtPartialDate").val();
+
+
+        $.ajax({
+            data: { ApplicationId: _ApplicationNo, ammortization: ammortization, reason: reason, remarks: remarks, proofofpayment: proofofpayment, paymentchannel: paymentchannel, penality_amount: penality_amount, date: date},
+                async:false,
+                url:'@Url.Action("AddPartial", "Loanoverdue")',
+                success:function(data)
+                {
+
+                    if (data) {
+
+                        alert("Added successfull");
+                        var url = '@Url.Action("LoanPaymentBucket", "Loanoverdue")' ;
+                        window.location.href = url;
+                    }
+                    else {
+                        alert("Unsuccessfull");
+                          var url = '@Url.Action("LoanPaymentBucket", "Loanoverdue")' ;
+                        window.location.href = url;
+                    }
+
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+         $("#modalPartial").toggle();
+    }
+    function RefreshPayModel() {
+        $('#modalPay').toggle();
+        window.location.reload();
+    }
+    function RefreshPTPModel() {
+        $('#modalPTP').toggle();
+        window.location.reload();
+    }
+
+    function RefreshPartialModel() {
+        $('#modalPartial').toggle();
+        window.location.reload();
+    }
+
+    function GetCalculatedAmountPay() {
+
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetCalcPenalityAmount", "Loanoverdue")',
+            data: { id: _ApplicationNo, Date: $('#txtPayDate').val() },
+            success: function (data) {
+                console.log(data);
+                if (data) {
+                    $("#txtPayAmortization").val(parseFloat(data._DueAmount).toFixed(2));
+                    $("#txtPayLatepenalties").val(parseFloat(parseFloat(data._Penality) + parseFloat(data.LateFee)).toFixed(2));
+                    var Total = parseFloat($("#txtPayAmortization").val()) + parseFloat(data._Penality) + parseFloat(data.LateFee);
+                    $("#txtPayTotal").val(parseFloat(Math.round(Total * 100) / 100).toFixed(2));
+                }
+                else {
+                    alert("Application Number does not exists");
+                }
+            }
+        });
+    };
+
+    function GetCalculatedAmountPTP(e) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetCalcPenalityAmount", "Loanoverdue")',
+                data: { id: _ApplicationNo, Date: $(e).val() },
+                success: function (data) {
+                    console.log(data);
+                    if (data) {
+                        $("#txtPtpAmortization").val(parseFloat(data._DueAmount));
+                        $("#txtPtpLatepenalties").val(parseFloat(data._Penality) + parseFloat(data.LateFee));
+                        var Total = parseFloat($("#txtPtpAmortization").val()) + parseFloat(data._Penality) + parseFloat(data.LateFee);
+                        $("#txtPtpTotal").val(Math.round(Total * 100) / 100);
+                    }
+                    else {
+                        alert("Application Number does not exists");
+                    }
+                }
+            });
+    };
+
+        function GetCalculatedAmountPartial(e) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetCalcPenalityAmount", "Loanoverdue")',
+                data: { id: _ApplicationNo, Date: $(e).val() },
+                success: function (data) {
+                    console.log(data);
+                    if (data) {
+                        $("#txtPartialAmortization").val(parseFloat(data._DueAmount).toFixed(2));
+                        $("#txtPartialLatepenalties").val(parseFloat(parseFloat(data._Penality) + parseFloat(data.LateFee)).toFixed(2));
+                        var Total = parseFloat($("#txtPartialAmortization").val()) + parseFloat(data._Penality) + parseFloat(data.LateFee);
+                        $("#txtPartialTotal").val(parseFloat(Math.round(Total * 100) / 100).toFixed(2));
+                    }
+                    else {
+                        alert("Application Number does not exists");
+                    }
+                }
+            });
+    };
+
+</script>
+<style>
+    .classname {
+        position: absolute;
+        z-index: 10;
+        top: 300px;
+        left: 600px;
+    }
+</style>

@@ -1,0 +1,579 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+@{
+    ViewBag.Title = "Edit Customer Info";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="row">
+    @using (Html.BeginForm("EditCustomerInfo", "Admin", FormMethod.Post))
+    {
+        <div class="pull-right "></div>
+        <div class="panel panel-primary clearfix">
+            <div class="panel-heading">
+                <h4>Personal Information<input type="button" class="btn btn-danger btn-flat pull-right" value="Back" onclick="location.href='@Url.Action("CustomerInfoBucket", "Admin")'" /></h4>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                @Html.HiddenFor(x => x.ApplicationNo)
+                                <label><span class="required-fields">*</span>First Name</label>
+                                @Html.TextBoxFor(x => x.First_Name, new { id = "txtFirstname", @class = "form-control CharcaterTextBox", @style = "text-transform: uppercase;", placeholder = "FIRST NAME", maxlength = "50", @onfocus = "RemoveValidation(this);" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label>Middle Name</label>
+                                @Html.TextBoxFor(x => x.Middle_Name, new { id = "txtMiddlename", @class = "form-control CharcaterTextBox", @style = "text-transform: uppercase", placeholder = "MIDDLE NAME", maxlength = "50", @onfocus = "RemoveValidation(this);" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label><span class="required-fields">*</span>Last Name</label>
+                                @Html.TextBoxFor(x => x.Last_Name, new { id = "txtLastname", @class = "form-control CharcaterTextBox", @style = "text-transform: uppercase", placeholder = "LAST NAME", maxlength = "50", @onfocus = "RemoveValidation(this);" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Date of Birth </label>
+                                @Html.TextBoxFor(x => x.DOB, new { id = "txtdateofbirth", @class = "form-control", placeholder = "dd-mm-yyyy", onfocus = "RemoveValidation(this);", maxlength = "10" })
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Email Address</label>
+                                <input type="text" id="txtpersonalemail" name="PersonalEmail" class="form-control EmailTextBox" placeholder="Email Address" onfocus="RemoveValidation(this);" value="@Model.PersonalEmail" maxlength="50" />
+                                <input type="hidden" value="texens" id="hdnpersonalmail" />
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Personal Contact No</label>
+                                @Html.TextBoxFor(x => x.Personal_ContactNo, new { id = "txtcontactno", placeholder = "XXXXXXXXXXX", @class = "form-control NumericTextBox mixinput", @readonly = "readonly", @onfocus = "RemoveValidation(this);" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <h4><label class="text-contrast"><span class="required-fields">*</span><u>Permanent Address</u></label></h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast">Province</label>
+                                <input type="text" id="txtProvince" name="Province" class="form-control" placeholder="Province" onfocus="RemoveValidation(this);" value="@Model.Province" maxlength="100" />
+                                @Html.HiddenFor(x => x.province_id, new { @id = "province_id", @name = "province_id" })
+                                @Html.ValidationMessageFor(x => x.Province, null, new { @class = "has-error" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast">City</label>
+                                <input type="text" id="txtCity" name="City_Name" class="form-control CharcaterTextBox" placeholder="Municipality or City" value="@Model.City_Name" onfocus="RemoveValidation(this);" maxlength="50" />
+                                @Html.HiddenFor(x => x.City, new { @id = "txtcityId", @name = "City" })
+                                <span id="ValidationMessageForCity" class="Validation-message"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast">Barangay</label>
+                                @Html.TextBoxFor(x => x.Barangay, new { id = "txtBarangay", @class = "form-control", placeholder = "Barangay", maxlength = "100", @onfocus = "RemoveValidation(this);" })
+                                @Html.HiddenFor(x => x.Barangay_id, new { @id = "txtBarangay_id", @name = "Barangay_id" })
+                                @Html.ValidationMessageFor(x => x.Barangay, null, new { @class = "has-error" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast">House Address</label>
+                                @Html.TextBoxFor(x => x.Address, new { id = "txtAddress", @class = "form-control col-12", placeholder = "House #/ Apartment #/ Floor/Condo Unit/Blk, Lot, Phase, SubdivisionName/ Compound/ Street", onfocus = "RemoveValidation(this);", maxlength = "100" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Home Phone No</label>
+                                <input type="text" id="txtHomeNo" class="form-control NumericTextBox" placeholder="Home Phone No" maxlength="11" onfocus="RemoveValidation(this);" name="HomePhone" value="@Model.HomePhone" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Civil Status</label>
+                                @Html.DropDownListFor(Model => Model.CivilStatus, new SelectList(ViewBag.CivilStatusData, "civilid", "civilname"), new { @class = "form-control", @id = "ddlcivilstatus", @onfocus = "RemoveValidation(this);" })
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary clearfix">
+            <div class="panel-heading">
+                <h4>Employment Details</h4>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Company/Business Name/Source of Income</label>
+                                <input type="text" id="txtcompanyname" class="form-control" placeholder="Name" name="CompanyName" onfocus="RemoveValidation(this);" value="@Model.CompanyName" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Company Address</label>
+                                <input type="text" id="txtcompanybranchaddress" class="form-control" placeholder="Address" onfocus="RemoveValidation(this);" name="CompanyAddress" value="@Model.CompanyAddress" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Job Title</label>
+                                <input type="text" id="txtposition" class="form-control CharcaterTextBox" placeholder="Job Title" name="Designation" value="@Model.Designation" onfocus="RemoveValidation(this);" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Gross Monthly Income with Allowance</label>
+                                <input type="text" id="txtgrossmonthlyincome" class="form-control NumericTextBox" placeholder="Gross Monthly Income  with Allowance" onfocus="RemoveValidation(this);" name="GrossIncome" value="@Model.GrossIncome" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Net Monthly Income</label>
+                                <input type="text" id="txtNetmonthlyincome" class="form-control NumericTextBox" placeholder="Net Monthly Income with Deduction" onfocus="RemoveValidation(this);" name="NetIncome" value="@Model.NetIncome" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Best Time to Call Morning</label>
+                                @Html.DropDownListFor(x => x.BestTimeToCallMorning_Id, new SelectList(Model.BestTimeToCallMorning, "Value", "Text"), new { @id = "ddl_BestTimeToCallMorning", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Best Time to Call Afternoon</label> @Html.DropDownListFor(x => x.BestTimeToCallNoon_Id, new SelectList(Model.BestTimeToCallNoon, "Value", "Text"), new { @id = "ddl_BestTimeToCallNoon", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Pay Date 1</label>
+                                @Html.DropDownListFor(x => x.PayDate1, new SelectList(Model.PayDateList, "Value", "Text"), new { @id = "ddlPayDate1", @class = "form-control", @style = "width: 60%;", @onfocus = "RemoveValidation(this);" })
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Pay Date 2</label>
+                                @Html.DropDownListFor(x => x.PayDate2, new SelectList(Model.PayDate2List, "Value", "Text"), new { @id = "ddlPayDate2", @class = "form-control", @style = "width: 60%;", @onfocus = "RemoveValidation(this);" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary clearfix">
+            <div class="panel-heading">
+                <h4>Loan Details</h4>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-12">
+
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Bank Name</label>
+                                @Html.DropDownListFor(x => x.BankName, new SelectList(Model.BankMasterModelList, "bank_name_with_bank_code", "bank_name_with_bank_code"), "--Select Bank--", new { @class = "form-control", @id = "ddlBank", @onchange = "GetBankName();" })
+
+                                <input type="hidden" id="txtbank_id" name="Bank" />
+                                @Html.ValidationMessageFor(x => x.BankName, null, new { @class = "has-error" })
+                                <label class="has-error" id="txtBank_lbl"></label>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label class="text-contrast"><span class="required-fields">*</span>Account Number</label>
+                                <input type="text" id="txtAccountNo" class="form-control NumericTextBox" placeholder="Account Number" onfocus="RemoveValidation(this);" name="BankAccNo" value="@Model.BankAccNo" maxlength="16" />
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="panel-footer">
+                <input type="submit" id="updatebtn" class="btn btn-primary btn-flat center-block submit-btn" value="Edit Customer Info" onclick="return update_click();" />
+            </div>
+        </div>
+    }
+</div>
+<link rel="stylesheet" href="~/Content/jquery-ui.css">
+<script src="~/Content/js/jquery.js"></script>
+<script src="~/Content/js/jquery-ui.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        console.log("ContactPrefix : " +'@Model.ContactPrefix');
+        $("#ddlStateList").val('@Model.ContactPrefix');
+        $("#MsgDiv").show(500);
+          $("#txtCity").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: '@(Url.Action("City", "Admin"))',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term, ProvinceID: $("#province_id").val() },
+                    success: function (data) {
+                        console.log(data);
+                        if (data != null) {
+                            response($.map(data, function (item) {
+                                console.log(item);
+                                $("#txtcityId").val(item.cityid);
+                                return { label: item.cityname, value: item.cityname, Id: item.cityid };
+                            }));
+                        }
+                        else {
+                            window.location.reload(1);
+                        }
+                    },
+                    error: function (data) {
+                        //
+                        window.location.reload(1);
+                        $('html,body').animate({ scrollTop: $("#MsgDiv").offset().top }, 800);
+                    }
+                });
+            },
+            select: function (event, ui) {
+                console.log("ui : " + ui);
+                console.log("ui.item : " + ui.item);
+                console.log("City_Id : " + ui.item.Id);
+                $("#txtcityId").val(ui.item.Id);
+                $("#txtBarangay_id").val('0');
+                $("#txtBarangay").val('');
+            }
+        });
+    $("#txtBarangay").autocomplete({
+            source: function (request, response) {
+                console.log('%^&&^&', request.term);
+                $.ajax({
+                    url: '@(Url.Action("Barangay", "Admin"))',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term, CityID: $("#txtcityId").val() },
+                    success: function (data) {
+                        if (data != null) {
+                            response($.map(data, function (item) {
+                                console.log(item);
+                                $("#txtBarangay_id").val(item.Id);
+                                return { label: item.Barangay_Name, value: item.Barangay_Name, Id: item.Id };
+                            }));
+                        }
+                        else {
+                            window.location.reload(1);
+                        }
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+        },
+        select: function (event, ui) {
+            console.log("ui : " + ui);
+            console.log("ui.item : " + ui.item);
+            console.log("Barangay_id : " + ui.item.Id);
+            $("#txtBarangay_id").val(ui.item.Id);
+        }
+        });
+        $("#txtProvince").autocomplete({
+            source: function (request, response) {
+                console.log('%^&&^&', request.term);
+                $.ajax({
+                    url: '@(Url.Action("Province", "Admin"))',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term },
+                    success: function (data) {
+                        if (data != null) {
+                            response($.map(data, function (item) {
+                                $("#province_id").val(item.Id);
+                                return { label: item.Province_Name, value: item.Province_Name, Id: item.Id };
+                            }));
+                        }
+                        else {
+                            window.location.reload(1);
+                        }
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+            },
+            select: function (event, ui) {
+                console.log("ui : " + ui);
+                console.log("ui.item : " + ui.item);
+                console.log("Province_Id : " + ui.item.Id);
+                $("#province_id").val(ui.item.Id);
+                $("#txtcityId").val('0');
+                $("#txtCity").val('');
+                $("#txtBarangay_id").val('0');
+                $("#txtBarangay").val('');
+            }
+        });
+
+
+        $("#txtBankName").autocomplete({
+            source: function (request, response) {
+                console.log('%^&&^&', request.term);
+                $.ajax({
+                    url: '@(Url.Action("BankName", "Admin"))',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term },
+                    success: function (data) {
+                        if (data != null) {
+                            response($.map(data, function (item) {
+                                console.log(item);
+                                $("#txtbank_id").val(item.bank_id);
+                                return { label: item.bank_name, value: item.bank_name };
+                            }));
+                        }
+                        else {
+                            window.location.reload(1);
+                        }
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+            },
+        });
+    });
+    function update_click() {
+        var flag = true;
+        $("#hdnpersonalmail").val($("#txtpersonalemail").val());
+        var FirstName = $("#txtFirstname").val();
+        var LastName = $("#txtLastname").val();
+        var personalemail = $("#txtpersonalemail").val();
+        var ContactPrefix = $("#ddlStateList :selected").text();
+        var contactno = $("#txtcontactno").val();
+        contactno = ContactPrefix + contactno;
+        var flag = 0;
+        var Address = $("#txtAddress").val();
+        var city = $("#txtCity").val();
+        var city_id = $("#txtcityId").val();
+        var dateofbirth = $("#txtdateofbirth").val();
+        var civilstatus = $("#ddlcivilstatus option:selected").val();
+        var companyname = $("#txtcompanyname").val();
+        var bankName = $("#txtBankName").val();
+        var accountNo = $("#txtAccountNo").val();
+        var companybranchaddress = $("#txtcompanybranchaddress").val();
+        var homeNo = $("#txtHomeNo").val();
+        var position = $("#txtposition").val();
+        var grossmonthlyincome = $("#txtgrossmonthlyincome").val();
+        var netmonthlyincome = $("#txtNetmonthlyincome").val();
+        var paydate1 = $("#ddlPayDate1").val();
+        var paydate2 = $("#ddlPayDate2").val();
+        var persoanlmailid = $("#hdnpersonalmail").val();
+        var Barangay = $("#txtBarangay").val();
+        var Province = $("#txtProvince").val();
+        var Schedule = $("#txtBTC").val();
+        var MsgStr = "Please Enter Mandatory Field";
+        var flag = 0;
+        if (Address == '') {
+            $("#txtAddress").addClass('has-error');
+            flag++;
+        }
+        if (city == '') {
+            $("#txtCity").addClass('has-error');
+            flag++;
+        }
+        if (dateofbirth == '') {
+            $("#txtdateofbirth").addClass('has-error');
+            flag++;
+        }
+        if (homeNo == '') {
+            $("#txtHomeNo").addClass('has-error');
+            flag++;
+        }
+        if (civilstatus == '0') {
+            $("#ddlcivilstatus").addClass('has-error');
+            flag++;
+        }
+        if (Barangay == '') {
+            $("#txtBarangay").addClass('has-error');
+            flag++;
+        }
+        if (Province == '') {
+            $("#txtProvince").addClass('has-error');
+            flag++;
+        }
+        if (companyname == '') {
+            $("#txtcompanyname").addClass('has-error');
+            flag++;
+        }
+        if (companybranchaddress == '') {
+            $("#txtcompanybranchaddress").addClass('has-error');
+            flag++;
+        }
+        if (bankName == '') {
+            $("#txtBankName").addClass('has-error');
+            flag++;
+        }
+        if (accountNo == '') {
+            $("#txtAccountNo").addClass('has-error');
+            flag++;
+        }
+        if (Schedule == '') {
+            $("#txtBTC").addClass('has-error');
+            flag++;
+        }
+        if (grossmonthlyincome == '' || grossmonthlyincome == '0') {
+            $("#txtgrossmonthlyincome").addClass('has-error');
+            flag++;
+        }
+        if (netmonthlyincome == '' || netmonthlyincome == '0') {
+            $("#txtNetmonthlyincome").addClass('has-error');
+            flag++;
+        }
+        if (paydate1 == '' || paydate1 == '0') {
+            $("#ddlPayDate1").addClass('has-error');
+            flag++;
+        }
+        if (paydate2 == '' || paydate2 == '0') {
+            $("#ddlPayDate2").addClass('has-error');
+            flag++;
+        }
+        if (personalemail == '') {
+                $("#txtpersonalemail").addClass('has-error');
+                flag++;
+            }
+        //if (contactno.length !=10) {
+        //        $("#txtcontactno").addClass('has-error');
+        //        flag++;
+        //}
+
+        if (flag > 0) {
+            $('html,body').animate({ scrollTop: $("html").offset().top }, 800);
+            return false;
+        }
+    }
+    //Datepicker
+    $("#txtdateofbirth").datepicker({
+        dateFormat: "dd-mm-yy",
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-100:+0",
+        maxDate: new Date()
+    });
+
+    function isValidEmailAddress(email) {
+        var filter = /^[\w\-\.\+]+\@@[a-zA-Z0-9\.\-]+\.[a-zA-z0-9]{2,4}$/;
+        if (filter.test(email)) {
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    function checkBank() {
+        var bank = $('#txtBankName').val();
+             $.ajax({
+                    type: "POST",
+                 url: '@(Url.Action("CheckBank", "Admin"))',
+                 data: { bank: bank },
+                 success: function (data) {
+                     if (data != null) {
+                         if (data) {
+                             return true;
+                         }
+                         else {
+                             $("#txtBankName").addClass('has-error');
+                             $('#txtBankName').val('');
+                             $('#txtBank_lbl').text("Please Enter Valid Bank Name");
+                             return false;
+                         }
+                     }
+                     else {
+                         window.location.reload(1);
+                     }
+                 },
+                 error: function (data) {
+                     window.location.reload(1);
+                 }
+
+
+             });
+    }
+    function RemoveValidation(obj) {
+
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+        $("#" + id + "_lbl").text('');
+    }
+
+
+
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+</style>

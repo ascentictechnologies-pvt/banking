@@ -1,0 +1,814 @@
+﻿@using System.Configuration;
+@model Loan_CRM.Areas.Collector.Models.PaymentInformation
+@{
+    ViewBag.Title = "Loan Detail";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+}
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="~/Content/js/ValidateNumericText.js"></script>
+<script src="~/Content/js/ValidateCharcterText.js"></script>
+<script src="~/Content/js/emailvalidation.js"></script>
+<script src="~/Content/js/jquery.js"></script>
+<script src="~/Content/js/jquery-ui.js"></script>
+<link href="~/Content/jquery-ui.css" rel="stylesheet">
+<style>
+    .mydiv {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        /*width: 30em;
+        height: 18em;*/
+        margin-top: -9em; /*set to a negative number 1/2 of your height*/
+        margin-left: -15em; /*set to a negative number 1/2 of your width*/
+        /*border: 1px solid #ccc;
+        background-color: #f3f3f3;*/
+    }
+</style>
+
+@using (Html.BeginForm("LoanDetail", "Loanoverdue", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+    <div id="loadingDiv">
+        <img src="../../../Content/images/Loader.gif" class="mydiv" loop=infinite />
+    </div>
+    <div id="modalNotify" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="RefreshNotifyModel()">&times;</span>
+                <h3>Notification Template</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Name</label>
+                    </div>
+                    <div class="col-md-6">
+                        @{
+                            if (ViewBag.NotificationTemplateList != null)
+                            {
+                                @Html.DropDownListFor(Model => Model.templatename, new SelectList(ViewBag.NotificationTemplateList, "id", "NotificationTemplateName"), new { @class = "form-control", @id = "ddlNotificationtemplate", @onchange = "GetNotificationValue();" })
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Description</label>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea class="form-control" id="txtnotifydescription" readonly></textarea>
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Definition</label>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea class="form-control" id="txtnotifydefinition" readonly></textarea>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary btn-flat" id="btnPaySubmit" value="Send" onclick="SendNotify()" />
+                <input type="button" class="btn btn-danger btn-flat" id="btnPayCancel" value="Cancel" onclick="RefreshNotifyModel()" />
+            </div>
+        </div>
+    </div>
+    <div class="content-wrapper">
+        <div class="container" id="mainContainer">
+
+            <section class="content">
+                <div class="col-md-7">
+                    <div class="box box-default">
+                        <div class="col-md-12">
+                            <table class="table table-bordered table-striped">
+                                <tr>
+                                    <th colspan="2" style="text-align:center;">Customer Details</th>
+                                </tr>
+                                <tr>
+                                    <td style="width:263px">Name</td>
+                                    <td style="width:263px"><input type="text" class="form-control" id="txtname" placeholder="Name" readonly="readonly" value="@Model.Name" /></td>
+
+                                </tr>
+                                <tr>
+                                    <td style="width:263px">Reloan Count</td>
+                                    <td style="width:263px"><input type="text" class="form-control" id="reloancount" placeholder="Reloan Count" readonly="readonly" value="@Model.ReloanCount" /></td>
+
+                                </tr>
+                                <tr>
+                                    <td>Application No</td>
+
+                                    <td> <input type="text" class="form-control" readonly="readonly" placeholder="Application No" value="@Model.applicationno" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Contract No</td>
+                                    <td><input type="text" class="form-control" placeholder="Contract No" readonly="readonly" value="@Model.Contractno" /></td>
+
+                                </tr>
+                                <tr>
+                                    <td>Reference No</td>
+                                    <td><input type="text" class="form-control" placeholder="Reference No" readonly="readonly" value="@Model.Referenceno" /></td>
+
+                                </tr>
+
+                                <tr>
+                                    <td>Date of Disbursemant</td>
+                                    <td><input type="text" class="form-control" placeholder="Date of Disbursemant" readonly="readonly" value="@Model.disbursemant" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Due Date</td>
+                                    <td><input type="text" class="form-control" id="currentdate" placeholder="Due Date" readonly="readonly" value="@Model.Dueedate" /></td>
+
+                                </tr>
+                                <tr>
+                                    <td>Term</td>
+                                    <td><input type="text" class="form-control" placeholder="Term" readonly="readonly" value="@Model.Term" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Principal</td>
+                                    <td><input type="text" class="form-control" placeholder="Principal" readonly="readonly" value="@Model.principal" /></td>
+                                </tr>
+
+                                <tr>
+                                    <td>Amortization</td>
+                                    <td><input type="text" class="form-control" placeholder="Amortization" readonly="readonly" value="@Model.amortization" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Outstanding</td>
+                                    <td><input type="text" class="form-control" readonly="readonly" placeholder="Outstanding" value="@Model.PayableAmount " /></td>
+                                </tr>
+                                <tr>
+                                    <td>Outstanding Late Penalties</td>
+                                    <td><input type="text" class="form-control" readonly="readonly" placeholder="Outstanding Late Penalties" value="@(Convert.ToDecimal(Model.LateFee)+Convert.ToDecimal(Model._Penality))" /></td>
+                                </tr>
+                                <tr>
+                                    <td>Add Contact Number</td>
+                                    <td>
+                                        <select id="ddlStateList" class="form-control col-md-3 mixselect">
+                                            <option value="CP">CP</option>
+                                            <option value="Home">Home</option>
+                                            <option value="Office">Office</option>
+                                            <option value="Refrence1">Reference 1</option>
+                                            <option value="Reference2">Reference 2</option>
+                                        </select>
+                                        <input class="form-control NumericTextBox mixinput" id="txtcontactno" maxlength="11" name="personalcontactno" onfocus="RemoveValidation(this);" placeholder="XXXXXXXXXXX" type="text">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>PTP</td>
+                                    <td>
+                                        <input type="text" id="idptp" class="form-control" placeholder="PTP" name="ptpamount" readonly onfocus="RemoveValidation(this);" value="@Model.ptpdate" />
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5" style="margin-top: -5px;">
+                    <div style="margin-top: 6px;">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <th colspan="3" style="text-align:center;">References</th>
+                                <th colspan="2" style="text-align:center;">Action</th>
+                            </tr>
+                            <tr>
+                                <td>@Model.familyname1</td>
+                                <td>@Model.familyrelation1</td>
+                                <td>
+                                    @{
+                                        if (Model.familycontact1 != "" && Model.familycontact1 != null)
+                                        {
+                                            <input type='button' value='Call' class='btn btn-danger' id='btnCall' onclick='ClickCall("@Model.familycontact1")' />
+
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>@Model.familyname2</td>
+                                <td>@Model.familyrelation2</td>
+                                <td>
+                                    @{
+                                        if (Model.familycontact2 != "" && Model.familycontact2 != null)
+                                        {
+                                            <input type='button' value='Call' class='btn btn-danger' id='btnCall' onclick='ClickCall("@Model.familycontact2")' />
+                                        }
+                                    }
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Remarks</td>
+                                <td>
+                                    <input type="text" placeholder="Enter Remarks" id="txt_Remark" class="form-control" />
+                                </td>
+                                <td> <input type="button" id="btn_RemarkSave" value="Save Remarks" class="btn btn-primary" /></td>
+                            </tr>
+                            @{
+                                <tr>
+                                    <th colspan="5" style="text-align:center">Remark History</th>
+                                </tr>
+                                <tr>
+                                    <th>Application No</th>
+                                    <th>Date</th>
+                                    <th>Remark</th>
+                                    <th>Remark Given By</th>
+                                    <th>Remark Identifier</th>
+                                </tr>
+                                if (Model.RemarkModelList != null && Model.RemarkModelList.Count > 0)
+                                {
+                                    foreach (var item in Model.RemarkModelList)
+                                    {
+                                        var remarkOn = item.createdon.ToString("dd-MM-yyyy hh:mm tt");
+                                        <tr>
+                                            <td>@item.application_id</td>
+                                            <td>@remarkOn</td>
+                                            <td>@item.remark</td>
+                                            <td>@item.createdbyname</td>
+                                            <td>@item.remarkidentifier</td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </table>
+                    </div>
+                    <div class="col-md-12" style="margin-bottom:15px;">
+                        <div class="col-md-6">
+                            <label>Checker</label>
+                            <input type="text" class="form-control" readonly value="@Model.checker" />
+                        </div>
+                        <div class="col-md-6">
+                            <label>Verifier</label>
+                            <input type="text" class="form-control" readonly value="@Model.verifier" />
+                        </div>
+                    </div>
+
+
+                    <div class="row" style="padding-top:2%;">
+                        <div class="col-md-12">
+
+                            <button type="button" class="btn btn-primary btn-flat" onclick="AddContact();" id="btn_Save">Save</button>
+                            <button type="button" class="btn btn-primary btn-flat" id="btn_Back">Back</button>
+                            @if (Convert.ToString(TempData["ActionName"]) == "DefaulterBucket")
+                            {
+                                <input type="button" class="btn btn-primary btn-flat" id="btn_LOD" value="LOD" />
+                                <input type="button" class="btn btn-primary btn-flat" id="btn_RemoveDefaulter" value="Remove Defaulter" />
+                            }
+                            @if (Convert.ToString(TempData["ActionName"]) == "LoanPaymentBucket")
+                            {
+                                <input type='button' value='LOD' class='btn btn-danger' id='btnLOD' onclick='ClickLOD("@Model.applicationno")' />
+
+                                <button type="button" style="display:none" class="btn btn-primary btn-flat" id="btn_Default">Default</button>
+                            }
+
+
+                        </div>
+                    </div>
+
+                    <div class="row" style="padding-top:2%;">
+                        <div class="col-md-12">
+                            @if (!String.IsNullOrWhiteSpace(Model.EmailId))
+                            {
+                                <a class="btn btn-primary" href='@Url.Action("GetOldData", "Home", new { Area = "" })?Emailid=@Model.EmailId' title="Offline Loan History" target="_blank">Offline Loan History</a>
+                            }
+                            <input type='button' value='Payment History' class='btn btn-success' id='btnPayment' onclick='PaymentHistory("@Model.applicationno")' />
+                            <input type='button' value='Loan History' class='btn btn-success' id='btnLoanHistory' onclick='requestloanhistory("@Model.UserID","@Model.applicationno");' />
+                            <button type="button" class="btn btn-primary btn-flat" id="btn_notification">Manual Notify</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    var UrlLink = '';
+    function CurrntDate()
+    {
+        var fullDate = new Date()
+        var twoDigitMonth = ((fullDate.getMonth().length+1) === 1)? (fullDate.getMonth()+1) : '0' + (fullDate.getMonth()+1);
+        var twoDigitDate=(fullDate.getDate().length==1) ? fullDate.getDate() : '0'+(fullDate.getDate());
+        var currentDate = twoDigitDate + "-" + twoDigitMonth + "-" + fullDate.getFullYear();
+        return currentDate;
+    }
+    function parseDate(str) {
+        var mdy = String(str).split('-');
+        return new Date(mdy[2], mdy[1]-1, mdy[0]);
+    }
+
+    function daydiff(first, second) {
+        return Math.round((second-first)/(1000*60*60*24));
+    }
+    function LateFeeFunc()
+    {
+        //
+        var Days=daydiff(parseDate('@Model.Dueedate'), parseDate(CurrntDate()))
+        var LateFee=0;
+        if(Days>0 && @Convert.ToDecimal(Model.balanceamt) > 0.00)
+        {
+            var Term='@Model.termtype';
+            var arr=Term.split(',');
+            Term=arr[0];
+            var WeeklyLateFee=@ConfigurationManager.AppSettings["WeeklyFee"];
+            var BiWeeklyLateFee=@ConfigurationManager.AppSettings["BiWeeklyFee"];
+            var MonthlyLateFee=@ConfigurationManager.AppSettings["MonthlyFee"];
+            if(Term=='Weekly')
+            {
+                var NumberofWeek=parseInt(Days/7);
+                var NumberOfDays = parseInt(Days % 7);
+                if (NumberOfDays > 0) {
+                    NumberofMonth = NumberofMonth + 1;
+                }
+                if(NumberOfDays>0 && NumberofWeek==0)
+                {
+                    LateFee=WeeklyLateFee;
+                }
+                if(NumberOfDays>0 && NumberofWeek>0)
+                {
+                    NumberofWeek=NumberofWeek+1;
+                    LateFee =NumberofWeek* WeeklyLateFee;
+                }
+                if(NumberOfDays==0 && NumberofWeek>0)
+                {
+                    LateFee =NumberofWeek* WeeklyLateFee;
+                }
+            }
+            if(Term=='Bi-Weekly')
+            {
+
+                var NumberofBiWeek=parseInt(Days/14);
+                var NumberOfDays = parseInt(Days % 14);
+                if (NumberOfDays > 0) {
+                    NumberofMonth = NumberofMonth + 1;
+                }
+                if(NumberOfDays>0 && NumberofBiWeek==0)
+                {
+                    LateFee=BiWeeklyLateFee;
+                }
+                if(NumberOfDays>0 && NumberofBiWeek>0)
+                {
+                    NumberofBiWeek=NumberofBiWeek+1;
+                    LateFee =NumberofBiWeek* BiWeeklyLateFee;
+                }
+                if(NumberOfDays==0 && NumberofBiWeek>0)
+                {
+                    LateFee =NumberofBiWeek* BiWeeklyLateFee;
+                }
+            }
+            if(Term=='Monthly')
+            {
+                var NumberofMonth=parseInt(Days/28);
+                var NumberOfDays = parseInt(Days % 28);
+                if (NumberOfDays > 0) {
+                    NumberofMonth = NumberofMonth + 1;
+                }
+                if(NumberOfDays>0 && NumberofMonth==0)
+                {
+                    LateFee=MonthlyLateFee;
+                }
+                if(NumberOfDays>0 && NumberofMonth>0)
+                {
+                    NumberofMonth=NumberofMonth+1;
+                    LateFee =NumberofMonth* MonthlyLateFee;
+                }
+                if(NumberOfDays==0 && NumberofMonth>0)
+                {
+                    LateFee =NumberofMonth* MonthlyLateFee;
+                }
+            }
+            return LateFee;
+        }
+        else
+        {
+            return LateFee;
+        }
+
+    }
+
+    $(document).ready(function () {
+        $("#btn_notification").click(function () {
+            NotifyModal();
+        });
+            $("#loadingDiv").hide();
+        $("#btn_LOD").click(function(e){
+
+            var Days=daydiff(parseDate('@Model.Dueedate'), parseDate(CurrntDate()))
+            var LateFee=LateFeeFunc();
+            var AppId=@Request.QueryString["Id"];
+
+            var Penality = ((parseFloat(@Model.amortization)) * 0.01) * Days;
+            var TotalAmount = Math.round(parseFloat(@Model.PayableAmount) * 100) / 100;
+            if (TotalAmount == null || TotalAmount == undefined) {
+
+                TotalAmount = 0;
+            }
+            if(LateFee!='')
+            {
+                $.ajax({
+                    data: { AppId: AppId, Name: '@Model.Name', ContractNumber: '@Model.Contractno', Date: '@Model.disbursemant', OutstandingBalance: '@Model.outstanding', Penality:@Model._Penality, LateFee:@Model.LateFee, TotalAmount: TotalAmount, EmailId: '@Model.EmailId', emidate: '@Model.Dueedate' },
+                    type:"GET",
+                    url:'@Url.Action("LOD_SMS_MAIL", "Loanoverdue")',
+                    success:function(data)
+                    {
+                        if(data!=null)
+                        {
+                            alert("Letter of Demand is sent successfully..!");
+                            window.location = "Download?FilePath=" + data + "&FileName=LOD";
+                            e.preventDefault();
+                            window.location.href = data;
+                        }
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+            }
+            else
+            {
+                alert("Can't Send Letter of Demand due insufficient Late Fee");
+            }
+        });
+
+
+        $("#btn_Default").click(function(){
+            var AppId=@Request.QueryString["Id"];
+            $.ajax({
+                data:{AppId:AppId},
+                url:'@Url.Action("MakeDefaulter", "Loanoverdue")',
+                success:function(data)
+                {
+                    if(data)
+                    {
+                        alert("Succussfully added in Defaulter List");
+                        window.location.href = '@Url.Action("LoanPaymentBucket", "Loanoverdue")';
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        });
+            $("#btn_Back").click(function () {
+            var AppId=@Request.QueryString["Id"];
+            var ActionName='@Request.QueryString["Actionname"]';
+            if(ActionName=="DefaulterBucket")
+            {
+                window.location.href = '@Url.Action("DefaulterBucket", "Loanoverdue")';
+            }
+            else if (ActionName == "LoanPaymentSearch")
+            {
+                 window.location.href = '@Url.Action("LoanPaymentBucket", "Loanoverdue")';
+            }
+            else
+            {
+                $.ajax({
+                    data:{AppId:AppId},
+                    url:'@Url.Action("UpdateIsPickedForCollector", "Loanoverdue")',
+                    success:function(data)
+                    {
+                        if(data)
+                        {
+                            window.location.href = '@Url.Action(Request.QueryString["Actionname"], "Loanoverdue")';
+                        }
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+            }
+        });
+        $("#btn_RemoveDefaulter").click(function(){
+            var AppId=@Request.QueryString["Id"];
+            $.ajax({
+                data:{AppId:AppId},
+                url:'@Url.Action("RemoveDefaulter", "Loanoverdue")',
+                success:function(data)
+                {
+                    if(data)
+                    {
+                        alert("Succussfully Removed in Defaulter List");
+                        window.location.href = '@Url.Action("DefaulterBucket", "Loanoverdue")';
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        });
+
+        $("#verification_btn").click(function () {
+            url = '@Url.Action("WindowVerifier", "WindowVerifier", new { Area = "Collector" })?Id=@Model.applicationno';
+            window.open(url);
+        });
+
+        $("#next_btn").click(function () {
+            var number = "@Model.personalcontactno";
+            var final = number.split(',');
+            var count = parseInt(final.length);
+            var phoneno = final[count-1];
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("ClicktoCall", "LoanRequestBucket", new { area = "Checker" })',
+                dataType: 'json',
+                data: { ContactNumber: phoneno },
+                success: function (result) {
+                    console.log(result);
+                    if (result) {
+                        availability = false;
+                    }
+    else {
+                        window.location.reload(1);
+                    }
+                }
+            });
+
+        });
+    });
+    $("#idpromisetopay").datepicker({
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-100:+0",
+        dateFormat: "dd-mm-yy",
+        minDate: new Date()
+    });
+
+    $('#iddatepaid').each(function () {
+        $(this).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            dateFormat: "dd-mm-yy",
+            maxDate: new Date()
+        });
+    });
+
+    $("#btn_RemarkSave").click(function () {
+            var Remark=$("#txt_Remark").val().trim();
+            var flag=true;
+            if(Remark=='')
+            {
+                $("#txt_Remark").addClass('has-error');
+                flag=false;
+
+            }
+            if(flag==true)
+            {
+                var ApplicationId=@Model.applicationno;
+                $.ajax({
+                    data:{ApplicationId:ApplicationId,Remark:Remark},
+                    url:'@Url.Action("InsertRemark", "Loanoverdue")',
+                    success:function(data)
+                    {
+                        if(data)
+                        {
+                            alert("Remark Inserted Successfully");
+                            var url = '@Url.Action("LoanDetail", "Loanoverdue")?Id=' + ApplicationId + '&Actionname=LoanPaymentBucket';
+        window.location.href = url;
+                        }
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+            }
+        });
+
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+
+    function ClickCall(ContactNo) {
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("ClicktoCall", "LoanRequestBucket", new { area = "Checker" })',
+                dataType: 'json',
+                data: { ContactNumber: ContactNo },
+                success: function (result) {
+                    console.log(result);
+                    if (result) {
+                        availability = false;
+                    }
+    else {
+                        window.location.reload(1);
+                    }
+                }
+            });
+    }
+
+    function ClickLOD(applicationno) {
+        console.log("AppId:" + applicationno + " Name: " + "@Model.Name" + "ContractNumber:" + "@Model.Contractno" + "Date:" + "@Model.disbursemant " + "OutstandingBalance: " + "@Model._DueAmount " + "Penality: " + "@Model.LateFee " + "LateFee: " + "@Model._Penality " + "TotalAmount: " + "@Model.PayableAmount " + "EmailId:  " +"@Model.EmailId");
+        $.ajax({
+            data: { AppId: applicationno, Name: '@Model.Name', ContractNumber: '@Model.Contractno', Date: '@Model.disbursemant', OutstandingBalance: @Model.outstanding, Penality: @Model.LateFee, LateFee: @Model._Penality, TotalAmount: @Model.PayableAmount, EmailId: '@Model.EmailId', emidate: '@Model.Dueedate' },
+            type: "GET",
+            url: '@Url.Action("LOD_SMS_MAIL", "Loanoverdue")',
+            datatype: 'json',
+            beforeSend: function () {
+                $("#loadingDiv").show();
+                $("#mainContainer").hide();
+            },
+            success: function (data) {
+                if (data != null) {
+                    //
+                    alert("Letter of Demand is sent successfully..!");
+                    window.location = "Download?FilePath=" + data + "&FileName=LOD";
+                }
+                $("#loadingDiv").hide();
+                $("#mainContainer").show();
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+
+        });
+    }
+     function PaymentHistory(obj) {
+         var url = '@Url.Action("PaymentHistory", "Loanoverdue")?Id=' + obj + '&ActionName=@Request.QueryString["ActionName"]';
+         console.log(url);
+        window.location.href = url;
+    }
+
+    function InsertPaymentClick() {
+        var Name = $("#txtname").val().trim();
+        var ApplicationID = $("#txtapplicationid").val().trim();
+
+        var DatePaid = $("#txtdatepaid").val().trim();
+        if (DatePaid != '') {
+            var arr = DatePaid.split('-');
+            DatePaid = arr[1] + '-' + arr[0] + '-' + arr[2];
+        }
+        var AmountPaid = $("#txtamountpaid").val().trim();
+        var PaymentChannel = $("#txtpaymentchennel").val().trim();
+        var Proofofpayment = $("#txtproofofpayment").val().trim();
+        var Besttimetocallback = $("#txtbesttimetocallback").val().trim();
+        var PromiseToPay = $("#txtpromisetopay").val().trim();
+        var AmountPTP = $("#txtamountptp").val().trim();
+        var ReasonofPayment = $("#txtreasonofnopayment").val().trim();
+        var OtherRemarks = $("#txtotherremarks").val().trim();
+        var ContactNo = $("#txtcontactno").val().trim();
+
+        var flag = 0;
+        if (Name == '') {
+            $("#txtname").addClass('has-error');
+            flag++;
+        }
+        if (ApplicationID == '') {
+            $("#txtapplicationid").addClass('has-error');
+            flag++;
+        }
+        if (DatePaid == '') {
+            $("#txtdatepaid").addClass('has-error');
+            flag++;
+        }
+        if (AmountPaid == '') {
+            $("#txtamountpaid").addClass('has-error');
+            flag++;
+        }
+        if (flag > 0) {
+            return false;
+        }
+else {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("InsertPaymentDetail", "Loanoverdue")',
+                data: { ApplicationID: ApplicationID, emi_date: DatePaid, emi_amount: AmountPaid, emi_rate: 0, emi_principal: 0, updatedby: Name },
+                success: function (response) {
+                    if (response != null) {
+                        alert("Data Saved Successfully");
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            })
+
+        }
+    }
+
+
+    $('#txtdatepaid').datepicker({
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-100:+0",
+        dateFormat: "dd-mm-yy",
+        maxDate: new Date()
+    });
+    function AddContact()
+    {
+        //
+        var number = $("#txtcontactno").val();
+        var column = $("#ddlStateList").val();
+        var ApplicationId =@Model.applicationno;
+        if (number.trim() != "") {
+            $.ajax({
+                data: { ApplicationId: ApplicationId, number: number, column: column },
+                async: false,
+                url: '@Url.Action("AddContact", "Loanoverdue")',
+                success: function (data) {
+
+                    if (data) {
+
+                        alert("Added successfull");
+                        var url = '@Url.Action("LoanDetail", "Loanoverdue")?Id=' + ApplicationId + '&Actionname=LoanPaymentBucket';
+                        window.location.href = url;
+                    }
+                    else {
+                        alert("Contact Insertion Unsuccessful!");
+                    }
+
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+        else {
+            alert("Please enter contact in Add Contact number field!");
+        }
+        }
+
+        function requestloanhistory(obj,appNo) {
+            var url = '@Url.Action("LoanHistory", "Loanoverdue")?UserID=' + obj + '&ActionName=@Request.QueryString["ActionName"]&ApplicationNo=' + appNo+'';;
+        window.location.href = url;
+    }
+
+     function NotifyModal() {
+        var modalNotify = document.getElementById('modalNotify');
+        modalNotify.style.display = "block";
+    }
+    function SendNotify() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: { notificationtoken: '@Model.notificationtoken', message: $("#txtnotifydefinition").val(), UserName: '@Convert.ToString(Request.Cookies["AgentName"].Value)', PanelName: '@Convert.ToString(Request.Cookies["RoleType"].Value)', MobileNo: '@Model.personalcontactno', ApplicationNo: '@Model.applicationno' },
+            url: '@Url.Action("SendManulNotification", "Home", new { Area = "" })',
+            success: function (data)
+            {
+                if (data) {
+                    alert("Notification Send Succussfully..");
+                    $('#modalNotify').toggle();
+                }
+            }
+        });
+    };
+    function GetNotificationValue() {
+        var Id = $('#ddlNotificationtemplate').val();
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("GetNotificationValues", "LoanRequestBucket", new { area = "Checker" })',
+            dataType: 'json',
+            data: { Id: Id },
+            success: function (sms) {
+                if (sms != null) {
+                    $("#txtnotifydefinition").val(sms.NotificationTemplateDefinition);
+                    $("#txtnotifydescription").val(sms.NotificationTemplateDesc);
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+
+            }
+            });
+    };
+    function RefreshNotifyModel() {
+        $('#modalNotify').toggle();
+        $("#ddlNotificationtemplate").val('');
+        $("#txtnotifydefinition").val('');
+        $("#txtnotifydescription").val('');
+    }
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+</style>

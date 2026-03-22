@@ -1,0 +1,164 @@
+﻿@model Loan_CRM.Models.SmileData
+@using Loan_CRM.Models;
+@{
+    ViewBag.Title = "Employment Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    th {
+        background-color: #f2f2f2;
+    }
+
+    .section-title {
+        font-size: 18px;
+        margin-top: 20px;
+    }
+</style>
+
+<h2>Identities</h2>
+<table>
+    <tr>
+        <th>Full Name:</th>
+        <td>@Model.FullName</td>
+        <th>Date of Birth:</th>
+        <td>@Model.DateOfBirth</td>
+    </tr>
+    <tr>
+        <th>First Name:</th>
+        <td>@Model.FirstName</td>
+        <th>Gender:</th>
+        <td>@Model.Gender</td>
+    </tr>
+    <tr>
+        <th>Middle Name:</th>
+        <td>@Model.MiddleName</td>
+        <th>Marital Status:</th>
+        <td>@Model.MaritalStatus</td>
+    </tr>
+    <tr>
+        <th>Last Name:</th>
+        <td>@Model.LastName</td>
+        <th>Country Residence:</th>
+        <td>@Model.CountryResidence</td>
+    </tr>
+    <tr>
+        <th>Suffix:</th>
+        <td>@Model.Suffix</td>
+        <th>Citizenship:</th>
+        <td>@Model.Citizendship</td>
+    </tr>
+</table>
+
+<h2>Documents</h2>
+<table>
+    <tr>
+        <th>NAME</th>
+        <th>Document ID</th>
+        <th>Document Type</th>
+        <th>Issue Date</th>
+        <th>Expiry Date</th>
+        <th>Status</th>
+        <th>Attachment</th>
+    </tr>
+    @foreach (SmileDocument item in Model.smileDocuments)
+    {
+        <tr>
+            <td>@item.DocName</td>
+            <td>@item.DocId</td>
+            <td>@item.DocType</td>
+            <td>@item.IssueDate</td>
+            <td>@item.ExpiryDate</td>
+            <td>@item.DocStatus</td>
+            <td>@item.Attachment</td>
+        </tr>
+    }
+</table>
+
+<h2>Employments</h2>
+<table>
+    <tr>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Job Details</th>
+        <th>Other Details</th>
+    </tr>
+    @foreach (SmileEmployment item in Model.smileEmployments)
+    {
+        <tr>
+            <td>@item.StartDate</td>
+            <td>@item.EndDate</td>
+            <td>Name: @item.JobName<br>Position: @item.JobPosition<br>Status: @item.JobStatus</td>
+            <td>Department: @item.Department<br>Employee: @item.Employee</td>
+        </tr>
+    }
+    </table>
+
+<h2>Liabilities</h2>
+<table>
+    <tr>
+        <th>Reference ID</th>
+        <th>Loan Amounts</th>
+        <th>Loan Details</th>
+        <th>Amortization Details</th>
+    </tr>
+    @foreach (SmileLiabilities item in Model.smileLiabilities)
+    {
+        <tr>
+            <td>@item.ReferenceId</td>
+            <td>Initial Loan: @item.InitialLoan<br>Outstanding Balance: @item.OutstandingBalance<br>Overdue: @item.Overdue</td>
+            <td>Type: @item.LoanType<br>Start: @item.StartDate<br>End: @item.EndDate</td>
+            <td>Frequency: @item.Frequency<br>Amount: @item.Amount<br>Starts On: @item.StartOn</td>
+        </tr>}
+    </table>
+
+<h2>Contributions</h2>
+<table>
+    <tr>
+        <th>Reference ID</th>
+        <th>Date</th>
+        <th>Currency</th>
+        <th>Amount</th>
+    </tr>
+    @foreach (SmileContributions item in Model.smileContributions)
+    {
+        <tr>
+            <td>@item.ReferenceId</td>
+            <td>@item.ContributionDate</td>
+            <td>@item.Currency</td>
+            <td>@item.Amount</td>
+        </tr>
+    }
+</table>
+
+<h2>Estimated Incomes</h2>
+<table>
+    <tr>
+        <th>Month</th>
+        <th>Currency</th>
+        <th>Amount</th>
+    </tr>
+    @foreach (SmileEstimatedIncome item in Model.smileEstimatedIncomes)
+    {
+        <tr>
+            <td>@item.IncomeMonth</td>
+            <td>@item.Currency</td>
+            <td>@item.Amount</td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,158 @@
+﻿@model List<Loan_CRM.Models.AgingDataReport>
+
+@{
+    ViewBag.Title = "Get All Application List";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+@if (TempData["Result"] != null)
+{
+    <h3>No Record Found To Export</h3>
+}
+else
+{
+    using (Html.BeginForm())
+    {
+        <div id="MsgDiv">
+            @if (TempData["msg"] != null)
+            {
+                if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+                {
+                    <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                        <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                    </div>
+                }
+                else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+                {
+                    <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                        <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                    </div>
+                }
+                else
+                {
+                    <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                        <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="row">
+            <div class="col-md-2">
+                <h3>Aging</h3>
+            </div>
+            <div class="col-md-4">
+
+            </div>
+            <div class="col-md-6" style="padding-top:1.75%;">
+                <input type="submit" class="btn btn-primary pull-right" id="btnExport" name="Search" value="Export to Excel" />
+            </div>
+        </div>
+
+        if (Model.Count > 0)
+        {
+            <div class="col-md-12 table-responsive" style="overflow-x:auto">
+                <div class="col-md-12" style="padding-top:2%;">
+                    <table id="tblAging" class="table table-bordered table-responsive table-striped">
+                        <thead>
+                            <tr>
+                                <th>Age (In Days)</th>
+                                <th>Due Date</th>
+                                <th>Total Maturities (Number)</th>
+                                <th>Total Maturities (Peso)</th>
+                                <th>Total Paid (Number)</th>
+                                <th>Total Paid (Peso)</th>
+                                <th>Collection Efficiency (Number)</th>
+                                <th>Collection Efficiency (Peso)</th>
+                                <th>Default (Number)</th>
+                                <th>Default (Peso)</th>
+                                <th>Number of Disbursement (New Loan Only)</th>
+                                <th>Amount of Disbursement new Loan (Net of Processing fee)</th>
+                                <th>Number of Disbursement Reloans only</th>
+                                <th>Amount of Disbursement Reloan (Net of Processing fee)</th>
+                            </tr>
+                        </thead>
+                        @foreach (var item in Model)
+                        {
+                    <tr>
+                        <td>@item.Age</td>
+                        <td>@item.DueDate</td>
+                        <td>@item.TotalMaturities</td>
+                        <td>@String.Format("{0:N2}", item.TotalMaturities_Peso)</td>
+                        <td>@item.TotalPaid</td>
+                        <td>@String.Format("{0:N2}", item.TotalPaid_Peso)</td>
+                        <td>@String.Format("{0:N2}", item.CollectionEfficiency)%</td>
+                        <td>@String.Format("{0:N2}", item.CollectionEfficiency_Peso)%</td>
+                        <td>@item.Default</td>
+                        <td>@String.Format("{0:N2}", item.Default_Peso)</td>
+                        <td>@item.Disbus_new_Loan_number</td>
+                        <td>@String.Format("{0:N2}", item.Disbus_new_Loan_amount)</td>
+                        <td>@item.Disbus_ReLoan_number</td>
+                        <td>@String.Format("{0:N2}", item.Disbus_ReLoan_amount)</td>
+                    </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="row">
+                <center>
+                    <h3>No Record Found</h3>
+                </center>
+            </div>
+        }
+    }
+}
+<script type="text/javascript">
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass('has-error');
+    }
+
+    $(document).ready(function () {
+        $("#tblAging").DataTable({
+            "bProcessing": false,
+            "bSort": false
+        });
+        $("#btn_Search").click(function () {
+            var flag = true;
+            var FromDate = $("#txt_FromDate").val().trim();
+            var ToDate = $("#txt_ToDate").val().trim();
+            if (FromDate == '') {
+                $("#txt_FromDate").addClass('has-error');
+                flag = false;
+            }
+            if (ToDate == '') {
+                $("#txt_ToDate").addClass('has-error');
+                flag = false;
+            }
+            return flag;
+        });
+
+        $("#txt_FromDate").datepicker({
+            dateFormat: "dd-mm-yy",
+            yearRange: "-100:+0",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            maxDate: new Date()
+        });
+        $("#txt_ToDate").datepicker({
+            dateFormat: "dd-mm-yy",
+            yearRange: "-100:+0",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            maxDate: new Date()
+        });
+    });
+</script>
+
+<style>
+    .has-error {
+        border-color: red;
+    }
+</style>

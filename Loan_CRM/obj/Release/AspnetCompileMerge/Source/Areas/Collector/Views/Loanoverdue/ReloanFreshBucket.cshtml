@@ -1,0 +1,48 @@
+﻿@model IEnumerable<Loan_CRM.Areas.Collector.Models.PaymentBucket>
+
+@{
+    ViewBag.Title = "Reloan Fresh Bucket";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="row">
+    <div class="col-md-4">
+        <h3>Reloan Fresh Bucket</h3>
+    </div>
+    <div class="col-md-7">
+
+    </div>
+    <div class="col-md-1" style="padding-top: 1%;float:right;">
+        <input type="button" class="btn btn-primary" id="btn_Back" value="Back" onclick="location.href='@Url.Action("PaymentHistory","Loanoverdue")'" />
+    </div>
+</div>
+<div id="loadingDiv">
+    <img src="../../../Content/images/Loader.gif" class="classname" loop=infinite />
+</div>
+<div class="row" style="padding-top: 2%;">
+    <table id="tblDefaulterBUcket" class="data-verification table table-striped"></table>
+</div>

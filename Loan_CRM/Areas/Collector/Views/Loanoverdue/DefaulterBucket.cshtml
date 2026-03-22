@@ -1,0 +1,689 @@
+﻿@using System.Configuration;
+@model Loan_CRM.Models.DefaulterModelVM
+
+@{
+    ViewBag.Title = "Defaulter Bucket";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="pull-left">
+
+</div>
+<div class="pull-right">
+
+</div>
+<div class="clearfix"></div>
+<div class="row">
+    <div class="col-md-4">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">Defaulter Loan Payment Bucket</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="col-md-3">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr>
+                    <th colspan="2" style="text-align:center"><b>BROADCAST</b></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-xs btn-primary" id="btnLOD" value="LOD" onclick="LODModal();" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-xs btn-primary" id="btnSMS" value="SMS" onclick="SMSModal();" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    @using (Html.BeginForm("ExportLOD", "Loanoverdue", new { Area = "Collector" }, FormMethod.Post))
+    {
+        <div class="col-md-3">
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th colspan="2" style="text-align:center"><b>EXPORT</b></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="text-align:center">
+
+                            <input type="submit" class="btn btn-xs btn-primary" id="btnLOD" value="LOD" onclick="return ExportLOD();" />
+                            <input type="hidden" id="ApplicationArray" name="ApplicationArray" />
+                        </td>
+                        <td style="text-align:center">
+                            <input type="button" class="btn btn-xs btn-primary" id="BtnFieldVisit" value="FIELD VISIT" onclick="return GetFieldVisitData(this);" />
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    }
+    <div class="col-md-2">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-primary" id="btn_Back" value="REPORT" onclick="location.href='@Url.Action("DefaulterReport","Loanoverdue")'" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-primary" id="btn_Back" value="BACK" onclick="location.href='@Url.Action("LoanPaymentBucket","Loanoverdue")'" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row" id="divFieldVisit">
+        <table id="tblFieldVisit" class="data-verification table table-bordered dataTable no-footer" style="display:block"></table>
+    </div>
+    <style>
+        .blue {
+            color: blue;
+        }
+    </style>
+
+    <div id="loadingDiv">
+        <img src="../../../Content/images/Loader.gif" class="classname" loop=infinite />
+    </div>
+    <div class="row" style="overflow-x:auto;padding-top: 2%; width:100%;">
+        <table id="tblDefaulterBUcket" width="100" class="data-verification table table-bordered dataTable no-footer">
+            <thead>
+                <tr>
+                    <th><input type='checkbox' id="chkSelectAll" /></th>
+                    <th>Aging</th>
+                    <th>Applicant No</th>
+                    <th>Applicant Name</th>
+                    <th>Reference Number</th>
+                    <th>Outstanding Balance</th>
+                    <th>Date Paid</th>
+                    <th>Outstanding Amortization</th>
+                    <th>Late Penalties</th>
+                    <th>Total</th>
+                    <th>Payment Channel</th>
+                    <th>Proof Of Payment</th>
+                    <th>Call</th>
+                    <th>Partial</th>
+                    <th>Pay</th>
+                    <th>PTP</th>
+                    <th>SMS</th>
+                    <th>Details</th>
+                    <th>Collector</th>
+                    <th>Agency</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (Model.DefaulterModelList != null && Model.DefaulterModelList.Count > 0)
+                    {
+                        foreach (var item in Model.DefaulterModelList.OrderBy(x => x.isptp).OrderByDescending(x => x.ptpdate).ToList())
+                        {
+                            var chkBoxId = Convert.ToString(item.application_no) + '_' + Convert.ToString(item.personalcontactno) + '_' + Convert.ToString(item.refernce_no) + '_' + Convert.ToString(item.outstanding_amount) + '_' + Convert.ToString(item.personal_email) + '_' + Convert.ToString(item.name) + '_' + Convert.ToString(item.complete_outstanding_amount) + '_' + Convert.ToString(item.latefee) + '_' + Convert.ToString(item.penalty);
+                            <tr>
+                                <td><input id="txtcheckbox_@chkBoxId" data-id="@item.application_no" class="chkUserId" onchange="Check();" type="checkbox" /></td>
+                                <td>@item.aging</td>
+                                <td>@item.application_no</td>
+                                <td>@item.name</td>
+                                <td>@item.refernce_no</td>
+                                <td>@item.complete_outstanding_amount</td>
+                                <td><input type="text" style="width:100px !important;" name="date" id="txtDate_@item.application_no" min="@DateTime.Now.ToString("dd-MM-yyyy")" value="@DateTime.Now.ToString("dd-MM-yyyy")" class="form-control txtPayDate" onchange='GetCalculatedAmountPay(@item.application_no,this);' /></td>
+                                <td><input type="text" class="form-control Amortization" onkeyup="CalculateAmortization(@item.application_no)" id="txtAmortization_@item.application_no" onkeyup="validateTextBox(this, @item.application_no);" style="width:100px !important;" onfocus="RemoveValidation(this);" value="@item.outstanding_amount" /></td>
+                                <td><input type="text" style="width:100px !important;" onkeyup="CalculateAmortization(@item.application_no)" class="form-control Panalties" onfocus="RemoveValidation(this);" onkeyup="validateTextBox(this,@item.application_no );" id="txtLatePenalties_@item.application_no" value="@item.latepenalty" /></td>
+                                <td><input type="text" class="form-control Total" style="width:100px !important;" readonly id="txtTotal_@item.application_no" value="@(item.outstanding_amount+item.latepenalty)" /></td>
+                                <td>@Html.DropDownListFor(x => x.PaymentChannel, new SelectList(Model.PaymentChannelList, "id", "payment_channel"), new { @class = "form-control", @id = "txtPaymentChannel_" + item.application_no + "", @style = "width:150px !important;" })</td>
+                                <td>@Html.DropDownListFor(x => x.ProofOfPayment, new SelectList(Model.ProofOfPaymentList, "id", "proof_of_payment"), new { @class = "form-control", @id = "txtProofOfPayment_" + item.application_no + "", @style = "width:150px !important;" })</td>
+                                <td><input type="button" class="btn btn-primary" value="Call" onclick="ClickCall(@item.personalcontactno)" /></td>
+                                <td><input type="button" class="btn btn-primary" value="Partial" onclick="DefaulterPartial(this,@item.application_no);" /></td>
+                                <td><input type="button" class="btn btn-primary" value="Pay" onclick="DefaulterPay(this,@item.application_no);" /></td>
+                                <td><input type="button" class="btn btn-primary" value="PTP" onclick="DefaulterPTP(this,@item.application_no);" /></td>
+                                <td><input type="button" class="btn btn-primary" value="SMS" onclick="SendSMS(@item.application_no,@item.personalcontactno,'@item.refernce_no',@item.outstanding_amount)" /></td>
+                                <td><input type="button" class="btn btn-primary" value="Details" onclick="Requestdetail(@item.application_no)" /></td>
+                                <td><input type="button" class="btn btn-primary" value="Collector" onclick="MoveToCollector(@item.application_no);" /></td>
+                                <td><input type="button" class="btn btn-primary" value="Agency" onclick="MoveToAgency(@item.application_no);" /></td>
+                            </tr>
+                        }
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+</div>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<script src="https://cdn.datatables.net/buttons/1.5.1/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.5.1/js/buttons.html5.min.js"></script>
+<script type="text/javascript">
+    var ApplicationChecked = "";
+    $(document).ready(function () {
+        $("#tblDefaulterBUcket").DataTable();
+        $('.txtPayDate').datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            changeYear: true,
+        });
+        $("#chkSelectAll").click(function () {
+            UserChkCount = $('.chkUserId').length;
+            if ($("#chkSelectAll").prop('checked'))
+                $('.chkUserId').prop('checked', true);
+            else
+                $('.chkUserId').prop('checked', false);
+        });
+        $("#loadingDiv").hide();
+        $("#divFieldVisit").hide();
+    });
+    function CalculateAmortization(e) {
+        var AmortizationAmount = $("#txtAmortization_" + e).val();
+        var Panalties = $("#txtLatePenalties_" + e).val();
+        if (AmortizationAmount == "" || AmortizationAmount == NaN) {
+            AmortizationAmount = 0;
+        }
+        if (Panalties == "" || Panalties == NaN) {
+            Panalties = 0;
+        }
+        var Total = parseFloat(AmortizationAmount) + parseFloat(Panalties);
+        $("#txtTotal_" + e).val(Math.round(Total * 100) / 100);
+    };
+    function GetCalculatedAmountPay(ApplicationNo,e) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("GetCalcPenalityAmount", "Loanoverdue")',
+            data: { id: ApplicationNo, Date: $(e).val() },
+            success: function (data) {
+                console.log(data);
+                if (data) {
+                    $("#txtLatePenalties_" + ApplicationNo).val(data.penalty);
+                    var Total = parseFloat($("#txtAmortization_" + ApplicationNo).val()) + parseFloat(data.penalty);
+                    $("#txtTotal_" + ApplicationNo).val(Math.round(Total * 100) / 100);
+                }
+                else {
+                    alert("Application Number does not exists");
+                }
+            }
+        });
+    };
+    function Check() {
+        UserChkCount = $('.chkUserId').length;
+        if (!$('.chkUserId').prop('checked')) {
+            $('#chkSelectAll').prop('checked', false);
+        }
+        var chckedUserLength = $('.chkUserId:checked').length;
+        if (chckedUserLength == UserChkCount) {
+            $('#chkSelectAll').prop('checked', true);
+        }
+        else {
+            $('#chkSelectAll').prop('checked', false);
+        }
+    };
+    function GetData() {
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetDefaulterData", "Loanoverdue")',
+            datatype: 'json',
+            beforeSend: function () {
+                $("#loadingDiv").show();
+            },
+            success: function (users) {
+                var _data = '';
+                _data += "<thead><tr><th><input type='checkbox' /></th><th>Aging</th><th> Applicant No</th><th>Applicant Name</th><th>Reference Number</th><th>Outstanding Balance</th><th>Date Paid</th><th>Amortization</th><th>Late Penalties</th><th>Total</th><th>Payment Channel</th><th>Proof Of Payment</th><th>Action</th><th></th><th></th><th></th><th></th><th></th><th></th><th></th></tr></thead><tbody>";
+                $.each(users, function (i, data) {
+
+                    _data += "<tr><td><input id='txtcheckbox_" + data.application_no + "_" + data.personalcontactno + "_" + data.refernce_no + "_" + data.outstanding_amount + "_" + data.personal_email + "' type='checkbox' /></td><td>" + data.aging + "</td><td>" + data.application_no + "</td><td>" + data.name + "</td><td>" + data.refernce_no + "</td><td>" + data.outstanding_amount + "</td>" + "<td> <input type='date' name='date' id='txtDate" + data.application_no + "' min='@DateTime.Now.ToString("yyyy-MM-dd")' value='@DateTime.Now.ToString("yyyy-MM-dd")' class='form-control' /></td><td><input type='text' class='form-control' id='txtAmortization" + data.application_no + "' onkeyup = 'validateTextBox(this," + data.application_no + ");' onfocus='RemoveValidation(this); ' value=" + data.outstanding_amount + " /></td><td><input type='text' class='form-control' onfocus='RemoveValidation(this); ' onkeyup = 'validateTextBox(this," + data.application_no + ");' id='txtLatePenalties" + data.application_no + "' value=0 /></td><td><input type='text' class='form-control ' readonly id='txtTotal" + data.application_no + "' value=0 /></td><td>    <select class='clsProof form-control'><option>--Select--</option></select>     </td><td><input type='text' onfocus='RemoveValidation(this); ' class='form-control' id='txtProofOfPayment" + data.application_no + "' /></td><td><input type='button' class='btn btn-primary' value='Call' onclick='ClickCall(" + data.personalcontactno + ")' /></td><td><input type='button' class='btn btn-primary' value='Partial' onclick='DefaulterPartial(this," + data.application_no + ");' /></td><td><input type='button' class='btn btn-primary' value='Pay' onclick='DefaulterPay(this," + data.application_no + ");' /></td><td><input type='button' class='btn btn-primary' value='PTP' onclick='DefaulterPTP(this," + data.application_no + ");' /></td><td><input type='button' class='btn btn-primary' value='SMS' onclick='SendSMS(" + data.applicationno + "," + data.personalcontactno + ",\"" + data.refernce_no + "\"," + data.outstanding_amount + ")' /></td><td><input type='button' class='btn btn-primary' value='Details' onclick='Requestdetail(" + data.application_no + ")' /></td><td><input type='button' class='btn btn-primary' value='Collector' onclick='MoveToCollector(" + data.application_no + ");' /></td><td><input type='button' class='btn btn-primary' value='Agency' onclick='MoveToAgency(" + data.application_no + ");' /></td></tr>";
+                });
+                _data += "</tbody>";
+                $("#tblDefaulterBUcket").html(_data);
+                $("#loadingDiv").hide();
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    };
+    function GetFieldVisitData() {
+        var ApplicationNumbers = [];
+        $('.chkUserId').each(function () {
+            if ($(this).is(':checked')) {
+                ApplicationNumbers.push($(this).attr("data-id"));
+            }
+        });
+        if (ApplicationNumbers.length > 0) {
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("GetFieldVisitReport", "Loanoverdue")',
+                data: { ApplicationNoArr: ApplicationNumbers },
+                datatype: 'json',
+                success: function (newstring) {
+                    var _data = '';
+                    _data = "<thead><tr><th> Application Number</th><th>Applicant Name</th><th>Address</th><th>Escalated Date</th><th>Date Past Due</th><th>Maturity Date</th><th>Date Of Loan</th><th>Outstanding Balance</th><th>Total Amount Due</th><th>Email Address</th><th>Payment Reference</th><th>Mobile Number</th></tr></thead><tbody>";
+                    $.each(newstring, function (i, data) {
+                        _data += "<tr><td>" + data.application_no + "</td><td>" + data.applicant_name + "</td><td>" + data.address + "</td><td>" + data.escalated_date + "</td><td>" + data.date_past_due + "</td><td>" + data.maturity_date + "</td><td>" + data.date_of_loan + "</td><td>" + data.completedue + "</td><td>" + data.total_amount_due + "</td><td>" + data.personal_email + "</td><td>" + data.payment_refernce + "</td><td>" + data.phone_no + "</td></tr>";
+                    });
+                    _data += "</tbody>";
+                    $("#tblFieldVisit").html(_data);
+                    if (_data != "") {
+                        var dt = new Date();
+                        var day = dt.getDate();
+                        var month = dt.getMonth() + 1;
+                        var year = dt.getFullYear();
+                        var hour = dt.getHours();
+                        var mins = dt.getMinutes();
+                        var sec = dt.getSeconds();
+                        var table_div = document.getElementById('tblFieldVisit');
+                        var postfix = day + "." + month + "." + year + "_" + hour + "." + mins + "." + sec;
+                        var a = document.createElement('a');
+                        var data_type = 'data:application/vnd.ms-excel';
+                        var table_html = table_div.outerHTML.replace(/ /g, '%20');
+                        a.href = data_type + ', ' + table_html;
+                        a.download = 'FieldVisitReport_' + postfix + '.xls';
+                        a.click();
+                        a.preventDefault();
+                    }
+                },
+                error: function(data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+        else {
+            alert('Please Select at least One Record');
+        }
+    };
+    function Requestdetail(obj) {
+         var url = '@Url.Action("LoanDetail", "Loanoverdue")?Id=' + obj + '&ActionName=DefaulterBucket';
+         window.location.href = url;
+    };
+    function validateTextBox(number, AppId) {
+        if (number.value !== "")
+        {
+            if (!(/^[0-9]+$/.test(number.value))) {
+                $("#" + number.id).val("");
+            }
+            var Amortization = $("#txtAmortization_" + AppId).val();
+            var LatePenalties = $("#txtLatePenalties_" + AppId).val();
+            if (Amortization != "") {
+                Amortization = parseInt(Amortization);
+            }
+            else {
+                Amortization = 0;
+            }
+            if (LatePenalties != "") {
+                LatePenalties = parseInt(LatePenalties);
+            }
+            else {
+                LatePenalties = 0;
+            }
+            var Total = Amortization + LatePenalties;
+            if (Total == NaN) {
+                Total = 0;
+            }
+            $("#txtTotal_" + AppId).val(Total);
+        }
+    };
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    };
+    function CalculateTotal(AppNo) {
+        var AmortizationAmount = $("#txtAmortization_" + AppNo).val();
+        var Panalties = $("#txtLatePenalties_" + AppNo).val();
+        if (AmortizationAmount == "" || AmortizationAmount == NaN) {
+            AmortizationAmount = 0;
+        }
+        if (Panalties == "" || Panalties == NaN) {
+            Panalties = 0;
+        }
+        var Total = parseFloat(AmortizationAmount) + parseFloat(Panalties);
+        $("#txtTotal_").val(Math.round(Total * 100) / 100);
+    };
+    function DefaulterPay(id, AppId) {
+        var flag = 0;
+        var Amortization = $("#txtAmortization_" + AppId).val();
+        var LatePenalties = $("#txtLatePenalties_" + AppId).val();
+        var Total = $("#txtTotal_" + AppId).val();
+        var PaymentChannel = $("#txtPaymentChannel_" + AppId+" :selected").text();
+        var ProofOfPayment = $("#txtProofOfPayment_" + AppId + " :selected").text();
+        if (Amortization == "") {
+            flag++;
+            $("#txtAmortization_" + AppId).addClass("has-error");
+        }
+        if (LatePenalties == "") {
+            flag++;
+            $("#txtLatePenalties_" + AppId).addClass("has-error");
+        }
+        if (Total == "") {
+            flag++;
+            $("#txtTotal_" + AppId).addClass("has-error");
+        }
+        if (PaymentChannel == "") {
+            flag++;
+            $("#txtPaymentChannel_" + AppId).addClass("has-error");
+        }
+        if (ProofOfPayment == "") {
+            flag++;
+            $("#txtProofOfPayment_" + AppId).addClass("has-error");
+        }
+        var txtPayDate = $("#txtDate_" + AppId).val();
+        if (flag == 0)
+        {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("DefaulterPay", "Loanoverdue")',
+                data: { ApplicationId: AppId, penalty: LatePenalties, total: Total, paymentchannel: PaymentChannel, proofofpayment: ProofOfPayment, Amortization: Amortization, PayDate: txtPayDate },
+                datatype: 'json',
+                success: function (data)
+                {
+                    if (data) {
+                        alert("Saved Successfully");
+                        var url = '@Url.Action("DefaulterBucket", "Loanoverdue", new { area = "Collector" })';
+                        window.location.href = url;
+                    }
+                    else {
+                        alert("Unsuccessful");
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+    };
+    function DefaulterPartial(id, AppId) {
+        var flag = 0;
+        var Date = $("#txtDate_" + AppId).val();
+        var Amortization = $("#txtAmortization_" + AppId).val();
+        var LatePenalties = $("#txtLatePenalties_" + AppId).val();
+        var Total = $("#txtTotal_" + AppId).val();
+        var PaymentChannel = $("#txtPaymentChannel_" + AppId + " :selected").text();
+        var ProofOfPayment = $("#txtProofOfPayment_" + AppId + " :selected").text();
+         var txtPayDate = $("#txtDate_" + AppId).val();
+        if (Amortization == "") {
+            flag++;
+            $("#txtAmortization_" + AppId).addClass("has-error");
+        }
+        if (LatePenalties == "") {
+            flag++;
+            $("#txtLatePenalties_" + AppId).addClass("has-error");
+        }
+        if (Total == "") {
+            flag++;
+            $("#txtTotal_" + AppId).addClass("has-error");
+        }
+        if (PaymentChannel == "") {
+            flag++;
+            $("#txtPaymentChannel_" + AppId).addClass("has-error");
+        }
+        if (ProofOfPayment == "") {
+            flag++;
+            $("#txtProofOfPayment-" + AppId).addClass("has-error");
+        }
+        if (flag == 0)
+        {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("DefaulterPartial", "Loanoverdue")',
+                data: { ApplicationId: AppId, penality_amount: LatePenalties, total: Total, paymentchannel: PaymentChannel, proofofpayment: ProofOfPayment, date: Date, Amortization: Amortization, PayDate: txtPayDate },
+                datatype: 'json',
+                success: function (data)
+                {
+                    if (data) {
+                        alert("Saved Successfully");
+                        var url = '@Url.Action("DefaulterBucket", "Loanoverdue", new { area = "Collector" })';
+                        window.location.href = url;
+                    }
+                    else {
+                        alert("Unsuccessful");
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+    };
+    function DefaulterPTP(id, AppId) {
+        var flag = 0;
+        var Date = $("#txtDate_" + AppId).val();
+        var Amortization = $("#txtAmortization_" + AppId).val();
+        var LatePenalties = $("#txtLatePenalties_" + AppId).val();
+        var Total = $("#txtTotal_" + AppId).val();
+        var PaymentChannel = $("#txtPaymentChannel_" + AppId).val();
+        var ProofOfPayment = $("#txtProofOfPayment_" + AppId).val();
+        if (Amortization == "") {
+            flag++;
+            $("#txtAmortization_" + AppId).addClass("has-error");
+        }
+        if (LatePenalties == "") {
+            flag++;
+            $("#txtLatePenalties_" + AppId).addClass("has-error");
+        }
+        if (Total == "") {
+            flag++;
+            $("#txtTotal_" + AppId).addClass("has-error");
+        }
+        if (flag == 0)
+        {
+            $.ajax({
+                type: 'GET',
+                url: '@Url.Action("DefaulterPTP", "Loanoverdue")',
+                data: { ApplicationId: AppId, penality_amount: LatePenalties, total: Total, date: Date, Amortization: Amortization },
+                datatype: 'json',
+                success: function (data)
+                {
+                    if (data) {
+                        alert("Saved Successfully");
+                        var url = '@Url.Action("DefaulterBucket", "Loanoverdue", new { area = "Collector" })';
+                        window.location.href = url;
+                    }
+                    else {
+                        alert("Unsuccessful");
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+    };
+    function SendSMS(AppId, ContactNo, RefernceNo, Amount) {
+        var number = ContactNo.toString();
+        var final = number.split(',');
+        var count = parseInt(final.length);
+        var mobno = final[count - 1];
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("DefaulterSMS", "Loanoverdue", new { area = "Collector" })',
+            dataType: 'json',
+            data: { Id: AppId, mobno: mobno, RefernceNo: RefernceNo, Amount: Amount },
+            success: function (result) {
+                if (result) {
+                    availability = false;
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    };
+    function ClickCall(ContactNo) {
+        var number = ContactNo.toString();
+        var final = number.split(',');
+        var count = parseInt(final.length);
+        var mobno = final[count - 1];
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("ClicktoCall", "LoanRequestBucket", new { area = "Checker" })',
+            dataType: 'json',
+            data: { ContactNumber: mobno },
+            success: function (result) {
+                if (result) {
+                    availability = false;
+                }
+                else {
+                    window.location.reload(1);
+                }
+            },
+        });
+    };
+    function MoveToCollector(AppId) {
+        $.ajax({
+            async: false,
+            type: 'POST',
+            url: '@Url.Action("MovedToCollector", "Loanoverdue", new { area = "Collector" })',
+            dataType: 'json',
+            data: { AppId: AppId },
+            success: function (result) {
+                if (result) {
+                    alert("Moved to Collector successfully.");
+                    var url = '@Url.Action("DefaulterBucket", "Loanoverdue", new { area = "Collector" })';
+                    window.location.href = url;
+                }
+                else {
+                    alert("Unsuccessfully.");
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    };
+    function MoveToAgency(AppId) {
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("MovedToAgency", "Loanoverdue", new { area = "Collector" })',
+            dataType: 'json',
+            data: { ApplicationId: AppId },
+            success: function (result) {
+                if (result) {
+                    alert("Moved to Agency successfully.");
+                    var url = '@Url.Action("DefaulterBucket", "Loanoverdue", new { area = "Collector" })';
+                    window.location.href = url;
+                }
+                else {
+                    alert("Movement to Agency Unsuccessfully.");
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    };
+    function SMSModal() {
+        var ApplicationChecked = [];
+        $(".chkUserId").each(function () {
+            var $this = $(this);
+            if ($this.is(":checked")) {
+                ApplicationChecked.push($this.attr("id"));
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DefaulterCheckedSMS", "Loanoverdue", new { area = "Collector" })',
+            dataType: 'json',
+            data: { ApplicationList: ApplicationChecked },
+            success: function (result) {
+                if (result) {
+                    alert("SMS Sent Successfully");
+                }
+                else {
+                    alert("Unsuccessfully");
+                }
+                var url = '@Url.Action("DefaulterBucket", "Loanoverdue", new { area = "Collector" })';
+                window.location.href = url;
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    };
+    function ExportLOD() {
+        $(".chkUserId").each(function () {
+            var $this = $(this);
+            if ($this.is(":checked")) {
+                ApplicationChecked = ApplicationChecked + $this.attr("id")+"~";
+            }
+        });
+        $("#ApplicationArray").val(ApplicationChecked);
+        return true;
+    };
+    function LODModal() {
+        var ApplicationChecked = [];
+        $(".chkUserId").each(function () {
+            var $this = $(this);
+            if ($this.is(":checked")) {
+                ApplicationChecked.push($this.attr("id"));
+            }
+        });
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("DefaulterCheckedLOD", "Loanoverdue", new { area = "Collector" })',
+            dataType: 'json',
+            data: { ApplicationList: ApplicationChecked },
+            success: function (result) {
+                if (result) {
+                    alert("LOD Sent Successfully");
+                }
+                else {
+                    alert("Unsuccessfully");
+                }
+                var url = '@Url.Action("DefaulterBucket", "Loanoverdue", new { area = "Collector" })';
+                window.location.href = url;
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    };
+</script>
+<style>
+    .classname {
+        position: absolute;
+        z-index: 10;
+        top: 300px;
+        left: 600px;
+    }
+
+    .has-error {
+        border-color: red;
+        color: red;
+    }
+</style>
+

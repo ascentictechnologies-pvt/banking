@@ -1,0 +1,118 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+@{
+    ViewBag.Title = "Customer Info Bucket";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+@using (Html.BeginForm("CustomerInfoBucket", "Admin", FormMethod.Post))
+{
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            Customer Info Bucket
+        </div>
+        <div class="panel-body">
+            <div class="col-md-12">
+                <table id="tblRecord" class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Application No</th>
+                            <th>Date Applied</th>
+                            <th>First Name</th>
+                            <th>Middle Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Contact Number</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+
+<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
+
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script>
+
+<script type="text/javascript">
+
+   $(document).ready(function () {
+
+       $("#tblRecord").DataTable({
+           "processing": true, // for show progress bar
+           "serverSide": true, // for process server side
+           "filter": true, // this is for disable filter (search box)
+           "orderMulti": false, // for disable multiple column at once
+           "pageLength": 10,
+
+           "ajax": {
+               "url": '@Url.Action("GetCustomerData", "Admin", new { Area = "Admin" })',
+               "type": "POST",
+               "datatype": "json",
+               error: function (data) {
+                   console.log(`Error :` + data);
+               }
+           },
+
+
+           "columns": [
+               { "data": "ApplicationNo", "name": "ApplicationNo"},
+               { "data": "DateApplied", "name": "DateApplied"},
+               { "data": "First_Name",  "name": "First_Name"},
+               { "data": "Middle_Name", "name": "Middle_Name"},
+               { "data": "Last_Name", "name": "Last_Name"},
+               { "data": "PersonalEmail", "name": "PersonalEmail"},
+               { "data": "PersonalContactNo", "name": "PersonalContactNo"},
+               {
+                   "render": function (data, type, full, meta) { return '<input type="button" value="Details" class="btn btn-success" id="btnDetails" onclick="GetDetails(' + full.ApplicationNo+');" />'; }
+               }
+           ]
+
+        })
+    });
+    function GetRecords(val)
+    {
+        //
+        var records = $("#ddlrecord option:selected").val();
+        var url = '@Url.Action("CustomerInfoBucket", "Admin")?count=' + records;
+        window.location.href = url;
+    }
+
+    function GetDetails(AppId)
+    {
+        //
+        var url = '@Url.Action("EditCustomerInfo", "Admin")?applicationNo=' + AppId;
+        window.location.href = url;
+
+    }
+</script>

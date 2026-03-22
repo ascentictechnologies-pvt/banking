@@ -1,0 +1,100 @@
+﻿@model Loan_CRM.Areas.Admin.Models.GetApplicationStatusModel
+@{
+    ViewBag.Title = "Get Application Status";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+@using (Html.BeginForm("GetApplicationStatus", "StatusUser", FormMethod.Post))
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-4">
+                    <h3>Application Status</h3>
+                </div>
+                <div class="col-md-2">
+                    <label>Search By</label>
+                    @Html.DropDownListFor(x => x.SearchBy, new SelectList(Model.SearchByOptions, "Value", "Text"), new { @class = "form-control" })
+                </div>
+
+                <div class="col-md-2">
+                    <label>Search Text</label>
+                    @Html.TextBoxFor(x => x.SearchText, new { @class = "form-control" })
+                </div>
+                <div class="col-md-2" style="margin-top:21px">
+                    <input type="submit" id="btn_Search" class="btn btn-success btn-flat" value="Search" name="CommandName" />
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div id="tableDiv">
+                <div class="col-md-12" style="width:100%; overflow:scroll">
+                    <table id="tblRecord" class="table table-bordered table-responsive table-striped">
+                        <thead>
+                            <tr>
+                                <th>Application No</th>
+                                <th>Applicant Name</th>
+                                <th>Location</th>
+                                <th>Handle By</th>
+                                <th>Checked By</th>
+                                <th>Checked On</th>
+                                <th>Verified By</th>
+                                <th>Verified On</th>
+                                <th>Is Completed</th>
+                                <th>Remarks</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model.applicationStatusDatas != null && Model.applicationStatusDatas.Count > 0)
+                                {
+                                    foreach (var item in Model.applicationStatusDatas)
+                                    {
+                                        <tr>
+                                            <td>@item.ApplicationNo</td>
+                                            <td>@item.Name</td>
+                                            <td>@item.location</td>
+                                            <td>@item.HandleBy</td>
+                                            <td>@item.CheckedBy</td>
+                                            <td>@item.CheckedOn</td>
+                                            <td>@item.VerifiedBy</td>
+                                            <td>@item.VerifiedOn</td>
+                                            <td>@item.IsComplete</td>
+                                            <td>@item.ApplicationRemark</td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+

@@ -1,0 +1,96 @@
+﻿@model Loan_CRM.Models.NewReferenceApprovalModel
+
+@{
+    ViewBag.Title = "New Reference Approval";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="panel panel-primary">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-12">
+                <h5>New Reference Approval</h5>
+            </div>
+        </div>
+    </div>
+    <div class="panel-body">
+        <table id="tblRecord" class="table table-bordered table-responsive table-striped">
+            <thead>
+                <tr>
+                    <th>Application No</th>
+                    <th>Old Reference</th>
+                    <th>New Reference</th>
+                    <th>Edited by</th>
+                    <th>Action</th>
+                    <th>Delete</th>
+                </tr>
+            </thead>
+            @foreach (var item in Model.NewReferenceList)
+            {
+                <tr>
+                    <th>@item.application_no</th>
+                    <th>@item.old_reference_no</th>
+                    <th>@item.new_reference_no</th>
+                    <th>@item.userfullname</th>
+                    <td><input type="submit" class="btn btn-success" value="Approve" onclick="ApproveApplication('@item.id','@item.new_reference_no','@item.application_no');" /> </td>
+                    <td><img src='../../../Content/images/Delete.png' title="Delete" style='width: 18%;cursor: pointer;' onclick="DeleteApplication('@item.id');" /></td>
+                </tr>
+            }
+        </table>
+    </div>
+</div>
+<script type="text/javascript">
+    function ApproveApplication(id,ref_no,AppId)
+    {
+        $.ajax({
+            data: { id: id, ref_no: ref_no, AppId: AppId },
+            url: '@Url.Action("NewReferenceIsApproval", "Admin")',
+            success: function (data)
+            {
+                if (data) {
+                    alert("Approved Successfully");
+                }
+                window.location.href = '@Url.Action("NewReferenceApproval", "Admin")';
+            }
+        });
+    }
+    function DeleteApplication(AppId)
+    {
+        $.ajax({
+            data: { id: AppId },
+            url: '@Url.Action("DeleteReferenceRecord", "Admin", new {area= "Admin"})',
+            success: function (data)
+            {
+                if (data) {
+                    alert("Deleted Successfully");
+                }
+                window.location.href = '@Url.Action("NewReferenceApproval", "Admin")';
+            }
+        });
+    }
+</script>
+

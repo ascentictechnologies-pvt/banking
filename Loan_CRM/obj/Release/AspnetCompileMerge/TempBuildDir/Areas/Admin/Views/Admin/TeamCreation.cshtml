@@ -1,0 +1,232 @@
+﻿@model Loan_CRM.Models.TeamAgentMappingVM
+
+@{
+    ViewBag.Title = "TeamCreation";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<style>
+    .has-error {
+        border-color: red !important;
+    }
+</style>
+<h2></h2>
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="col-md-12">
+    <div class="col-md-12">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <span>Team Agent Mapping</span>
+            </div>
+            <div class="panel-body">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <input type="hidden" id="id" name="id" value="@Model.id" />
+                        <label>Type</label>
+                        <select name="type" onclick="RemoveValidation(this);" class="form-control" id="ddlType">
+                            <option value="">--Select--</option>
+                            <option value="TL Sales">TL Sales</option>
+                            <option value="TL Defaulter">TL Defaulter</option>
+                        </select>
+                        @Html.ValidationMessageFor(x => x.type, null, new { @class = "has-error" })
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label>TL Name:</label>
+                        <select name="tl_id" onclick="RemoveValidation(this);" class="form-control" id="ddlTl">
+                            <option value="">--Select--</option>
+                        </select>
+                        @Html.ValidationMessageFor(x => x.tl_id)
+                    </div>
+                </div>
+                <div class="col-md-2">
+                    <div class="form-group" style="margin-top: 20px;">
+                        <input type="button" id="btnAssign" value="Assign" class="btn btn-primary" />
+                        <input type="button" id="btnReset" value="Reset" class="btn btn-danger" />
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <h6></h6>
+                <div class="col-md-6">
+                    <table id="tblData" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>User Name</th>
+                                <th><input type="checkbox" id="chkSelectAll">&nbsp;&nbsp; Select All</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    var UserChkCount = 0;
+    $(document).ready(function () {
+        $("#tblData").hide();
+        $("#chkSelectAll").click(function () {
+            UserChkCount = $('.chkUserId').length;
+            if ($("#chkSelectAll").prop('checked'))
+                $('.chkUserId').prop('checked', true);
+            else
+                $('.chkUserId').prop('checked', false);
+        });
+        $("#btnReset").click(function () {
+            window.location.reload();
+        });
+        $("#ddlType").change(function () {
+            $("#tblData").hide();
+            var Type = $("#ddlType option:selected").val();
+            $.ajax({
+            url: '@Url.Action("GetTL", "Admin",new { Area="Admin"})',
+            type: "GET",
+            data: { Type: Type },
+            success: function (result) {
+                $("#ddlTl").empty();
+                var html = '<option value="">--Select--</option>';
+                $.each(result, function (key, value) {
+                    html += '<option value="' + value.userid + '">' + value.userfullname + '</option>';
+                });
+                $("#ddlTl").append(html);
+            }
+        });
+        });
+        $("#ddlTl").change(function () {
+            var Type = $("#ddlType :selected").val();
+            var TLId = $("#ddlTl :selected").val();
+            if (TLId == "") {
+                $("#tblData").hide();
+            }
+            else {
+            $.ajax({
+                url: '@Url.Action("GetMappedUser", "Admin",new { Area="Admin"})',
+                type: "GET",
+                data: { Type: Type, TLId: TLId },
+                success: function (result) {
+                    //
+                    if (result != null) {
+                        $("#tblBody").empty();
+                        var html = '';
+                        $("#tblData").show();
+                        $.each(result, function (key, value) {
+                            //
+                            html += '<tr><td>' + value.userfullname + '</td><td><input type="checkbox" onchange="Check();" value="' + value.userid + '" class="chkUserId" /></td></tr>';
+                        });
+                        $("#tblBody").append(html);
+                    }
+                 }
+            }).done(function () {
+                var TLId = $("#ddlTl :selected").val();
+                $.ajax({
+                    url: '@Url.Action("AutoSelectMappedUser", "Admin",new { Area="Admin"})',
+                    type: "GET",
+                    data: { TLId: TLId },
+                    success: function (data) {
+                        //
+                        if (data != null && data.length > 0) {
+                            $.each(data, function (dKey, dValue) {
+                                $('.chkUserId').each(function (key, value) {
+                                    
+                                    console.log("UserId : " + $(this).val());
+                                    if (dValue.agent_id == $(this).val()) {
+                                        $(this).prop('checked', true);
+                                    }
+                                });
+                            });
+                        }
+                    }
+                });
+                    });
+        }
+        });
+        $("#btnAssign").click(function () {
+            
+            $("#MsgDiv").hide(500);
+            var UserId = [];
+            var TLId = $("#ddlTl :selected").val();
+            var flag = 0;
+            if (TLId == "") {
+                flag++;
+                $("#ddlTl").addClass('has-error');
+            }
+            if (flag > 0) {
+                return false;
+            }
+            else {
+                $('.chkUserId').each(function () {
+                    if ($(this).prop('checked')) {
+                        UserId.push($(this).attr('value'));
+                    }
+                });
+                console.log("Selected User's Id : " + UserId);
+                if (UserId.length > 0) {
+                    $.ajax({
+                        url: '@Url.Action("SavedMappedUser", "Admin",new { Area="Admin"})',
+                        type: "POST",
+                        data: { UserId: UserId, TLId: TLId },
+                        success: function (result) {
+                            
+                            $("#tblData").hide();
+                            window.location.reload(1);
+                        }
+                    });
+                }
+                else {
+                    $("#MsgDiv").empty();
+                    var msg = '<div onclick="HideIt(this);" class="alert alert-danger"><label>Please Select At least One CheckBox</label><a onclick="$("#MsgDiv").hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a></div>'
+                    $("#MsgDiv").html(msg);
+                    $("#MsgDiv").show(500);
+                }
+            }
+        });
+    });
+    function Check() {
+        
+        UserChkCount = $('.chkUserId').length;
+        if (!$('.chkUserId').prop('checked')) {
+            $('#chkSelectAll').prop('checked', false);
+        }
+        var chckedUserLength = $('.chkUserId:checked').length;
+        if (chckedUserLength == UserChkCount) {
+            $('#chkSelectAll').prop('checked', true);
+        }
+        else {
+            $('#chkSelectAll').prop('checked', false);
+        }
+    }
+    //Remove Validation
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+    function HideIt(id) {
+        
+    $(id).hide();
+    }
+</script>

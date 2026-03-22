@@ -1,0 +1,327 @@
+﻿@model Loan_CRM.Models.SSSNoModelVM
+
+@{
+    ViewBag.Title = "SSSNoMaster";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<style>
+    .has-error {
+        color: red !important;
+    }
+</style>
+<h2></h2>
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") ||  Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="col-md-12">
+    @using (Html.BeginForm("SSSNoMaster","Admin",FormMethod.Post,new { @enctype="multipart/form-data"}))
+    {
+        <div class="col-md-4">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <span>Add SSSNo Details</span>
+                </div>
+                <div class="panel-body">
+
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#tab1">Single Upload</a></li>
+                        <li><a data-toggle="tab" href="#tab2">SSS No Excel Upload</a></li>
+                    </ul>
+
+                    <div class="tab-content">
+                        <div id="tab1" class="tab-pane fade in active">
+                            <div style="padding-top: 4%">
+                            
+                                    <div class="panel-body">
+
+                                        <div class="form-group">
+                                            <input type="hidden" id="id" name="id" value="@Model.id" />
+                                            <label>SSS Number</label>
+                                            @Html.TextBoxFor(x => x.sss_no, new { id = "sss_no", @class = "form-control NumericTextBox", maxlength = "10", placeholder = "SSS No", onfocus = "RemoveValidation(this);" })
+                                            @Html.ValidationMessageFor(x => x.sss_no, null, new { @class = "has-error" })
+
+                                        </div>
+                                    </div>
+
+                                    <div class="panel-footer">
+                                        
+                                            <input type="submit" name="CommandName" id="btnSave" value="Save" class="btn btn-success" />
+                                            <input type="button"  value="Reset" id="btnReset" class="btn btn-danger" />
+                                       
+                                    </div>
+                               
+                            </div>
+                        </div>
+                        <div id="tab2" class="tab-pane fade">
+
+                            <div style="padding-top: 4%">
+
+                                <div class="panel-body">
+
+                                    <div class="form-group">
+                                        <label for="file">Upload Excel:</label>
+                                        <input type="file" name="FileName" id="filetxt" /><br><br>
+                                   
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="panel-footer">
+                                    <div>
+                                        <input type="submit" name="CommandName" value="Upload" class="btn btn-primary" onclick="return ValidateUploadDocument();" />
+                                        <input type="submit" name="CommandName" value="Download Format" class="btn btn-primary" />
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    
+                </div>
+                
+            </div>
+      
+        <div class="col-md-8">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <span>SSS No Details</span>
+                </div>
+                <div class="panel-body">
+                    <table id="tblOccupation" class="table table-striped table-responsive">
+                        <thead>
+                            <tr>
+                                <th>SNO</th>
+                                <th>SSS No</th>
+                                <th>Is ORR</th>
+                                <th>Created On</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                if (Model.SSSNoModelList != null && Model.SSSNoModelList.Count > 0)
+                                {
+                                    int i = 1;
+                                    foreach (var item in Model.SSSNoModelList)
+                                    {
+                                        <tr>
+                                            <td>@i</td>
+                                            <td>@item.sss_no</td>
+                                            <td>
+                                                @{
+                                                    if (item.is_orr)
+                                                    {
+
+                                                        <a class="anchor" onclick="DisableORR(@item.id)" title="Click to Disable"><img src="~/Content/img/Circle_Green.png" alt="Enable" height="18" width="18" /></a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="anchor" onclick="EnableORR(@item.id)" title="Click to Enable"><img src="~/Content/img/Circle_Red.png" alt="Enable" height="18" width="18" /></a>
+                                                    }
+                                                }
+                                            </td>
+                                            <td>@item.created_on</td>
+                                            <td>
+                                                <a style="cursor:pointer;" onclick="EditData('@item.id')">Edit</a> | @{
+                                                    if (item.isactive.HasValue == true && item.isactive.Value == true)
+                                                    {
+                                                        <a class="anchor" onclick="DisableData(@item.id)" title="Click to Disable"><img src="~/Content/img/Circle_Green.png" alt="Enable" height="18" width="18" /></a>
+                                                    }
+                                                    else
+                                                    {
+                                                        <a class="anchor" onclick="EnableData(@item.id)" title="Click to Enable"><img src="~/Content/img/Circle_Red.png" alt="Disable" height="18" width="18" /></a>
+                                                    }
+                                                }
+                                            </td>
+                                        </tr>
+                                        i = i + 1;
+                                    }
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+     }
+</div>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tblOccupation").DataTable();
+        $("#btnReset").click(function () {
+            $("#id").val("0");
+            $("#sss_no").val("");
+            $("#btnSave").val("Save");
+            $("#chk_ORR").removeProp("checked");
+        });
+    });
+    $(".NumericTextBox").keydown(function (e) {
+        console.log(e.keyCode);
+        // Allow: backspace, delete, tab, escape, enter and .
+        if ($.inArray(e.keyCode, [46, 8, 9, 27, 13, 110, 190]) !== -1 ||
+            // Allow: Ctrl+A, Command+A
+            (e.keyCode === 65 && (e.ctrlKey === true || e.metaKey === true)) ||
+            // Allow: home, end, left, right, down, up
+            (e.keyCode >= 35 && e.keyCode <= 40)) {
+            // let it happen, don't do anything
+            return;
+        }
+        // Ensure that it is a number and stop the keypress
+        if ((e.shiftKey || (e.keyCode < 48 || e.keyCode > 57)) && (e.keyCode < 96 || e.keyCode > 105)) {
+            e.preventDefault();
+        }
+        if (!((event.keyCode == 46 ||
+            event.keyCode == 8 ||
+            event.keyCode == 37 ||
+            event.keyCode == 39 ||
+            event.keyCode == 9 ||
+            event.keyCode == 186) ||
+
+            (event.ctrlKey && event.keyCode == 86) ||  // Edit: Added to allow ctrl+v
+            ((event.keyCode >= 48 && event.keyCode <= 57) ||
+                (event.keyCode >= 96 && event.keyCode <= 105)))) {
+            event.preventDefault();
+            return false;
+        }
+
+    });
+    //Remove Validation
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+    function EditData(Id) {
+        
+        $.ajax({
+            url: '@Url.Action("EditSSSNoData", "Admin",new { Area="Admin"})',
+            type: "POST",
+            data: { Id: Id },
+            success: function (result) {
+                
+                if (result != null) {
+                    $("#id").val(result[0].id);
+                    $("#sss_no").val(result[0].sss_no);
+                    $("#btnSave").val("Update");
+                    if (result[0].is_orr) {
+                        $("#chk_ORR").prop("checked", "checked");
+                    }
+                }
+                else {
+                    window.location.reload(1);
+                }
+            },
+            error: function () {
+                window.location.reload(1);
+            }
+        });
+    }
+    $("#btnReset").click(function () {
+        window.location.reload();
+    });
+    function DisableData(id) {
+        var r = confirm("Are you sure to Disable this SSSNo?");
+            if (r == true) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("DisableSSSNo", "Admin",new { Area="Admin"})',
+                        data: { id: id },
+                        success: function (data) {
+                            console.log(data);
+
+                            if (data) {
+                                window.location.href = '@Url.Action("SSSNoMaster", "Admin",new {Area="Admin"})';
+                            }
+                        }
+                    });
+            }
+        }
+        function EnableData(id) {
+            var r = confirm("Are you sure to Enable this SSSNo?");
+            if (r == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("EnableSSSNo", "Admin",new { Area="Admin"})',
+                    data: { id: id },
+                    success: function (data) {
+                        console.log(data);
+                        if (data) {
+                            window.location.href = '@Url.Action("SSSNoMaster", "Admin",new {Area="Admin"})';
+                        }
+                    }
+                });
+            }
+    }
+
+        function DisableORR(id) {
+            var r = confirm("Are you sure to Disable ORR?");
+            if (r == true) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("DisableIsOrrSSSNo", "Admin",new { Area="Admin"})',
+                        data: { id: id },
+                        success: function (data) {
+                            console.log(data);
+
+                            if (data) {
+                                window.location.href = '@Url.Action("SSSNoMaster", "Admin",new {Area="Admin"})';
+                            }
+                        }
+                    });
+            }
+        }
+        function EnableORR(id) {
+            var r = confirm("Are you sure to Enable ORR?");
+            if (r == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("EnableIsOrrSSSNo", "Admin",new { Area="Admin"})',
+                    data: { id: id },
+                    success: function (data) {
+                        console.log(data);
+                        if (data) {
+                            window.location.href = '@Url.Action("SSSNoMaster", "Admin",new {Area="Admin"})';
+                        }
+                    }
+                });
+            }
+    }
+
+    function ValidateUploadDocument() {
+        //
+        var fileName = $("#filetxt").val().toString();
+        if (fileName == '' || fileName == undefined) {
+            alert("No file uploaded");
+            return false;
+           
+        }
+        else {
+            return true;
+        }
+        console.log(fileName);
+    }
+    
+</script>

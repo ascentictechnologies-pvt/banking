@@ -1,0 +1,1322 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+@{
+    ViewBag.Title = "";
+    Layout = "~/Views/Shared/_LayoutNew.cshtml";
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="row" id="form-wizard">
+    @using (Html.BeginForm("ApplicationRecord", "Home", FormMethod.Post, new { @id = "demo", enctype = "multipart/form-data" }))
+    {
+        <div class="row">
+            <div class="col-md-12 banner-form">
+            </div>
+        </div>
+        <div id="div_FirstStep" class="row">
+            <div id="divMsg">
+            </div>
+            <div class="col-md-10 center-block col-float-none form-bg form-bg-bottom">
+                <h2 class="text-center" style="font-size:27px">Enjoy quick and flexible loans today!</h2>
+                <p class="text-center" style="margin-bottom: 30px; margin-top: 20px;"><span><img src="../../Content/img/secure-loan.png" style="width: 15px; margin-right: 10px;"></span>Cash Mart uses 256-bit verified encryption to keep your data safe.</p>
+                <h3 class="text-contrast text-center text-bg-green padding-small col-md-7 center-block" style="float:none">Step 1: Create Your Login Account</h3>
+                <div class="form-wrap row">
+                    <div class="form-wrapper-group">
+                        <h4 class="text-contrast form-label">Login Details</h4>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    @Html.HiddenFor(x => x.ApplicationNo, new { id = "htApplicationNo" })
+                                    <label class="text-contrast"><span class="required-fields">*</span>FIRST NAME</label>
+                                    @Html.TextBoxFor(x => x.First_Name, new { id = "txtFirstname", @class = "form-control CharcaterTextBox", @style = "text-transform: uppercase", placeholder = "FIRST NAME", maxlength = "50", @onkeyup = "validateTextBox(this);", @onfocus = "RemoveValidation(this);" })
+                                    @Html.ValidationMessageFor(x => x.First_Name, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast">MIDDLE NAME</label>
+                                    @Html.TextBoxFor(x => x.Middle_Name, new { id = "txtMiddlename", @class = "form-control CharcaterTextBox", @style = "text-transform: uppercase", placeholder = "MIDDLE NAME", maxlength = "50", @onfocus = "RemoveValidation(this);", @onkeyup = "validateTextBox(this);" })
+                                    @Html.ValidationMessageFor(x => x.Middle_Name, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>LAST NAME</label>
+                                    @Html.TextBoxFor(x => x.Last_Name, new { id = "txtLastname", @class = "form-control CharcaterTextBox", @style = "text-transform: uppercase", placeholder = "LAST NAME", maxlength = "50", @onfocus = "RemoveValidation(this);", @onkeyup = "validateTextBox(this);" })
+                                    @Html.ValidationMessageFor(x => x.Last_Name, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Email Address</label>
+                                    @Html.TextBoxFor(x => x.PersonalEmail, new { id = "txtpersonalemail", @type = "email", @class = "form-control", placeholder = "example@email.com", maxlength = "50", @onfocus = "RemoveValidation(this);", @onchange = "ValidateEmail(this);" })
+                                    <input type="hidden" value="texens" id="hdnpersonalmail" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Confirm Email Address</label>
+                                    @Html.TextBoxFor(x => x.ConfirmEmail, new { id = "txtConfirmEmail", @type = "email", @class = "form-control", placeholder = "example@email.com", maxlength = "50", @onchange = "CompareEmail();", @onfocus = "RemoveValidation(this);", @onfocusout = "ValidateConfirmEmail(this);" })
+                                    @Html.ValidationMessageFor(x => x.ConfirmEmail, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Create Password</label>
+                                    @Html.TextBoxFor(x => x.Password, new { id = "txtPassword", @class = "form-control", placeholder = "Create Password", @type = "password", @minlength = "6", @maxlength = "50", @onfocusout = "PasswordLength();", @onfocus = "RemoveValidation(this);" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class=" form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Confirm Password</label>
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(x => x.confirm_password, new { id = "txtConfirmPassword", placeholder = "Confirm Password", @class = "form-control", @type = "password", @minlength = "6", @maxlength = "50", @onfocusout = "ConfirmPasswordLength();", @onchange = "ComparePassword();", @onfocus = "RemoveValidation(this);" })
+                                        <span class="input-group-btn">
+                                            <button type="button" class="btn btn-info btn-flat" id="show_hide" name="show_hide">Show</button>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-5">
+                                <label class="text-contrast"><span class="required-fields">*</span>Mobile Phone No.</label>
+                                <div class="form-group">
+                                    <select id="ddlStateList" class="form-control col-md-3 mixselect">
+                                        <option value="09">09</option>
+                                        <option value="08">08</option>
+                                    </select>
+                                    @Html.TextBoxFor(x => x.PersonalContactNo, new { id = "txtcontactno", placeholder = "XXXXXXXXXXX", @class = "form-control NumericTextBox mixinput", maxlength = "9", @onfocus = "RemoveValidation(this);" })
+                                    @Html.ValidationMessageFor(x => x.PersonalContactNo, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 form-wrapper-group" style="margin-top:30px;">
+                        <input type="button" id="firstcontinuebtn" style="padding:1.25% 15%;" class="center-block submit-btn" value="Create Account" onclick="FirstContinueClick(this);" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="div_FinalStep" class="row" style="display:none;">
+            <div id="divMsg1">
+
+            </div>
+
+            <div class="col-md-10 center-block col-float-none form-bg form-bg-bottom">
+                <h2 class="text-center" style="font-size:27px">Congratulations, you're almost done!</h2>
+                <p class="text-center" style="margin-bottom:30px; margin-top:20px;"><span><img src="../../Content/img/secure-loan.png" style="width: 15px; margin-right: 10px;"></span>Cash Mart uses 256-bit verified encryption to keep your data safe.</p>
+                <h3 class="text-contrast text-center text-bg-green padding-small col-md-7 center-block" style="float:none">Step 2: Fill Out the Necessary Information</h3>
+                <div class="form-wrap row">
+                    <div class="form-wrapper-group">
+                        <h4 class="text-contrast form-label">Login Details</h4>
+                        <h3><span class="hide" id="lblTimer"></span></h3>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Province</label>
+                                    @Html.TextBoxFor(x => x.Province, new { @id = "txtProvince", @class = "form-control", placeholder = "Province", maxlength = "100", @onfocus = "RemoveValidation(this);" })
+                                    <input type="hidden" id="province_id" name="province_id" />
+                                    @Html.ValidationMessageFor(x => x.Province, null, new { @class = "has-error" })
+                                    <label class="has-error" id="txtProvince_lbl"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Municipality or City</label>
+                                    <input type="text" id="txtCity" name="City_Name" class="form-control CharcaterTextBox" placeholder="Municipality or City" value="@Model.City_Name" onfocus="RemoveValidation(this);" maxlength="50" />
+                                    <input type="hidden" id="txtcityId" name="City" />
+                                    @Html.ValidationMessageFor(x => x.City_Name, null, new { @class = "has-error" })
+                                    <label class="has-error" id="txtCity_lbl"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Barangay</label>
+                                    @Html.TextBoxFor(x => x.Barangay, new
+                                    {
+                                        @id = "txtBarangay",
+                                        @class = "form-control",
+                                        placeholder = "Barangay",
+                                        maxlength = "100",
+                                        @onfocus = "RemoveValidation(this);"
+                                    })
+                                    <input type="hidden" id="txtBarangay_id" name="Barangay_id" />
+                                    @Html.ValidationMessageFor(x => x.Barangay, null, new { @class = "has-error" })
+                                    <label class="has-error" id="txtBarangay_lbl"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Complete Address</label>
+                                    @Html.TextBoxFor(x => x.Address, new { @id = "txtAddress", @class = "form-control", placeholder = "House #/ Apartment #/ Floor/Condo Unit/Blk, Lot, Phase, SubdivisionName/ Compound/ Street", onfocus = "RemoveValidation(this);", maxlength = "100" })
+                                    @Html.ValidationMessageFor(x => x.Address, null, new { @class = "has-error" })
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Date of Birth </label>
+                                    @Html.TextBoxFor(x => x.DOB, new { id = "txtdateofbirth", @class = "form-control", placeholder = "dd-mm-yyyy", onfocus = "RemoveValidation(this);", maxlength = "10", @readonly = "readonly" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Civil Status</label>
+                                    @Html.DropDownListFor(Model => Model.CivilStatus, new SelectList(ViewBag.CivilStatusData, "civilid", "civilname"), new { @class = "form-control", @id = "ddlcivilstatus", @onfocus = "RemoveValidation(this);" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>SSS No </label>
+                                    @Html.TextBoxFor(x => x.SSS_No, new { id = "txtSSS", @class = "form-control NumericTextBox", maxlength = "10", placeholder = "SSS No", onfocus = "RemoveValidation(this);" })
+                                    @Html.ValidationMessageFor(x => x.SSS_No, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        <h4 class="text-contrast form-label">Source Of Income</h4>
+                        <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Company/Business Name/Source of Remittance</label>
+                                    @Html.TextBoxFor(x => x.CompanyName, new { id = "txtcompanyname", @class = "form-control", placeholder = "Name", onfocus = "RemoveValidation(this);" })
+                                    @Html.ValidationMessageFor(x => x.CompanyName, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Company/Business/Source of Remittance Address</label>
+                                    @Html.TextBoxFor(x => x.CompanyAddress, new { id = "txtcompanybranchaddress", @class = "form-control", placeholder = "Address", onfocus = "RemoveValidation(this);" })
+                                    @Html.ValidationMessageFor(x => x.CompanyAddress, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Phone No</label>
+                                    @Html.TextBoxFor(x => x.Company_Phoneno, new { id = "txtcompanyphone", @class = "form-control NumericTextBox", placeholder = "Phone No", @maxlength = "11", @onfocus = "RemoveValidation(this);" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Joining Date</label>
+                                    @Html.TextBoxFor(x => x.JoinDate, new { id = "txtjoiningdate", @class = "form-control", maxlength = "10", placeholder = "dd-mm-yyyy", @readonly = "readonly", @onfocus = "RemoveValidation(this);" })
+
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Industry</label>
+
+                                    @Html.DropDownListFor(x => x.Occupation, new SelectList(ViewBag.OccupationData, "id", "occupation_name", "optionGroup", Model.Occupation), new { @id = "ddlIndustry", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Position in the Company(type NA if allottee)</label>
+                                    @Html.TextBoxFor(x => x.Designation, new { id = "txtposition", @class = "form-control CharcaterTextBox", placeholder = "Position in the Company", onfocus = "RemoveValidation(this);" })
+                                    @Html.ValidationMessageFor(x => x.Designation, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Gross Monthly Income/Remittance</label>
+                                    @Html.TextBoxFor(x => x.GrossIncome, new { id = "txtgrossmonthlyincome", @class = "form-control NumericTextBox", placeholder = "Gross Monthly Income", onfocus = "RemoveValidation(this);", maxlength = "9" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Pay Date1</label>
+                                    @Html.DropDownListFor(x => x.PayDate1, new SelectList(Model.PayDateList, "Value", "Text"), new { @id = "ddlPayDate1", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                                    @Html.ValidationMessageFor(x => x.PayDate1, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Pay Date2</label>
+                                    @Html.DropDownListFor(x => x.PayDate2, new SelectList(Model.PayDate2List, "Value", "Text"), new { @id = "ddlPayDate2", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                                    @Html.ValidationMessageFor(x => x.PayDate2, null, new { @class = "has-error" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        <h4 class="text-contrast form-label">Loan Details</h4>
+                        <div class="col-md-12">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Loan Amount</label>
+                                    @Html.TextBoxFor(x => x.Loan_Amount, new { id = "txtloanamount", @class = "form-control NumericTextBox", placeholder = "Loan Amount", maxlength = "9", onfocus = "RemoveValidation(this);" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Term Type</label>
+                                    @Html.DropDownListFor(Model => Model.TermType, new SelectList(ViewBag.TermTypeData, "Id", "term_Type"), new { @class = "form-control", @id = "ddltermtype", @onfocus = "RemoveValidation(this);" })
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="text-contrast"><span class="required-fields">*</span>Terms</label>
+                                    @Html.DropDownListFor(Model => Model.TermText, new SelectList(string.Empty, "Id", "term_Name"), "Select", new { @class = "form-control", @id = "ddlterm", @onfocus = "RemoveValidation(this);" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <label class="text-contrast"><span class="required-fields">*</span>Best Time to Call</label>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="col-md-4 col-sm-6">
+                                <div class="form-group">
+                                    <label class="text-contrast text-center center-block">Morning</label>
+                                    @Html.DropDownListFor(x => x.BestTimeToCallMorning_Id, new SelectList(Model.BestTimeToCallMorning, "Value", "Text"), new { @id = "ddl_BestTimeToCallMorning", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                                <div class="form-group">
+                                    <label class="text-contrast text-center center-block">Afternoon</label>
+                                    @Html.DropDownListFor(x => x.BestTimeToCallNoon_Id, new SelectList(Model.BestTimeToCallNoon, "Value", "Text"), new { @id = "ddl_BestTimeToCallNoon", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        <h4 class="text-contrast form-label">Documents</h4>
+                        <span class="accepted-file-block">Max size  5mb(JPEG, JPG, PNG or PDF)</span>
+                        <div class="col-md-12">
+                            <div class="form-group file_upload_wrap">
+                                <label class="text-contrast"><span class="required-fields"></span>Attach Goverment ID</label>
+                                <input type="file" id="govidFile" style="margin-top: 1%;" name="GovIdFile" onchange="return ValidateFile(this);" />
+                            </div>
+                            <div class="form-group file_upload_wrap">
+                                <label><span class="required-fields"></span>Attach Proof of Income</label>
+                                <input type="file" id="incomeFile" style="margin-top: 1%;" name="IncomeIdFile" onchange="return ValidateFile(this);" />
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group file_upload_wrap">
+                                <label><span class="required-fields"></span>Attach Company ID</label>
+                                <input type="file" id="companyidFile" style="margin-top: 1%;" name="CompanyIdFile" onchange="return ValidateFile(this);" />
+                            </div>
+                            <div class="form-group file_upload_wrap">
+                                <label><span class="required-fields"></span>Attach Proof of Billing</label>
+                                <input type="file" id="billingFile" style="margin-top: 1%;" name="BillingIdFile" onchange="return ValidateFile(this);" />
+                            </div>
+                        </div>
+
+                        <div class="col-md-12">
+                            <div class="form-group file_upload_wrap">
+                                <label>ATM Attachment</label>
+                                <input type="file" id="ATMidFile" style="margin-top: 1%;" name="AtmIdFile" onchange="return ValidateFile(this);" />
+                            </div>
+                            <div class="form-group file_upload_wrap">
+                                <label>Optional Attachment</label>
+                                <input type="file" id="otherFile" style="margin-top: 1%;" name="OtherIdFile" onchange="return ValidateFile(this);" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-wrapper-group">
+                        <div class="col-md-4">
+                            <div class=" form-group">
+                                <label class="text-contrast" id="lblcode"><span class="required-fields">*</span>Please Enter Code Received Via SMS</label>
+                                <div class="input-group">
+                                    @Html.TextBoxFor(x => x.code, new { id = "txtCode", @class = "form-control NumericTextBox", placeholder = "Code", @onfocus = "RemoveValidation(this);" })
+                                    <span class="input-group-btn">
+                                        <input type="button" class="btn btn-info btn-flat" id="btnVerify" value="Verify" />
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="text-contrast" id="lblResend"><span class="required-fields">*</span>Did Not Received Code Via SMS</label>
+                                <input type="button" class="btn btn-flat pull-right" id="btnResend" value="Resend" />
+                            </div>
+                        </div>
+                        <div class="form-wrapper-group">
+                            <div class="checkbox text-contrast center-block" style="float: none; width: 450px; margin-bottom: 30px; margin-top: 50px;">
+                                <label>
+                                    <input type="checkbox" checked="checked" id="Term_CheckBox" required="">Yes. I accept the <a href="~/Content/Privacy policy CMA Final .pdf" target="_blank" style="color:#006599">Terms of Agreement</a>.
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-wrapper-group">
+                            <input type="submit" style="padding:1.25% 15%;margin-top: 0;" class="center-block submit-btn" id="sendapplicationbtn" value="Complete Application" onclick="return Sendapplicationclick();" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<link rel="stylesheet" href="~/Content/App/jquery-ui_App.css">
+<script src="~/Content/App/jquery-1.10.2_App.js"></script>
+<script src="~/Content/App/jquery-ui_App.js"></script>
+<script type="text/javascript">
+    var TimerVar = 0;
+    var contactno = '';
+    var ApplicationNumber = 0;
+    var ApplicantName = '';
+    $(document).keypress(
+        function (event) {
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        });
+    function HideIt(id) {
+        $(id).hide();
+    }
+    $(document).ready(function () {
+        //Swal.fire(
+        //    'Good job!',
+        //    'You clicked the button!',
+        //    'success'
+        //)
+
+        $('input[type="text"]').bind("cut copy paste", function (e) {
+            e.preventDefault();
+        });
+        $("#txtCity").autocomplete({
+            source: function (request, response) {
+                console.log('%^&&^&', request.term);
+                $.ajax({
+                    url: '@(Url.Action("City", "Home"))',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term, ProvinceID: $("#province_id").val() },
+                    success: function (data) {
+                        if (data != null) {
+                            response($.map(data, function (item) {
+                                console.log(item);
+                                $("#txtcityId").val(item.cityid);
+                                return { label: item.cityname, value: item.cityname, Id: item.cityid };
+                            }));
+                        }
+                        else {
+                            }
+                    },
+                    error: function (data) {
+                    }
+                });
+            },
+            select: function (event, ui) {
+                console.log("ui : " + ui);
+                console.log("ui.item : " + ui.item);
+                console.log("City_Id : " + ui.item.Id);
+                $("#txtcityId").val(ui.item.Id);
+                $("#txtBarangay_id").val('0');
+                $("#txtBarangay").val('');
+
+            }
+        });
+      $("#txtBarangay").autocomplete({
+            source: function (request, response) {
+                console.log('%^&&^&', request.term);
+                $.ajax({
+                    url: '@(Url.Action("Barangay", "Home"))',
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term, CityID: $("#txtcityId").val() },
+                    success: function (data) {
+                        if (data != null) {
+                            response($.map(data, function (item) {
+                                console.log(item);
+                                $("#txtBarangay_id").val(item.Id);
+                                return { label: item.Barangay_Name, value: item.Barangay_Name, Id: item.Id };
+                            }));
+                        }
+                        else {
+                        }
+                    },
+                    error: function (data) {
+                    }
+                });
+           },
+          select: function (event, ui) {
+              console.log("ui : " + ui);
+              console.log("ui.item : " + ui.item);
+              console.log("Barangay_id : " + ui.item.Id);
+              $("#txtBarangay_id").val(ui.item.Id);
+          }
+      });
+      $("#txtProvince").autocomplete({
+        source: function (request, response) {
+            console.log('%^&&^&', request.term);
+            $.ajax({
+                url: '@(Url.Action("Province", "Home"))',
+                type: "POST",
+                dataType: "json",
+                data: { Prefix: request.term },
+                success: function (data) {
+                    if (data != null) {
+                        response($.map(data, function (item) {
+                            $("#province_id").val(item.Id);
+                            return { label: item.Province_Name, value: item.Province_Name, Id: item.Id };
+                        }));
+                    }
+                    else {
+                    }
+                },
+                error: function () {
+                }
+            });
+        },
+        select: function (event, ui) {
+            console.log("ui : " + ui);
+            console.log("ui.item : " + ui.item);
+            console.log("Province_Id : " + ui.item.Id);
+            $("#province_id").val(ui.item.Id);
+            $("#txtcityId").val('0');
+            $("#txtCity").val('');
+            $("#txtBarangay_id").val('0');
+            $("#txtBarangay").val('');
+        }
+      });
+
+        $("#sendapplicationbtn").hide();
+        $("#Term_CheckBox").prop('disabled', true);
+        $("#ddltermtype").change(function () {
+            var termTypeId = $("#ddltermtype").val();
+            var Amount = $("#txtloanamount").val();
+            $.ajax({
+                data: { id: termTypeId, Amount: Amount },
+                url: '@Url.Action("GetTerm","Home")',
+                success: function (terms) {
+                    if (terms != null) {
+                        $("#ddlterm").empty();
+                        $.each(terms, function (i, term) {
+                            $("#ddlterm").append('<option value="' + term.Value + '">' + term.Text + '</option>');
+                        });
+                    }
+                    else {
+                       }
+                },
+                error: function (terms) {
+                }
+            });
+        });
+        $('#Term_CheckBox').attr('checked', false); // Unchecks it
+         $('#Term_CheckBox').change(function () {
+             if (($(this).is(':checked'))) {
+                 $("#sendapplicationbtn").show();
+             } else {
+                 $("#sendapplicationbtn").hide();
+             }
+        });
+         $('#txtFirstname').bind('copy paste cut', function (e) {
+            e.preventDefault(); //disable cut,copy,paste
+            Swal.free('','Cut , Copy & Paste Options are Disabled !!','error');
+        });
+        $('#txtMiddlename').bind('copy paste cut', function (e) {
+            e.preventDefault(); //disable cut,copy,paste
+            alert('Cut , Copy & Paste Options are Disabled !!');
+        });
+        $('#txtLastname').bind('copy paste cut', function (e) {
+            e.preventDefault(); //disable cut,copy,paste
+            alert('Cut , Copy & Paste Options are Disabled !!');
+        });
+        $('#txtpersonalemail').bind('copy paste cut', function (e) {
+
+            e.preventDefault(); //disable cut,copy,paste
+            alert('Cut , Copy & Paste Options are Disabled !!');
+        });
+        $('#txtConfirmEmail').bind('copy paste cut', function (e) {
+
+            e.preventDefault(); //disable cut,copy,paste
+            alert('Cut , Copy & Paste Options are Disabled !!');
+        });
+        $('#txtcontactno').bind('copy paste cut', function (e) {
+            e.preventDefault(); //disable cut,copy,paste
+            alert('Cut , Copy & Paste Options are Disabled !!');
+        });
+        $('#show_hide').on('click', function () {
+            var passwordfield = $('#txtConfirmPassword');
+            var passwordtype = passwordfield.attr('type');
+            if (passwordtype == 'password')
+            {
+                passwordfield.attr('type', 'text');
+                $(this).text('hide');
+            }
+            else
+            {
+                passwordfield.attr('type', 'password');
+                $(this).text('show');
+            }
+        });
+
+
+    });
+      function validateTextBox(firstname) {
+
+        if (firstname.value !== "") {
+            if (/^[0-9A-Za-z ]+$/.test(firstname.value)) {
+            }
+            else {
+                alert("Only Characters And Space Allowed, Special Characters Not allowed");
+                $("#" + firstname.id).val("");
+                $("#" + firstname.id).focus();
+
+            }
+
+        }
+
+      };
+    function validateTextBoxSpace(name) {
+        if (name.value !== "") {
+            if (/^[0-9A-Za-z]+$/.test(name.value)) {
+
+
+            }
+            else {
+                alert("Only Characters Allowed , Space and Special Characters are not allowed");
+                $("#" + name.id).val("");
+                $("#" + name.id).focus();
+
+            }
+
+        }
+
+    };
+
+    //To Chekc Contact NUmber is Duplicate
+    function isContactNumberAvailable(ContactNumber) {
+        var availability = true;
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("IsContactNumberAvailable", "Home", new { area = "" })',
+            dataType: 'json',
+            data: { ContactNumber: ContactNumber },
+            success: function (result) {
+                if (result) {
+                    availability = false;
+                }
+            }
+        });
+        return availability;
+    }
+    //To Chekc Email Is Duplicate
+    function isEmailAvailable(email) {
+        var availability = true;
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("IsEmailAvailable", "Home", new { area = "" })',
+            dataType: 'json',
+            data: { emailid: email },
+            success: function (result) {
+                if (result) {
+
+                    availability = false;
+                }
+            }
+        });
+        return availability;
+    }
+    function ValidateEmail(mail) {
+        if (mail.value !== "") {
+            if (/[\w\-\._]+@@[\w\-\._]+\.\w{2,10}/.test(mail.value)) {
+            }
+            else {
+                alert("You have entered an invalid email address!");
+                $("#txtpersonalemail").addClass('has-error');
+                $("#" + mail.id).val("");
+                $("#" + mail.id).focus();
+
+            }
+        }
+
+    };
+    function ValidateConfirmEmail(mail) {
+        if (mail.value !== "") {
+            if (/[\w\-\._]+@@[\w\-\._]+\.\w{2,10}/.test(mail.value)) {
+            }
+            else {
+                alert("You have entered an invalid email address!");
+                $("#txtConfirmEmail").addClass('has-error');
+                $("#" + mail.id).val("");
+                $("#" + mail.id).focus();
+            }
+        }
+
+    };
+
+
+    // To Complete First Step
+    function FirstContinueClick(e) {
+        //
+        $(e).hide();
+        $("#hdnpersonalmail").val($("#txtpersonalemail").val());
+        var FirstName = $("#txtFirstname").val();
+        var MiddleName = $("#txtMiddlename").val();
+        var LastName = $("#txtLastname").val();
+        ApplicantName = $("#txtFirstname").val() + ' ' + $("#txtMiddlename").val() + ' ' + $("#txtLastname").val();
+        var personalemail = $("#txtpersonalemail").val();
+        var ConfirmEmail = $("#txtConfirmEmail").val();
+        contactno = $("#txtcontactno").val();
+        var password = $("#txtPassword").val();
+        var confirmpass = $("#txtConfirmPassword").val();
+        var mobilecode = $("#ddlStateList").val();
+        var flag = 0;
+
+        var MobileNo = mobilecode + contactno;
+        var ScrollElementId = '';
+        if (FirstName == '') {
+            $("#txtFirstname").addClass('has-error');
+            if (ScrollElementId == '') {
+                ScrollElementId = "txtFirstname";
+            }
+            flag++;
+        }
+        if (LastName == '') {
+            $("#txtLastname").addClass('has-error');
+            if (ScrollElementId == '') {
+                ScrollElementId = "txtLastname";
+            }
+            flag++;
+        }
+        if (personalemail == '') {
+            $("#txtpersonalemail").addClass('has-error');
+            if (ScrollElementId == '') {
+                ScrollElementId = "txtpersonalemail";
+            }
+            flag++;
+        }
+        if (ConfirmEmail == '') {
+            $("#txtConfirmEmail").addClass('has-error');
+            if (ScrollElementId == '') {
+                ScrollElementId = "txtConfirmEmail";
+            }
+            flag++;
+        }
+        if (contactno == '') {
+            $("#txtcontactno").addClass('has-error');
+            $("#txtcontactno").val('');
+            if (ScrollElementId == '') {
+                ScrollElementId = "txtcontactno";
+            }
+            flag++;
+        }
+        if (contactno != '') {
+            if (contactno.length != 9) {
+                alert("Contact Number not in correct format");
+                $("#txtcontactno").addClass('has-error');
+                $("#txtcontactno").val('');
+                if (ScrollElementId == '') {
+                    ScrollElementId = "txtcontactno";
+                }
+                flag++;
+            }
+        }
+
+        if (password == '') {
+            $("#txtPassword").addClass('has-error');
+            if (ScrollElementId == '') {
+                ScrollElementId = "txtPassword";
+            }
+            flag++;
+        }
+        if (confirmpass == '') {
+            $("#txtConfirmPassword").addClass('has-error');
+            if (ScrollElementId == '') {
+                ScrollElementId = "txtConfirmPassword";
+            }
+            flag++;
+        }
+        if (personalemail != '') {
+            if (!isEmailAvailable(personalemail)) {
+                $("#txtpersonalemail").addClass('has-error');
+                $("#txtpersonalemail").val('');
+                $("#txtConfirmEmail").addClass('has-error');
+                $("#txtConfirmEmail").val('');
+                if (ScrollElementId == '') {
+                    ScrollElementId = "txtConfirmEmail";
+                }
+                alert("E-Mail ID Already Exists..");
+                flag++;
+            }
+        }
+
+        if (MobileNo != '') {
+
+            if (!isContactNumberAvailable(MobileNo)) {
+                alert("Contact Number is Already Exist..");
+                $("#txtcontactno").addClass('has-error');
+                $("#txtcontactno").val('');
+                if (ScrollElementId == '') {
+                    ScrollElementId = "txtcontactno";
+                }
+                flag++;
+            }
+            else {
+            }
+        }
+
+        if (flag > 0) {
+            var msg = '<div onclick="HideIt(this);" class="alert alert-danger"><label>Please Enter Mandatory Field</label><a class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a></div>'
+            $("#divMsg").html(msg);
+            $("#divMsg").show(500);
+            $('html,body').animate({ scrollTop: $("#" + ScrollElementId).offset().top }, 800);
+            $(e).show();
+            return false;
+        }
+        else {
+
+            $.ajax({
+
+                type: 'GET',
+                url: '@Url.Action("InsertPersonalRecord", "Home")',
+                data: { FirstName: FirstName, MiddleName: MiddleName, LastName: LastName, personalMail: personalemail, persoanlContactno: MobileNo, password: password },
+                success: function (response) {
+                    console.log(response);
+                    SendMail();
+                    if (response != 0) {
+                        TimerVar = 1;
+                        ApplicationNumber = response;
+                        $('#htApplicationNo').val(response);
+                        $("#div_FirstStep").hide();
+                        $("#div_FinalStep").show();
+                        $("#lblTimer").timer({
+                            countdown: true,
+                            duration: '15m00s',
+                            callback: function () {
+                                $("#lblTimer").timer('remove');
+                                $.ajax({
+                                    type: 'POST',
+                                    data: { mobno: MobileNo, name: ApplicantName },
+                                    url: '@Url.Action("SendSMS", "Home")',
+                                    success: function (data) {
+                                        alert("Please check SMS for application status");
+                                    }
+                                });
+
+                            }
+
+                        });
+                    }
+                    else {
+                        alert("Error ! Please check your entries carefully or Contact Us");
+                    }
+                }
+            });
+        }
+    }
+    $('#btnResend').click(function () {
+        //
+            var code = $('#txtCode').val();
+            var mobilecode = $("#ddlStateList").val();
+            var contactno = $("#txtcontactno").val();
+            var MobileNo = mobilecode + contactno;
+            $.ajax({
+                url: '@Url.Action("ResendOTP", "Home")',
+                type: 'POST',
+                data: {mobno: MobileNo },
+                success: function (data) {
+                    //
+                    if (data) {
+                        alert('OTP Sent');
+                        $("#" + code.id).focus();
+                    }
+                    else {
+                        alert('Unsuccessfull');
+                    }
+                },
+                error: function (data) {
+                }
+            });
+     });
+
+
+        ///OTP VERIFY
+    $('#btnVerify').click(function () {
+          var code = $('#txtCode').val();
+            var mobilecode = $("#ddlStateList").val();
+            var contactno = $("#txtcontactno").val();
+        var MobileNo = mobilecode + contactno;
+        var flag = 0;
+
+        if (code == '') {
+            alert("Please Enter OTP");
+            $("#txtCode").addClass('has-error');
+            $("#txtCode").val('');
+
+            flag++;
+        }
+            if (code.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    url: '@(Url.Action("VerifyCode", "Home"))',
+                    data: {code: code,PersonalNO: MobileNo },
+                    success: function (data) {
+                        if (data != null) {
+                            if (data) {
+                                alert('OTP Verified');
+                                $("#sendapplicationbtn").hide();
+                                $('#txtCode').hide();
+                                $('#btnVerify').hide();
+                                $('#lblcode').hide();
+                                $('#lblResend').hide();
+                                $('#btnResend').hide();
+                                $('#Term_CheckBox').removeAttr('disabled');
+                            }
+                            else {
+                                alert('OTP Invalid Please Enter Correct OTP Code');
+                                $('#txtCode').addClass('has-error');
+                                $("#txtCode").val('');
+                                $("#sendapplicationbtn").hide();
+                            }
+                        }
+                        },
+                    error: function (data) {
+                    }
+
+                });
+            }
+       });
+
+        //Final Click
+    function Sendapplicationclick() {
+        //
+        var flag = true;
+        var Address = $("#txtAddress").val();
+        var city = $("#txtCity").val();
+        var dateofbirth = $("#txtdateofbirth").val().trim();
+        var civilstatus = $("#ddlcivilstatus option:selected").val();
+        var companyname = $("#txtcompanyname").val();
+        var companybranchaddress = $("#txtcompanybranchaddress").val();
+        var companyphoneno = $("#txtcompanyphone").val();
+        var joiningdate = $("#txtjoiningdate").val().trim();
+        var position = $("#txtposition").val();
+        var grossmonthlyincome = $("#txtgrossmonthlyincome").val();
+        var paydate1 = $("#ddlPayDate1").val();
+        var paydate2 = $("#ddlPayDate2").val();
+        var LoanAmount = $("#txtloanamount").val();
+        var termtext = $("#ddlterm option:selected").text();
+        var termtype = $("#ddltermtype option:selected").val();
+        var BestTimeToCallMorning = $("#ddl_BestTimeToCallMorning option:selected").val();
+        var BestTimeToCallNoon = $("#ddl_BestTimeToCallNoon option:selected").val();
+        var persoanlmailid = $("#hdnpersonalmail").val();
+        var Barangay = $("#txtBarangay").val();
+        var Province = $("#txtProvince").val();
+        var SSSNo = $("#txtSSS").val();
+        var Industry = $("#ddlIndustry").val();
+        var OtpCode = $("#txtCode").val();
+        var flag = 0;
+        var ScrollElementById = '';
+        if (Barangay == '') {
+            $("#txtBarangay").addClass('has-error');
+            $('#Term_CheckBox').attr('checked', false);
+
+            $('#sendapplicationbtn').hide();
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtBarangay";
+            }
+            flag++;
+        }
+
+        if (Province == '') {
+            $("#txtProvince").addClass('has-error');
+            $('#Term_CheckBox').attr('checked', false);
+            $('#sendapplicationbtn').hide();
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtProvince";
+            }
+            flag++;
+        }
+        if (Address == '') {
+            $("#txtAddress").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtAddress";
+            }
+            flag++;
+        }
+        if (city == '') {
+            $("#txtCity").addClass('has-error');
+            $('#Term_CheckBox').attr('checked', false);
+            $('#sendapplicationbtn').hide();
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtCity";
+            }
+            flag++;
+        }
+        if (dateofbirth == '') {
+            $("#txtdateofbirth").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtdateofbirth";
+            }
+            flag++;
+        }
+        if (civilstatus == '0') {
+            $("#ddlcivilstatus").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "ddlcivilstatus";
+            }
+            flag++;
+        }
+
+        if (SSSNo == '') {
+            $("#txtSSS").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtSSS";
+            }
+            flag++;
+        }
+        if (Industry == '-1') {
+            $("#ddlIndustry").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "ddlIndustry";
+            }
+            flag++;
+        }
+
+        if (companyname == '') {
+            $("#txtcompanyname").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtcompanyname";
+            }
+            flag++;
+        }
+        if (companybranchaddress == '') {
+            $("#txtcompanybranchaddress").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtcompanybranchaddress";
+            }
+            flag++;
+        }
+        if (joiningdate == '') {
+            $("#txtjoiningdate").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtjoiningdate";
+            }
+            flag++;
+        }
+        if (position == '') {
+            $("#txtposition").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtposition";
+            }
+            flag++;
+        }
+        if (grossmonthlyincome == '' || grossmonthlyincome == 0) {
+            $("#txtgrossmonthlyincome").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtgrossmonthlyincome";
+            }
+            flag++;
+        }
+        if (companyphoneno == '') {
+            $("#txtcompanyphone").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtcompanyphone";
+            }
+            flag++;
+        }
+        if (companyphoneno != '') {
+            if (companyphoneno.length <= 11 && companyphoneno.length >= 9) {
+            }
+            else {
+                alert("Company phone number is not valid.");
+                $("#txtcompanyphone").val('');
+                $("#txtcompanyphone").addClass('has-error');
+                if (ScrollElementById == '') {
+                    ScrollElementById = "txtcompanyphone";
+                }
+                flag++;
+            }
+        }
+        if (paydate1 == '0' || paydate1 == '') {
+            $("#ddlPayDate1").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "ddlPayDate1";
+            }
+            flag++;
+        }
+        if (paydate2 == '' || paydate2 == '-1') {
+            $("#ddlPayDate2").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "ddlPayDate2";
+            }
+            flag++;
+        }
+        if (LoanAmount == '' || LoanAmount == '0') {
+            $("#txtloanamount").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "txtloanamount";
+            }
+            flag++;
+        }
+        if (termtype == '-1' || termtype == '') {
+            $("#ddltermtype").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "ddltermtype";
+            }
+            flag++;
+        }
+        if (termtext == 'Select' || termtext == '') {
+            $("#ddlterm").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "ddlterm";
+            }
+            flag++;
+        }
+        if (BestTimeToCallMorning == '-1' || BestTimeToCallMorning == '') {
+            $("#ddl_BestTimeToCallMorning").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "ddl_BestTimeToCallMorning";
+            }
+
+            flag++;
+        }
+        if (BestTimeToCallNoon == '-1' || BestTimeToCallNoon == '') {
+            $("#ddl_BestTimeToCallNoon").addClass('has-error');
+            if (ScrollElementById == '') {
+                ScrollElementById = "ddl_BestTimeToCallNoon";
+            }
+            flag++;
+        }
+        if (OtpCode == '') {
+
+            $("#txtCode").addClass('has-error');
+            $("#txtCode").val('');
+            flag++;
+        }
+        var govidFile = $("#govidFile").val();
+        var incomeFile = $("#incomeFile").val();
+        var companyidFile = $("#companyidFile").val();
+        var billingFile = $("#billingFile").val();
+        var ATMidFile = $("#ATMidFile").val();
+        //
+        if (govidFile == '' || incomeFile == '' || companyidFile == '' || billingFile == '') {
+            alert("Incomplete attachment. Application with insufficient documents will be declined .");
+        }
+        if (flag > 0) {
+            var msg = '<div onclick="HideIt(this);" class="alert alert-danger"><label>Please Enter Mandatory Field</label><a class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a></div>'
+            $("#divMsg1").html(msg);
+            $("#divMsg1").show(500);
+            $('html,body').animate({ scrollTop: $("#" + ScrollElementById).offset().top }, 800);
+            return false;
+        }
+        else {
+            SendMail();
+            //$("demo").submit();
+            return true;
+        }
+    }
+
+
+
+     //To Send Mail AFter Complete First Step
+    function SendMail() {
+        //
+        var FirstName = $("#txtFirstname").val();
+        var MiddleName = $("#txtMiddlename").val();
+         var LastName = $("#txtLastname").val();
+         ApplicantName = FirstName + ' ' + MiddleName + ' ' + LastName;
+
+            var contactno = $("#txtcontactno").val();
+            var mobilecode = $("#ddlStateList").val();
+            var MobileNo = mobilecode + contactno;
+            var personalemail = $("#txtpersonalemail").val();
+            $.ajax({
+                url: '@Url.Action("SendEmail", "Home")',
+                type: 'post',
+                data: {"personalMail": personalemail,"name": ApplicantName,"persoanlContactno": MobileNo},
+                success: function (data) {
+                    if (!data) {
+                    }
+                }
+            });
+     }
+
+        //Match Password
+        function ComparePassword() {
+            var pwd = $("#txtPassword").val();
+            var confirmPwd = $("#txtConfirmPassword").val();
+            if (pwd != confirmPwd) {
+                alert("Confirm Password should match Password.")
+                $("#txtConfirmPassword").addClass('has-error');
+                $("#txtConfirmPassword").val('');
+                $("#txtConfirmPassword").focus();
+            }
+        }
+
+    //length of password
+    function PasswordLength(){
+        var Password = $("#txtPassword").val();
+        if (Password != '') {
+            if (Password.length < 6) {
+                alert("Password length should be greater than 5");
+                $("#txtPassword").addClass('has-error');
+                $("#txtPassword").val('');
+                $("#txtPassword").focus();
+            }
+        }
+    }
+    //length of confirm password
+    function ConfirmPasswordLength() {
+        var confirmPassword = $("#txtConfirmPassword").val();
+        if (confirmPassword != '') {
+            if (confirmPassword.length < 6) {
+                alert("Confirm Password length should be greater than 5");
+                $("#txtConfirmPassword").addClass('has-error');
+                $("#txtConfirmPassword").val('');
+                $("#txtConfirmPassword").focus();
+            }
+        }
+    }
+
+    //Match Email
+    function CompareEmail() {
+        var email = $("#txtpersonalemail").val();
+        var confirmemail = $("#txtConfirmEmail").val();
+        if (email != confirmemail) {
+            alert("Confirm Email should be match to Email.")
+            $("#txtConfirmEmail").addClass('has-error');
+            $("#txtConfirmEmail").val('');
+            $("#txtConfirmEmail").focus();
+        }
+    }
+        //Remove Validation
+        function RemoveValidation(obj) {
+            var id = obj.id;
+            $("#" + id).removeClass("has-error");
+            $("#" + id + "_lbl").text('');
+        }
+        //Datepicker
+    $("#txtdateofbirth").datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            maxDate: new Date()
+        });
+        $("#txtjoiningdate").datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            maxDate: new Date()
+        });
+    //Check Valid file
+    function CheckExtension(e) {
+        if (e != "") {
+            var validFilesTypes = ["jpg", "png", "jpeg", "pdf"];
+            var file = e;
+            var path = file.value;
+            var ext = path.substring(path.lastIndexOf(".") + 1, path.length).toLowerCase();
+            var isValidFile = false;
+            for (var i = 0; i < validFilesTypes.length; i++) {
+                if (ext == validFilesTypes[i]) {
+                    isValidFile = true;
+                    break;
+                }
+            }
+            if (!isValidFile) {
+                alert("Upload Image types file only");
+                var id = e.id;
+                $("#" + id).val('');
+            }
+            return isValidFile;
+        }
+        else
+            return false;
+    }
+    function ValidateFile(e) {
+        //
+        if (e != "" || e != null) {
+            var IsValidExtension = false;
+            var file = e;
+            var fileSize = file.files[0].size;
+            var isValidFile = false;
+            IsValidExtension = CheckExtension(e);
+            if (IsValidExtension) {
+                if (fileSize !== 0 && fileSize <= (5 * 1024 * 1024)) {
+                    isValidFile = true;
+                }
+                else if (!isValidFile) {
+                    alert("File Size Should not exceed 5 MB");
+                    var id = e.id;
+                    $("#" + id).val('');
+                }
+            }
+        }
+        else
+            return false;
+    }
+
+</script>
+
+<style>
+    .has-error {
+        border-color: red;
+        color: red;
+    }
+
+
+    .custom-file-input {
+        float: left;
+        background-color: #666;
+        padding: 10px;
+        width: 150px;
+        text-align: center;
+        border-radius: 3px;
+        -webkit-border-radius: 3px;
+        -moz-border-radius: 3px;
+        color: #fff;
+        box-shadow: inset 3px 4px 3px -1px #909090;
+        -moz-box-shadow: inset 3px 4px 3px -1px #909090;
+        -webkit-box-shadow: inset 3px 4px 3px -1px #909090;
+        cursor: pointer;
+    }
+
+    .mixselect {
+        width: 20% !important;
+        border-top-right-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+    }
+
+    .mixinput {
+        width: 80% !important;
+        border-top-left-radius: 0px !important;
+        border-bottom-left-radius: 0px !important;
+    }
+</style>
+

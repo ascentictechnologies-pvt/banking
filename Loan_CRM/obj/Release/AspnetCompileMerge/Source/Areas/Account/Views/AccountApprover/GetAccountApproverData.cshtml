@@ -1,0 +1,236 @@
+﻿@using System.Configuration;
+
+@model Loan_CRM.Models.DisbursementModel
+@{
+    ViewBag.Title = "Get Account Approver Data";
+    Layout = "~/Views/Shared/_LayoutAccount.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css">
+<script type="text/javascript" src="https://cdn.datatables.net/r/dt/pdfmake-0.1.18,dt-1.10.9/datatables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+
+@using (Html.BeginForm())
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">Account Approver List</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <input type="button" value="Pending Payments" class="btn btn-primary" style="float: right; margin-left:10px;" onclick="location.href='@Url.Action("PendingPayments","SummeryDetail",new { area = "Account" })'" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" value="EMI Section" class="btn btn-primary" style="float: right; margin-left:10px;" onclick="location.href='@Url.Action("AccountSummery","SummeryDetail",new { area = "Account" })'" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" value="Disbursement Screen" class="btn btn-primary" style="float: right; margin-left:10px;" onclick="location.href='@Url.Action("DisbursementList","Disbursement",new { area = "Account" })'" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div id="tableDiv">
+        <table id="tbl" class="table table-bordered table-responsive table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Application Number</th>
+                    <th>Date Applied</th>
+                    <th>Date Approved</th>
+                    <th>Bank Name</th>
+                    <th>Account Number</th>
+                    <th>Term</th>
+                    <th>Loan Amount</th>
+                    @*<th>Amount to be Disbursed</th>*@
+                    <th>Document</th>
+                    <th>Reject</th>
+                    <th>Approved</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#tbl").DataTable({
+            "processing": true, // for show progress bar
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false, // for disable multiple column at once
+            "pageLength": 10,
+            "lengthChange": false,
+            "bInfo": false,
+                "ajax": {
+                    "url": '@Url.Action("GetAccountData", "AccountApprover", new { Area = "Account" })',
+                    "type": "POST",
+                    "datatype": "json",
+
+                    error: function (data) {
+                        console.log(`Error :` + data);
+                    //    window.location.reload(1);
+                    }
+                },
+                "columns": [
+                    { "data": "Name", "name": "Name" },
+                    { "data": "ApplicationNo", "name": "ApplicationNo" },
+                    { "data": "DateApplied", "name": "DateApplied"},
+                    { "data": "ApprovedOn", "name": "ApprovedOn" },
+                    { "data": "BankName_or_Status", "name": "BankName_or_Status" },
+                    { "data": "BankAccountNumber_or_Status", "name": "BankAccountNumber_or_Status" },
+                    { "data": "TermComplete", "name": "TermComplete" },
+                    { "data": "Loan_Amount", "name": "Loan_Amount" },
+                   /* { "data": "AmountToDisbursement", "name": "AmountToDisbursement" },*/
+                    {
+                        "render": function (data, type, full, meta) {
+                            if (full.AtmUrl == null || full.AtmUrl == undefined || full.AtmUrl == "") {
+                                return '<a class="btn btn-danger">ATM (A)</a>';
+                            }
+                            else {
+                                return '<a class="btn btn-primary" href="/Home/DownloadAttachment?url=' + full.AtmUrl + '" target="_blank">ATM (A)</a>';
+                            }
+                        }
+                    },
+                    {
+                        "render": function (data, type, full, meta) { return '<input type="button" value="Reject" class="btn btn-danger" onclick="return RejectAccount(' + full.ApplicationNo + ',' + full.user_id + ');" />'; }
+                    },
+                    {
+                        "render": function (data, type, full, meta) { return '<input type="button" value="Approve" class="btn btn-primary" onclick="return AccountApprove(' + full.ApplicationNo + ',' + full.user_id + ',' + full.Loan_Amount+');" />'; }
+                    }
+                ]
+        });
+    });
+
+    function AccountApprove(obj, user_id,amount) {
+         $.ajax({
+            type:'POST',
+            url: '@Url.Action("UpdateApprover", "AccountApprover")',
+             data: { applicationno: obj, user_id: user_id, amount: amount},
+            success: function (response) {
+                if (response) {
+                    alert("Account Approved successfully");
+                    var url = '@Url.Action("GetAccountApproverData", "AccountApprover")';
+                    window.location.href = url;
+                }
+
+             },
+             error: function (data) {
+                 console.log(`Error :` + data);
+             //    window.location.reload(1);
+             }
+        })
+    }
+    function RejectAccount(obj, user_id) {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("RejectAccount", "AccountApprover")',
+            data: { applicationno: obj, user_id: user_id },
+            success: function (response) {
+                if (response) {
+                    alert("Account Reject successfully");
+                    var url = '@Url.Action("GetAccountApproverData", "AccountApprover")';
+                window.location.href = url;
+                }
+
+            },
+            error: function (data) {
+                console.log(`Error :` + data);
+            //    window.location.reload(1);
+            }
+        });
+    }
+    @*function Emailbtnclick(obj)
+    {
+        $.ajax({
+            type: 'POST',
+            url: '@Url.Action("SendAccountApproverEmail", "AccountApprover")',
+            data: { applicationno: obj },
+            success: function (response) {
+                if (response) {
+                    alert("Send Mail and SMS Successfully");
+                    var url = '@Url.Action("GetAccountApproverData", "AccountApprover")';
+                    window.location.href = url;
+                }
+                else {
+                    alert("Already Exist");
+                    var url = '@Url.Action("GetAccountApproverData", "AccountApprover")';
+                    window.location.href = url;
+                }
+            },
+            error: function (data) {
+        console.log(`Error :` + data);
+                window.location.reload(1);
+            }
+        });
+    }*@
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+
+    .table-responsive {
+        min-height: .01%;
+        overflow-x: auto;
+    }
+
+    .table-bordered {
+        border: 1px solid #ddd;
+    }
+
+    .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    table {
+        background-color: transparent;
+    }
+
+    table {
+        border-spacing: 0;
+        border-collapse: collapse;
+    }
+</style>
+

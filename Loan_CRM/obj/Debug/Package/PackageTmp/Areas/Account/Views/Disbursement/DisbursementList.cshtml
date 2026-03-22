@@ -1,0 +1,294 @@
+﻿@model Loan_CRM.Models.DisbursementModel
+
+@{
+    ViewBag.Title = "Get Loan Request For Disbursement";
+    Layout = "~/Views/Shared/_LayoutAccount.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+
+}
+<link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.2.4/css/buttons.dataTables.min.css">
+<script type="text/javascript" src="https://cdn.datatables.net/r/dt/pdfmake-0.1.18,dt-1.10.9/datatables.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.4/js/buttons.html5.min.js"></script>
+<script src="https://cdn.datatables.net/buttons/1.2.4/js/dataTables.buttons.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+@using (Html.BeginForm())
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">Loan Disbursement List</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td>
+                        <label><span style="color: #ff0000;">*</span>From Date</label>
+                        @Html.TextBoxFor(x => x.FromDate, new { @id = "txtFromDate", @Class = "form-control", placeholder = "Enter From Date(dd/mm/yyyy)", onfocus = "RemoveValidation(this);", @readonly = true })
+                    </td>
+                    <td>
+                        <label><span style="color: #ff0000;">*</span>To Date</label>
+                        @Html.TextBoxFor(x => x.ToDate, new { @id = "txtToDate", @Class = "form-control", placeholder = "Enter To Date(dd/mm/yyyy)", onfocus = "RemoveValidation(this);", @readonly = true })
+                    </td>
+                    <td style="text-align:center">
+                        <input type="submit" id="btn_submit" class="btn btn-primary" value="Search" />
+                    </td>
+                    <td style="text-align:center">
+                        @if (TempData["Result"] != null)
+                        {
+                            <input type="button" class="btn btn-primary" id="btnExcel" value="Export to Excel" />
+                        }
+                        else
+                        {
+                            <input type="button" class="btn btn-primary" id="btnExcel" value="Export to Excel" disabled />
+                        }
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-primary" value="Refresh" onclick="location.href= '@Url.Action("DisbursementList","Disbursement")'" />
+                    </td>
+                    <td style="text-align:center">
+                        <input type="button" class="btn btn-primary btn-flat" value="Back" onclick="location.href='@Url.Action("GetAccountApproverData", "AccountApprover")'" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <table id="tblDisbursement" class="table table-bordered dataTable no-footer">
+        <thead>
+            <tr>
+                <th>Bank Name</th>
+                <th>Account Number</th>
+                <th>Name</th>
+                <th>Amount</th>
+                <th>Date of Export</th>
+                <th>Contract No</th>
+
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+       
+    </table>
+    <div id="tblhidden" style="display:none;">
+        <table>
+            <thead>
+                <tr>
+                    <th>Bank Name</th>
+                    <th>Account Number</th>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Date of Export</th>
+                    <th>Contract No</th>
+
+                </tr>
+            </thead>
+            <tbody id="ExportData">
+               
+            </tbody>
+            
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Result = false;
+        var FromDate = $("#txtFromDate").val().trim();
+        var ToDate = $("#txtToDate").val().trim();
+        $("#tblDisbursement").DataTable({
+            "processing": true, // for show progress bar
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false, // for disable multiple column at once
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]],
+            //"pageLength": 10,
+            //"lengthChange": true,
+            "bInfo": true,
+           // "dom": 'Bfrtip',
+
+            "ajax": {
+                "url": '@Url.Action("GetDisbursementData", "Disbursement", new { Area = "Account" })',
+                "type": "POST",
+                "data": {
+                    "FromDate": FromDate,
+                    "ToDate": ToDate
+                },
+                "datatype": "json",
+                error: function (data) {
+                    console.log(`Error :` + data);
+                //    window.location.reload(1);
+                }
+            },
+            "columns": [
+                { "data": "BankName_or_Status", "name": "BankName_or_Status" },
+                { "data": "BankAccountNumber_or_Status", "name": "BankAccountNumber_or_Status" },
+                { "data": "Name", "name": "Name" },
+                { "data": "Loan_Amount", "name": "Loan_Amount" },
+                { "data": "Disbursement_FullDate", "name": "Disbursement_FullDate" },
+                { "data": "ContractNumber", "name": "ContractNumber" }
+            ]
+        });
+        $("#btnExcel").click(function (e) {
+   
+            var FromDate=$("#txtFromDate").val();
+            var ToDate = $("#txtToDate").val();
+            if (FromDate != '' && ToDate != '') {
+                $.ajax({
+                    data: { FromDate: FromDate, ToDate: ToDate },
+                    async: false,
+                    url: '@Url.Action("UpdateDisbursementList", "Disbursement")',
+                    success: function (data) {
+                        if (data != "") {
+                            var dt = new Date();
+                            var day = dt.getDate();
+                            var month = dt.getMonth() + 1;
+                            var year = dt.getFullYear();
+                            var hour = dt.getHours();
+                            var mins = dt.getMinutes();
+                            var _finaldata = "";
+                            $.each(data, function (key, value) {
+                                _finaldata += '<tr><td>' + value.BankName_or_Status + '</td><td>\'' + value.BankAccountNumber_or_Status + '</td><td>' + value.Name + '</td><td>' + value.Loan_Amount + '</td><td>' + value.Disbursement_FullDate + '</td><td>' + value.ContractNumber + '</td></tr>';
+                            });
+                            $('#ExportData').html(_finaldata);
+                            var table_div = document.getElementById('tblhidden');
+                            var postfix = day + "." + month + "." + year + "_" + hour + "." + mins;
+                            var a = document.createElement('a');
+                            var data_type = 'data:application/vnd.ms-excel';
+                            var table_html = table_div.outerHTML.replace(/ /g, '%20');
+                            a.href = data_type + ', ' + table_html;
+                            a.download = 'Disbursment' + postfix + '.xls';
+                            a.click();
+                            e.preventDefault();
+                        }
+                        window.location.reload(1);
+                    },
+                    error: function (data) {
+                        console.log(`Error :` + data);
+                    //    window.location.reload(1);
+                    },
+                    complete: function () {
+                        $("#txtFromDate").val("");
+                        $("#txtToDate").val("");
+                        }
+                });
+            }
+           
+        });
+        $("#btn_submit").click(function () {
+
+            var flag = true;
+            var FromDate=$("#txtFromDate").val().trim();
+            var ToDate = $("#txtToDate").val().trim();
+            if (FromDate == '')
+            {
+                $("#txtFromDate").addClass('has-error');
+                flag = false;
+            }
+            if (ToDate == '')
+            {
+                $("#txtToDate").addClass('has-error');
+                flag = false;
+            }
+            if(flag==true)
+            {
+                $("#btnExcel").prop('disabled', false);
+            }
+            return flag;
+        });
+        $("#txtFromDate").datepicker({
+            dateFormat: 'dd-mm-yy',
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            maxDate: new Date()
+        });
+        $('#txtFromDate').change(function () {
+            var from = $('#txtFromDate').datepicker('getDate');
+            var date_diff = Math.ceil((from.getTime() - Date.parse(new Date())) / 86400000);
+            var maxDate_d = date_diff + 14 + 'd';
+            date_diff = date_diff + 'd';
+            $('#txtToDate').val('').removeAttr('disabled').removeClass('hasDatepicker').datepicker({
+                dateFormat: 'dd-mm-yy',
+                minDate: date_diff,
+                maxDate: maxDate_d
+            });
+        });
+        $("#txtToDate").datepicker({
+            dateFormat: "dd-mm-yy",
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0"
+        });
+    });
+    function UpdateDisburmentList(FromDate,ToDate)
+    {
+        var flag = false;
+
+    }
+    //Remove Validation
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+
+    .table-responsive {
+        min-height: .01%;
+        overflow-x: auto;
+    }
+
+    .table-bordered {
+        border: 1px solid #ddd;
+    }
+
+    .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    table {
+        background-color: transparent;
+    }
+
+    table {
+        border-spacing: 0;
+        border-collapse: collapse;
+    }
+</style>
+

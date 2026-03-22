@@ -1,0 +1,41 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\dell\\source\\repos\\cashmartweb\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{B7C79F6E-5048-42AA-BA1D-C277D723053A}|Loan_CRM\\Loan_CRM.csproj|c:\\users\\dell\\source\\repos\\cashmartweb\\loan_crm\\models\\credolabmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B7C79F6E-5048-42AA-BA1D-C277D723053A}|Loan_CRM\\Loan_CRM.csproj|solutionrelative:loan_crm\\models\\credolabmodel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 1,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{57d563b6-44a5-47df-85be-f4199ad6b651}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "CredolabModel.cs",
+              "DocumentMoniker": "C:\\Users\\dell\\source\\repos\\cashmartweb\\Loan_CRM\\Models\\CredolabModel.cs",
+              "RelativeDocumentMoniker": "Loan_CRM\\Models\\CredolabModel.cs",
+              "ToolTip": "C:\\Users\\dell\\source\\repos\\cashmartweb\\Loan_CRM\\Models\\CredolabModel.cs",
+              "RelativeToolTip": "Loan_CRM\\Models\\CredolabModel.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA8AAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2024-09-17T15:34:47.091Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+
+@{
+    ViewBag.Title = "Transfer With Departments Lead";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+@using (Html.BeginForm("TransferWithDepartments", "Admin", FormMethod.Post))
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-4">
+                    <h4>Transfer Leads within Departments</h4>
+                </div>
+                <div class="col-md-2">
+                    <label>Assign From</label>
+                    @Html.DropDownListFor(x => x.userfrom, new List<SelectListItem> {
+                           new SelectListItem { Value = "0" , Text = "Checker" },
+                           new SelectListItem { Value = "1" , Text = "Verifier" },
+                           new SelectListItem { Value = "2" , Text = "Approver" },
+                        }, new { @class = "form-control", @id = "ddluserlistfrom" })
+                    <input type="hidden" name="checkerfrom" value="@Model.userfrom" id="lblCheckerFrom" />
+                </div>
+                <div class="col-md-2" id="ddluserlistto">
+                    <label>Assign To</label>
+                    @Html.DropDownListFor(x => x.userto, new List<SelectListItem> { }, new { @class = "form-control", @id = "userlistto" })
+                </div>
+                <div class="col-md-2">
+                    <input type="submit" id="btn_Search" style="float:right" class="btn btn-success btn-flat" value="Search" name="CommandName" />
+                    <input type="submit" id="btn_ReAssign" style="float:right" class="btn btn-success btn-flat" value="ReAssign" name="CommandName" />
+                </div>
+                <div class="col-md-2">
+                    <input type="submit" onclick="window.location.href='@Url.Action("TransferWithDepartments","Admin")'" id="btn_ReAssign" style="float:right" class="btn btn-danger btn-flat" value="Back" name="CommandName" />
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <table id="tblRecord" class="table table-bordered table-responsive table-striped">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="ckbCheckAll" /></th>
+                        <th>Application No</th>
+                        <th>Date Applied</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Contact Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model.ApplicationRecordList != null && Model.ApplicationRecordList.Count > 0)
+                        {
+                            foreach (var item in Model.ApplicationRecordList)
+                            {
+                                Html.RenderPartial("_ApplicationModelListP", item);
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var view = '@Model.view';
+        if (view == 0) {
+            $("#btn_Search").show();
+            $("#btn_ReAssign").hide();
+            $("#ddluserlistto").hide();
+
+        }
+        else {
+            var userassignfrom = '@Model.userfrom';
+            if (userassignfrom == '1') {
+                var newOption = $('<option value="0">Checker</option><option value="2">Approver</option>');
+                $('#userlistto').append(newOption);
+            }
+            else {
+                var newOption = $('<option value="1">Verifier</option>');
+                $('#userlistto').append(newOption);
+            }
+            $("#ddluserlistfrom").attr("disabled", "disabled")
+            $("#btn_Search").hide();
+            $("#btn_ReAssign").show();
+            $("#ddluserlistto").show();
+        }
+        $("#ddluserlistfrom").change(function () {
+
+            var SelectedVal = $("#ddluserlistfrom :selected").val();
+            $("#lblCheckerFrom").val(SelectedVal);
+        });
+    });
+     $(document).ready(function () {
+    $("#ckbCheckAll").click(function () {
+        $(".checkBoxClass").prop('checked', $(this).prop('checked'));
+    });
+
+});
+</script>

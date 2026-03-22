@@ -1,0 +1,93 @@
+﻿body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-size:12px;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.table_div {
+    overflow-y: scroll;
+    max-height: 450px;
+    position: relative;
+}
+
+.webGrid {
+    margin: 4px;
+    border-collapse: collapse;
+    width: 500px;
+    background-color: #B4CFC3;
+}
+
+.header {
+    background-color: #C1D4E6;
+    font-weight: bold;
+    color: #FFF;
+}
+
+.webGrid th, .webGrid td {
+    border: 1px solid #C0C0C0;
+    padding: 5px;
+}
+
+.alt {
+    background-color: #E4E9F5;
+    color: #000;
+}
+
+.gridHead a:hover {
+    text-decoration: underline;
+}
+
+.description {
+    width: auto;
+}
+
+.select {
+    background-color: #71857C;
+}
+
+.btn {
+    
+    font-size: 11px !important;
+    
+}
+
+.Button_setting {
+    padding-top: 394px;
+}
+
+.top-buffer {
+    margin-top: -10px;
+}
+
+.field-validation-valid span {
+    color: red;
+}
+
+
+@media (min-width: 768px) {
+    .modal-dialog {
+        width: 1086px !important;
+        margin: 30px auto;
+    }
+}

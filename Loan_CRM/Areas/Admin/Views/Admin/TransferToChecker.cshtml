@@ -1,0 +1,106 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+
+@{
+    ViewBag.Title = "Transfer To Checker";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+
+@using (Html.BeginForm("TransferToChecker", "Admin", FormMethod.Post))
+{
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>Transfer To Checker</h4>
+                </div>
+                <div class="col-md-3">
+                    <select id="ddlrecord" class="form-control" onchange="GetRecords(this.value);">
+                        <option value="0">---Select Number of Records---</option>
+                        <option value="100">100</option>
+                        <option value="250">250</option>
+                        <option value="500">500</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="submit" style="float:right" class="btn btn-success btn-flat" id="btnTransfer" value="Transfer To Checker" />
+                </div>
+            </div>
+        </div>
+        <div class="panel-body">
+            <table id="tblRecord" class="table table-bordered table-responsive table-striped">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="ckbCheckAll" /></th>
+                        <th>Application No</th>
+                        <th>Date Applied</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Contact Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model.ApplicationRecordList != null && Model.ApplicationRecordList.Count > 0)
+                        {
+                            foreach (var item in Model.ApplicationRecordList.OrderBy(x => x.ApplicationNo).ToList())
+                            {
+                                Html.RenderPartial("_ApplicationBulkTransfer", item);
+
+                            }
+                        }
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#btnTransfer").show();
+        var count = '@Model.ApplicationRecordList.Count';
+        if (count == '0') {
+            $("#btnTransfer").hide();
+        }
+    });
+    function GetRecords(val) {
+
+        var records = $("#ddlrecord option:selected").val();
+        var url = '@Url.Action("TransferToChecker", "Admin")?count=' + records;
+        window.location.href = url;
+    }
+     $(document).ready(function () {
+    $("#ckbCheckAll").click(function () {
+        $(".checkBoxClass").prop('checked', $(this).prop('checked'));
+    });
+
+});
+</script>

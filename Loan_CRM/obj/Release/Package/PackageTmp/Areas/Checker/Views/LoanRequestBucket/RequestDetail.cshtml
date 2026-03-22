@@ -1,0 +1,922 @@
+﻿@model Loan_CRM.Areas.Checker.Models.Chekerinformation
+@{
+    ViewBag.Title = "Request Detail";
+    Layout = "~/Views/Shared/_LayoutChecker.cshtml";
+}
+
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+
+@if (TempData["Result"] != null)
+{
+    <h2>@Convert.ToString(TempData["Result"])</h2>
+}
+
+<h3 style="margin-left: 16px;"></h3>
+
+@using (@Html.BeginForm("RequestDetail", "LoanRequestBucket", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div id="modalNotify" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="RefreshNotifyModel()">&times;</span>
+                <h3>Notification Template</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Name</label>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.DropDownListFor(Model => Model.templatename, new SelectList(ViewBag.NotificationTemplateList, "id", "NotificationTemplateName"), new { @class = "form-control", @id = "ddlNotificationtemplate", @onchange = "GetNotificationValue();" })
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Description</label>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea class="form-control" id="txtnotifydescription" readonly></textarea>
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Definition</label>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea class="form-control" id="txtnotifydefinition" readonly></textarea>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary btn-flat" id="btnPaySubmit" value="Send" onclick="SendNotify()" />
+                <input type="button" class="btn btn-danger btn-flat" id="btnPayCancel" value="Cancel" onclick="RefreshNotifyModel()" />
+            </div>
+        </div>
+    </div>
+
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">Loan Request Detail</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <input type="hidden" name="GovUrl" value="@ViewBag.govidurl" />
+        <input type="hidden" name="CompUrl" value="@ViewBag.companyidurl" />
+        <input type="hidden" name="IncomeUrl" value="@ViewBag.incom_url" />
+        <input type="hidden" name="BillUrl" value="@ViewBag.billingurl" />
+        <input type="hidden" name="OthUrl" value="@ViewBag.other_url" />
+        <input type="hidden" name="ATMUrl" value="@ViewBag.atm_url" />
+        <input type="hidden" name="applicationno" value="@Model.applicationno" />
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    @if (Model.applicationno>0)
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("GetSmileData", "Home", new { Area = "" })?ApplicationNo=@Model.applicationno' title="Employment Details" target="_blank">Employment Details</a></td>
+                    }
+                    @if (!String.IsNullOrWhiteSpace(Model.personalemail))
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("GetOldData", "Home", new { Area = "" })?Emailid=@Model.personalemail' title="Offline Loan History" target="_blank">Offline Loan History</a></td>
+                    }
+                    @if (Model.applicationno > 0)
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("LoanHistory", "Home", new { Area = "" })?UserID=@Model.user_id&ActionName=@Request.QueryString["ActionName"]&ApplicationNo=@Model.applicationno' title="Loan History" target="_blank">Loan History</a></td>
+                    }
+                    @if (ViewBag.govidurl == "")
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="GovermentID Document missing!">ID1</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@ViewBag.govidurl' title="GovermentID Document" target="_blank">ID1</a></td>
+                    }
+                    @if (ViewBag.companyidurl == "")
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="Company Document missing!">ID2</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@ViewBag.companyidurl' target="_blank" title="Company Document">ID2</a></td>
+                    }
+                    @if (ViewBag.incom_url == "")
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="Income Document missing!">PI</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@ViewBag.incom_url' target="_blank" title="Income Document">PI</a></td>
+                    }
+                    @if (ViewBag.billingurl == "")
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="Bill Document missing!">PB</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@ViewBag.billingurl' title="Bill Document" target="_blank">PB</a></td>
+                    }
+                    @if (ViewBag.other_url == "")
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="Other Document missing!">O</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@ViewBag.other_url' target="_blank" title="Other Document">O</a></td>
+                    }
+                    @if (ViewBag.atm_url == "")
+                    {
+                        <td style="text-align:center"><a class="btn btn-danger" title="ATM Document missing!">A</a></td>
+                    }
+                    else
+                    {
+                        <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@ViewBag.atm_url' target="_blank" title="ATM Document">A</a></td>
+                    }
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div id="myModal" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="RefreshHistoryModel();">&times;</span>
+                <h3>Remark History</h3>
+            </div>
+            <div class="modal-body">
+                <div class="col-md-12">
+                    <table id="tblRemark" class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Application No</th>
+                                <th>Remark</th>
+                                <th>Remark By</th>
+                                <th>Remark On</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblRemarkBody"></tbody>
+                    </table>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-lg-6 col-xs-6">
+            <table border="1" class="table table-bordered table-responsive table-striped">
+                <tr>
+                    <td style="width:30%"> <label>Application No:-</label></td>
+                    <td style="width:70%" colspan="2"> <span id="span_address">@Model.applicationno</span></td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Name:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_name">@Model.name</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Address:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_address">
+                            @{
+                                var _Address = String.Empty;
+                                if (!String.IsNullOrWhiteSpace(Model.address))
+                                {
+                                    _Address += Model.address.ToUpper();
+                                    _Address += ",";
+                                }
+                                if (!String.IsNullOrWhiteSpace(Model.street))
+                                {
+                                    _Address += Model.street.ToUpper();
+                                    _Address += ",";
+                                }
+                                if (!String.IsNullOrWhiteSpace(Model.barangay_name))
+                                {
+                                    _Address += Model.barangay_name.ToUpper();
+                                    _Address += ",";
+                                }
+                                if (!String.IsNullOrWhiteSpace(Model.cityname))
+                                {
+                                    _Address += Model.cityname.ToUpper();
+                                    _Address += ",";
+                                }
+                                if (!String.IsNullOrWhiteSpace(Model.province_name))
+                                {
+                                    _Address += Model.province_name.ToUpper();
+                                    _Address += ",";
+                                }
+                                if (!String.IsNullOrWhiteSpace(Model.zipcode))
+                                {
+                                    _Address += Model.zipcode.ToUpper();
+                                }
+                            }
+                            @_Address
+
+                        </span>
+                    </td>
+
+
+                </tr>
+                <tr>
+                    <td>
+                        <label>Date of Birth:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_datofbirth">@Model.dateofbirth</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Age:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_age">@Model.age</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Gender:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_age">@Model.gender</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Contact NO 1:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_contactone" style="overflow-wrap:break-word">@Model.personalcontactno</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Alternate No:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_homephoneno" style="overflow-wrap:break-word">@Model.homephoneno</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Personal Email Address:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_email">@Model.personalemail</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Employer Name:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_employername">@Model.companyname</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Employer Address:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_employraddress">@Model.companyaddress.ToUpper()</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Employer Contact No.:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_employercontectno" style="overflow-wrap:break-word">@Model.company_phoneno</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Current Position handle:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_posision">@Model.designation</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Date Hired:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_datehired">@Model.date_joining</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>SSS no./GSIS no./TIN no.:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_grossincome">@Model.sss_no</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Doc Type:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_doctype">@Model.gov_doc_type</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Pay Date 1:-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_paydate">@Model.paydate1</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Pay Date 2:-</label>
+                    </td>
+                    <td colspan="2">
+                        @if (Model.paydate2 == 32)
+                        {
+                            <span id="span_paydate">None</span>
+                        }
+                        else
+                        {
+                            <span id="span_paydate">@Model.paydate2</span>
+                        }
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Facemap ID :-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_Jumio">@Model.jumioreference</span>
+                    </td>
+                </tr>
+                 <tr>
+                    <td>
+                        <label>Transaction ID :-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_Jumio">@Model.transactionid</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Document Status :-</label>
+                    </td>
+                    <td colspan="2">
+                        <span id="span_facemap">@Model.facemapstatus</span>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <label>Add Contact No:-</label>
+                    </td>
+                    <td>
+                        <select id="ddlMobileExtension" class="form-control col-md-4 mixselect">
+                            <option value="09">09</option>
+                            <option value="08">08</option>
+                        </select>
+                        @Html.TextBoxFor(x => x.add_personalcontactno, new { id = "txtcontactno", placeholder = "XXXXXXXXXXX", @class = "form-control NumericTextBox mixinput", maxlength = "9", @onfocus = "RemoveValidation(this);" })
+                    </td>
+                    <td>
+                        <input type="button" onclick="AddPersonalContact();" class="btn btn-primary btn-flat btn-sm" value="Add" />
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>Add Employer Contact No:-</label>
+                    </td>
+                    <td>
+                        <select id="ddlCompanyMobileExtension" class="form-control col-md-4 mixselect">
+                            <option value="09">09</option>
+                            <option value="08">08</option>
+                        </select>
+                        @Html.TextBoxFor(x => x.add_company_phoneno, new { id = "txtemployercontactno", placeholder = "XXXXXXXXXXX", @class = "form-control NumericTextBox mixinput", maxlength = "9", @onfocus = "RemoveValidation(this);" })
+                    </td>
+                    <td>
+                        <input type="button" onclick="AddCompanyPhoneNo();" class="btn btn-primary btn-flat btn-sm" value="Add" />
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="col-md-6 col-sm-6 col-lg-6 col-xs-6">
+            <table border="1" class="table table-bordered table-responsive table-striped">
+                <tr>
+                    <td><label>Attach Gov't ID</label></td>
+                    <td><label>Attach Company ID</label></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="file" id="govid" name="GovIdFile" onchange="return ValidateFile(this);" />
+                        <span style="color: #ff0000;">*Max size 5 MB , jpg,png,jpeg or pdf</span>
+                    </td>
+                    <td>
+                        <input type="file" id="companyid" name="CompanyIdFile" onchange="return ValidateFile(this);" />
+                        <span style="color: #ff0000;">*Max size 5 MB , jpg,png,jpeg or pdf</span>
+                    </td>
+                </tr>
+            </table>
+            <table border="1" class="table table-bordered table-responsive table-striped">
+                <tr>
+                    <td><label>Attach Proof of Billing</label></td>
+                    <td><label>Attach Proof of Income</label></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="file" id="billing" name="BillingIdFile" onchange="return ValidateFile(this);" />
+                        <span style="color: #ff0000;">*Max size 5 MB , jpg,png,jpeg or pdf</span>
+                    </td>
+                    <td>
+                        <input type="file" id="income" name="IncomeIdFile" onchange="return ValidateFile(this);" />
+                        <span style="color: #ff0000;">*Max size 5 MB , jpg,png,jpeg or pdf</span>
+                    </td>
+                </tr>
+            </table>
+            <table border="1" class="table table-bordered table-responsive table-striped">
+                <tr>
+                    <td><label>Attach Other File</label></td>
+                    <td><label>Attach ATM Card Image File</label></td>
+                </tr>
+                <tr>
+                    <td>
+                        <input type="file" id="otherfile" name="OtherIdFile" onchange="return ValidateFile(this);" />
+                        <span style="color: #ff0000;">*Max size 5 MB , jpg,png,jpeg or pdf</span>
+                    </td>
+                    <td>
+                        <input type="file" id="atm" name="AtmIdFile" onchange="return ValidateFile(this);" />
+                        <span style="color: #ff0000;">*Max size 5 MB , jpg,png,jpeg or pdf</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><input type="submit" class="btn btn-primary pull-right" name="CommandName" value="Save Upload Files" /></td>
+                </tr>
+            </table>
+            <table border="1" class="table table-bordered table-responsive table-striped">
+                <tr>
+                    <td colspan="2"><label>Enter Remark</label></td>
+                </tr>
+                <tr>
+                    <td rowspan="2">
+                        @Html.TextAreaFor(x => x.remarks, new { id = "txt_Remark", @class = "form-control", style = "height:119px;", onfocus = "RemoveValidation(this);" })
+                    </td>
+                    <td><input type="button" id="btn_RemarkSave" value="Save Remarks" class="btn btn-primary" /></td>
+                </tr>
+                <tr>
+                    <td><input type="button" id="myBtn" value="Remark History" onclick="GetRemarks();" class="btn btn-primary" style="" /></td>
+                </tr>
+            </table>
+            <table border="1" class="table table-bordered table-responsive table-striped">
+                <tr>
+                    <td><button type="button" style="margin-left: 1.3%;" class="btn btn-primary btn-flat" id="bth_Back">BACK</button></td>
+                    <td><input type="submit" class="btn btn-primary btn-flat" name="CommandName" id="next_btn" value="NEXT"></td>
+                    <td><button type="button" class="btn btn-primary btn-flat" id="call_btn">FOR CALL</button></td>
+                    <td><button type="button" class="btn btn-primary btn-flat" id="btn_notification">Manual Notify</button></td>
+                    <td>
+                        <button type="button" class="btn btn-primary btn-flat" id="decline_btn">DECLINE</button>
+                        @ViewBag.Name
+                        @if (Convert.ToString(TempData["actionname"]) == "InsufficientDocument")
+                        {
+                            <text>
+                                <script type="text/javascript">
+                                    $("#insufficient_Doc_btn").hide();
+                                </script>
+                            </text>
+                        }
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        var modal = document.getElementById('myModal');
+        var span = document.getElementsByClassName("close").onclick = function () {
+            debugger;
+            modal.style.display = "none";
+        };
+        span.onclick = function () {
+            debugger;
+            modal.style.display = "none";
+        }
+        window.onclick = function (event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        };
+        $("#insufficient_Doc_btn").click(function () {
+            var ApplicationId = '';
+            ApplicationId = @Model.applicationno;
+            var Name = '@Model.name';
+            var number = "@Model.personalcontactno";
+            var final = number.split(',');
+            var count = parseInt(final.length);
+            var phoneno = final[count - 1];
+            if (ApplicationId != '') {
+                $.ajax({
+                    data: { ApplicationId: ApplicationId, ContactNo: phoneno, Name: Name, Email: '@Model.personalemail' },
+                    url: '@Url.Action("UpdateInsufficientDoc", "LoanRequestBucket")',
+                    success: function (data) {
+                        if (data) {
+                            alert("Record Updated Succussfully..");
+                            window.location.href = '@Url.Action(Request.QueryString["Actionname"], "LoanRequestBucket")';
+                        }
+                        else {
+                            window.location.reload(1);
+                        }
+                    }
+                });
+            }
+        });
+        $("#bth_Back").click(function () {
+            var ApplicationId =@Model.applicationno;
+            $.ajax({
+                data:{ApplicationId:ApplicationId},
+                url:'@Url.Action("UpdateIsPickedChecker", "LoanRequestBucket")',
+                success:function(data)
+                {
+                    if (data)
+                    {
+                        window.location.href='@Url.Action(Request.QueryString["Actionname"], "LoanRequestBucket")';
+                    }
+                    else
+                    {
+                        window.location.reload(1);
+                    }
+                }
+            });
+        });
+        $("#btn_RemarkSave").click(function () {
+            var Remark = $("#txt_Remark").val().trim();
+            var flag = true;
+            if(Remark=="")
+            {
+                $("#txt_Remark").addClass('has-error');
+                flag=false;
+            }
+            if(flag==true)
+            {
+                var ApplicationId=@Model.applicationno;
+                $.ajax({
+                    data:{ApplicationId:ApplicationId,Remark:Remark},
+                    url:'@Url.Action("InsertRemark", "LoanRequestBucket")',
+                    success:function(data)
+                    {
+                        if (data)
+                        {
+                            $("#txt_Remark").val('');
+                            alert("Remark Inserted Successfully");
+                        }
+                    }
+                });
+            }
+        });
+        $("#call_btn").click(function () {
+            var number = "@Model.personalcontactno";
+            var final = number.split(',');
+            var count = parseInt(final.length);
+            var phoneno = final[count-1];
+            $.ajax({
+                async: false,
+                type: 'GET',
+                url: '@Url.Action("ClicktoCall", "LoanRequestBucket", new { area = "Checker" })',
+                dataType: 'json',
+                data: { ContactNumber: phoneno, userid: @Model.user_id, applicationno: @Model.applicationno },
+                success: function (result) {
+                    console.log(result);
+                    if (result) {
+                        availability = false;
+                    }
+                    else {
+                        window.location.reload(1);
+                    }
+                }
+            });
+        });
+        $("#next_btn").click(function (event) {
+            var Remark = $("#txt_Remark").val().trim();
+            if (Remark != "") {
+                var ApplicationId =@Model.applicationno;
+                $.ajax({
+                    data: { ApplicationId: ApplicationId, Remark: Remark },
+                    url: '@Url.Action("InsertRemark", "LoanRequestBucket")',
+                    success: function (data)
+                    {
+                        if (data)
+                        {
+                            $("#txt_Remark").val('');
+                            alert("Remark Inserted Successfully");
+                        }
+                    }
+                });
+            }
+
+            var url = '@Url.Action("UpdateRequestDetail", "LoanRequestBucket")?Id=@Model.applicationno&phoneNumber=@Request.QueryString["phoneNumber"]&Actionname=@Request.QueryString["Actionname"]';
+            window.location.href = url;
+        });
+        $("#decline_btn").click(function () {
+
+            var number = "@Model.personalcontactno";
+            var remarks = $("#txt_Remark").val().trim();
+            if (remarks != "") {
+                var final = number.split(',');
+                var count = parseInt(final.length);
+                var phoneno = final[count - 1];
+                $.ajax({
+                    data: { Id:@Model.applicationno, ContactNo: phoneno, Remaks: remarks, userid:@Model.user_id},
+                    async: false,
+                    url: '@Url.Action("UpdateDecline", "LoanRequestBucket")',
+                    success: function (data) {
+                        if (data) {
+                            alert("Successfully Decline");
+                            window.location.href = '@Url.Action("LoanRequest", "LoanRequestBucket")';
+                        }
+                        else
+                            window.location.reload(1);
+                    }
+                });
+
+                var url = '@Url.Action("LoanRequest", "LoanRequestBucket")';
+                window.location.href = url;
+            }
+            else {
+                alert("Remark is Manatory for Application Decline");
+            }
+        });
+        $("#btn_notification").click(function () {
+            NotifyModal();
+        });
+    });
+    function ValidateFile(e) {
+
+        if (e != "" || e != null) {
+            var IsValidExtension = false;
+            var file = e;
+            var fileSize = file.files[0].size;
+            var isValidFile = false;
+            IsValidExtension = CheckExtension(e);
+            if (IsValidExtension) {
+                if (fileSize !== 0 && fileSize <= (5 * 1024 * 1024)) {
+                    isValidFile = true;
+                }
+                else if (!isValidFile) {
+                    alert("File Size Should not exceed 5 MB");
+                    var id = e.id;
+                    $("#" + id).val('');
+                }
+            }
+        }
+        else
+            return false;
+    };
+    function CheckExtension(e) {
+        if (e != "") {
+            var validFilesTypes = ["jpg","png", "jpeg", "pdf"];
+            var file = e;
+            var path = file.value;
+            var ext = path.substring(path.lastIndexOf(".") + 1, path.length).toLowerCase();
+            var isValidFile = false;
+            for (var i = 0; i < validFilesTypes.length; i++) {
+                if (ext == validFilesTypes[i]) {
+                    isValidFile = true;
+                    break;
+                }
+            }
+            if (!isValidFile) {
+                alert("Upload Image types file only");
+                var id = e.id;
+                $("#" + id).val('');
+            }
+            return isValidFile;
+        }
+        else
+            return false;
+    };
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    };
+    function GetRemarks() {
+        var _data = '';
+        var btn = document.getElementById("myBtn");
+        var modal = document.getElementById('myModal');
+         $.ajax({
+             data: { appId:@Model.applicationno},
+                async:false,
+                url:'@Url.Action("GetRemark", "LoanRequestBucket")',
+                success:function(data)
+                {
+                    if (data != null) {
+                        if (data) {
+                            $.each(data, function (i, data) {
+                                _data += "<tr><td>" + data.application_id + "</td><td>" + data.remark + "</td><td>" + data.createdbyname + "</td><td>" + data.remarkon + "</td></tr>";
+                            });
+                        }
+                        $("#tblRemarkBody").html(_data);
+                        modal.style.display = "block";
+                    }
+                    else {
+                        modal.style.display = "block";
+                    }
+             },
+             error: function (data) {
+                 console.log(data);
+                // window.location.reload(1);
+             }
+         });
+        modal.style.display = "block";
+    };
+    function AddPersonalContact() {
+        //
+        var mobile_code = $("#ddlMobileExtension").val();
+        var number = $("#txtcontactno").val();
+        var Mobile_Number = mobile_code + number;
+        var flag = 0;
+        if (number == '') {
+            alert("Please enter the contact number");
+            $("#txtcontactno").addClass('has-error');
+            $("#txtcontactno").val('');
+            flag++;
+        }
+        if (number != '') {
+            if (number.length != 9) {
+
+                alert("Contact Number not in correct format");
+                $("#txtcontactno").addClass('has-error');
+                $("#txtcontactno").val('');
+                flag++;
+            }
+        }
+        if (flag == 0) {
+            var ApplicationId =@Model.applicationno;
+            $.ajax({
+            data: { ApplicationId: ApplicationId, number: Mobile_Number },
+                async:false,
+                url:'@Url.Action("AddPersonalContact", "LoanRequestBucket")',
+                success:function(data)
+                {
+
+                    if (data) {
+
+                        alert("Successfully Added");
+                        var url = '@Url.Action("RequestDetail", "LoanRequestBucket")?Id=' + ApplicationId + '&Actionname=LoanRequest';
+        window.location.href = url;
+                    }
+                    else {
+                        window.location.reload(1);
+                    }
+
+            }
+            });
+        }
+
+    };
+    function AddCompanyPhoneNo() {
+        var mobile_code = $("#ddlCompanyMobileExtension").val();
+        var number = $("#txtemployercontactno").val();
+        var Mobile_Number = mobile_code + number;
+        var flag = 0;
+            if (number == '') {
+                alert("Please enter the contact number");
+                $("#txtemployercontactno").addClass('has-error');
+                $("#txtemployercontactno").val('');
+            flag++;
+        }
+            if (number != '') {
+                if (number.length != 9) {
+                alert("Contact Number not in correct format");
+                    $("#txtemployercontactno").addClass('has-error');
+                    $("#txtemployercontactno").val('');
+                flag++;
+            }
+        }
+        if (flag == 0) {
+            var ApplicationId=@Model.applicationno;
+        $.ajax({
+            data: { ApplicationId: ApplicationId, number: Mobile_Number },
+                async:false,
+                url:'@Url.Action("AddCompanyPhoneNo", "LoanRequestBucket")',
+                success:function(data)
+                {
+
+                    if (data) {
+
+                        alert("Successfully Added");
+                        var url = '@Url.Action("RequestDetail", "LoanRequestBucket")?Id=' + ApplicationId + '&Actionname=LoanRequest';
+        window.location.href = url;
+                    }
+                    else {
+                        window.location.reload(1);
+                    }
+                }
+            });
+        }
+    };
+    function NotifyModal() {
+        var modalNotify = document.getElementById('modalNotify');
+        modalNotify.style.display = "block";
+    }
+    function SendNotify() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: { notificationtoken: '@Model.notificationtoken', message: $("#txtnotifydefinition").val(), UserName: '@Convert.ToString(Request.Cookies["AgentName"].Value)', PanelName: '@Convert.ToString(Request.Cookies["RoleType"].Value)', MobileNo: '@Model.personalcontactno', ApplicationNo: '@Model.applicationno' },
+            url: '@Url.Action("SendManulNotification", "Home", new { Area = "" })',
+            success: function (data)
+            {
+                if (data) {
+                    alert("Notification Send Succussfully..");
+                    $('#modalNotify').toggle();
+                }
+            }
+        });
+    };
+    function GetNotificationValue() {
+        var Id = $('#ddlNotificationtemplate').val();
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("GetNotificationValues", "LoanRequestBucket", new { area = "Checker" })',
+            dataType: 'json',
+            data: { Id: Id },
+            success: function (sms) {
+                if (sms != null) {
+                    $("#txtnotifydefinition").val(sms.NotificationTemplateDefinition);
+                    $("#txtnotifydescription").val(sms.NotificationTemplateDesc);
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+
+            }
+            });
+    };
+    function RefreshNotifyModel() {
+        $('#modalNotify').toggle();
+        $("#ddlNotificationtemplate").val('');
+        $("#txtnotifydefinition").val('');
+        $("#txtnotifydescription").val('');
+    }
+    function RefreshHistoryModel() {
+        $('#myModal').toggle();
+    }
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+
+    .mixselect {
+        width: 33% !important;
+        border-top-right-radius: 0px !important;
+        border-bottom-right-radius: 0px !important;
+    }
+
+    .mixinput {
+        width: 67% !important;
+        border-top-left-radius: 0px !important;
+        border-bottom-left-radius: 0px !important;
+    }
+</style>
+
+
+
+
+

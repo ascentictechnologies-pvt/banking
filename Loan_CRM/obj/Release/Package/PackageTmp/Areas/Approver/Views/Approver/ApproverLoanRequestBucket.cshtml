@@ -1,0 +1,163 @@
+﻿@using System.Configuration;
+@{
+    ViewBag.Title = "Approver Loan Request Bucket";
+    Layout = "~/Views/Shared/_LayoutApprover.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="pull-left">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <b style="font-size:20px;">Approver Window</b>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="clearfix"></div>
+
+<div id="loadingDiv">
+    <img src="../../../Content/images/Loader.gif" class="classname" loop=infinite />
+</div>
+<div class="col-md-12">
+    <table id="tblApprover" class="data-verification table table-bordered dataTable no-footer table-striped"></table>
+</div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        GetData();
+    });
+
+    function GetData() {
+        var _data = '';
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetUserData", "Approver")',
+            datatype: 'json',
+            beforeSend: function () {
+                $("#loadingDiv").show();
+            },
+            success: function (response) {
+                var _data = '';
+                _data += "<thead><tr><th>Sr No.</th><th> Applicant No</th><th>Applicant Name</th><th>Date Applied</th><th>Gross Income</th><th>Loan Amount</th><th>Verifier</th><th>Signed</th><th style='width:125px'>Detail</th><th>Approved</th>><th>Reject</th></tr></thead><tbody>";
+                $.each(response, function (i, data) {
+                    var inProcess = '';
+                    if (data.IsPickedApprover == true) {
+                        inProcess = "<span style='margin-left: 6%;color:red;'>In Process...</span>";
+                        _data += "<tr><td>" + data.Id + "</td>" +
+                            "<td>" + data.ApplicationNo + "</td>" +
+                            "<td>" + data.First_Name + " " + data.Middle_Name + " " + data.Last_Name + "</td>" +
+                            "<td>" + data.DateApplied + "</td>" +
+                            "<td>" + data.GrossIncome + "</td>" +
+                            "<td>" + data.Loan_Amount + "</td>" +
+                            "<td>" + data.username + "</td>" +
+                             "<td>" + data.signed + "</td>" +
+                            "<td>" + inProcess + "</td>" +
+                            "<td></td><td></td></tr>"
+                    }
+                    else {
+                        _data += "<tr><td>" + data.Id + "</td>" +
+                            "<td>" + data.ApplicationNo + "</td>" +
+                            "<td>" + data.First_Name + " " + data.Middle_Name + " " + data.Last_Name + "</td>" +
+                            "<td>" + data.DateApplied + "</td>" +
+                            "<td>" + data.GrossIncome + "</td>" +
+                            "<td>" + data.Loan_Amount + "</td>" +
+                            "<td>" + data.username + "</td>" +
+                            "<td>" + data.signed + "</td>" +
+                            "<td><input type='button' value='Detail  'class='btn btn-primary' id='btnDetail'onclick='Requestdetail(" + data.ApplicationNo + ")'/>  </td>" +
+                            "<td><input type='button' value='OK'class='btn btn-success' id='btnOK' onclick='RequestApprove(" + data.ApplicationNo + "," + data.user_id + ")'/> </td>"+
+                            "<td><input type='button' value='Reject' class='btn btn-danger'id='Reject'onclick='RequestReject(" + data.ApplicationNo + ")' /></td></tr>"
+                    }
+                });
+                _data += "</tbody>";
+                $("#tblApprover").html(_data);
+                $("#tblApprover").DataTable().destroy();
+                $("#tblApprover").DataTable({
+                    "bProcessing": false,
+                    "bSort": true
+                });
+                $("#loadingDiv").hide();
+                setTimeout(GetData, @Convert.ToInt32(ConfigurationManager.AppSettings["GridRefreshTime"]));
+            },
+            error: function (response) {
+                window.location.reload(1);
+            }
+        });
+    }
+    function Requestdetail(obj) {
+        var url = '@Url.Action("ViewDetailsForApproval", "Approver")?Id=' + obj + '&ActionName=ApproverLoanBucket';
+        window.location.href = url;
+    }
+    function RequestReject(id) {
+            var r = confirm("Are you sure to Reject?");
+            if (r == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DoReject", "Approver")',
+                    data: { id: id },
+                    success: function (data) {
+                        if (data) {
+                            window.location.reload(1);
+                        }
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+            }
+    }
+    function RequestApprove(id, user_id) {
+            var r = confirm("Are you sure to Approve?");
+            if (r == true) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("DoApprove", "Approver")',
+                        data: { id: id, user_id: user_id },
+                        success: function (data) {
+                            if (data) {
+                                window.location.reload(1);
+                            }
+                        },
+                        error: function (data) {
+                            window.location.reload(1);
+                        }
+
+                    });
+            }
+    }
+
+</script>
+<style>
+    .classname {
+        position: absolute;
+        z-index: 10;
+        top: 300px;
+        left: 600px;
+    }
+</style>

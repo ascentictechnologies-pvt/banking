@@ -1,0 +1,5 @@
+{
+  "snyk.advanced.organization": "d534fe4a-2368-4ca6-8196-729faeef3188",
+  "snyk.advanced.autoSelectOrganization": true,
+  "dotnet.preferCSharpExtension": true
+}

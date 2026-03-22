@@ -1,0 +1,896 @@
+﻿@model Loan_CRM.Models.CompleteAppVerificationDetails
+@{
+    ViewBag.Title = "Approver Window";
+    Layout = "~/Views/Shared/_LayoutApprover.cshtml";
+}
+<style>
+    #back2Top {
+        width: 40px;
+        line-height: 40px;
+        overflow: hidden;
+        z-index: 999;
+        display: none;
+        cursor: pointer;
+        -moz-transform: rotate(270deg);
+        -webkit-transform: rotate(270deg);
+        -o-transform: rotate(270deg);
+        -ms-transform: rotate(270deg);
+        transform: rotate(270deg);
+        position: fixed;
+        bottom: 50px;
+        right: 0;
+        background-color: #DDD;
+        color: #555;
+        text-align: center;
+        font-size: 30px;
+        text-decoration: none;
+    }
+
+        #back2Top:hover {
+            background-color: #DDF;
+            color: #000;
+        }
+</style>
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div class="pull-left">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    @{ if (Model.BackActionName == "PreTermBucket" || Model.BackActionName == "ReLoanBucket" || Model.BackActionName == "PaymentHistory")
+                        {
+                            <b style="font-size:20px;">
+                                Verification Window
+                            </b>
+                        }
+                        else
+                        {
+                            <b style="font-size:20px;">
+                                Approver Window
+                            </b>
+                        }
+                    }
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div id="modalNotify" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="RefreshNotifyModel()">&times;</span>
+            <h3>Notification Template</h3>
+        </div>
+        <div class="modal-body">
+            <div class="row form-group spc">
+                <div class="col-md-6">
+                    <label>Notification Template Name</label>
+                </div>
+                <div class="col-md-6">
+                    @Html.DropDownListFor(Model => Model.templatename, new SelectList(ViewBag.NotificationTemplateList, "id", "NotificationTemplateName"), new { @class = "form-control", @id = "ddlNotificationtemplate", @onchange = "GetNotificationValue();" })
+                </div>
+            </div>
+            <div class="row form-group spc">
+                <div class="col-md-6">
+                    <label>Notification Template Description</label>
+                </div>
+                <div class="col-md-6">
+                    <textarea class="form-control" id="txtnotifydescription" readonly></textarea>
+                </div>
+            </div>
+            <div class="row form-group spc">
+                <div class="col-md-6">
+                    <label>Notification Template Definition</label>
+                </div>
+                <div class="col-md-6">
+                    <textarea class="form-control" id="txtnotifydefinition" readonly></textarea>
+                </div>
+            </div>
+
+            <div class="clearfix"></div>
+        </div>
+        <div class="modal-footer">
+            <input type="button" class="btn btn-primary btn-flat" id="btnPaySubmit" value="Send" onclick="SendNotify()" />
+            <input type="button" class="btn btn-danger btn-flat" id="btnPayCancel" value="Cancel" onclick="RefreshNotifyModel()" />
+        </div>
+    </div>
+</div>
+<div class="pull-right">
+    <input type="hidden" name="GovUrl" value="@Model.GovUrl" />
+    <input type="hidden" name="CompUrl" value="@Model.CompUrl" />
+    <input type="hidden" name="IncomeUrl" value="@Model.IncomeUrl" />
+    <input type="hidden" name="BillUrl" value="@Model.BillUrl" />
+    <input type="hidden" name="OthUrl" value="@Model.OthUrl" />
+    <input type="hidden" name="ATMUrl" value="@Model.ATMUrl" />
+    @Html.HiddenFor(x => x.signUrl)
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                @if (Model.ApplicationNo > 0)
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("GetSmileData", "Home", new { Area = "" })?ApplicationNo=@Model.ApplicationNo' title="Employment Details" target="_blank">Employment Details</a></td>
+                }
+                @if (!String.IsNullOrWhiteSpace(Model.PersonalEmail))
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("GetOldData", "Home", new { Area = "" })?Emailid=@Model.PersonalEmail' title="Offline Loan History" target="_blank">Offline Loan History</a></td>
+                }
+                @if (Model.ApplicationNo > 0)
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("LoanHistory", "Home", new { Area = "" })?UserID=@Model.userid&ActionName=@Request.QueryString["ActionName"]&ApplicationNo=@Model.ApplicationNo' title="Loan History" target="_blank">Loan History</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.GovUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="GovermentID Document missing!">ID1</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.GovUrl' title="GovermentID Document" target="_blank">ID1</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.CompUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="Company Document missing!">ID2</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.CompUrl' title="Company Document" target="_blank">ID2</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.IncomeUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="Income Document missing!">PI</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.IncomeUrl' title="Income Document" target="_blank">PI</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.BillUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="Bill Document missing!">PB</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.BillUrl' title="Bill Document" target="_blank">PB</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.OthUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="Other Document missing!">O</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.OthUrl' title="Other Document" target="_blank">O</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.ATMUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="ATM Document missing!">A</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" title="ATM Document" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.ATMUrl' target="_blank">A</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.signUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="Sign Document missing!">Sign</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" title="Sign Document" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.signUrl' target="_blank">Sign</a></td>
+                }
+                <td style="text-align:center">
+                </td>
+                <td style="text-align:center">
+                    @{
+                        if (Model.BackActionName == "PreTermBucket")
+                        {
+                            <a href="@Url.Action("PreTermBucket", "Loanoverdue",new { Area="Collector"})" id="btnBack" class="btn btn-primary">Back</a>
+                        }
+                        else if (Model.BackActionName == "ReLoanBucket")
+                        {
+                            <a href="@Url.Action("ReLoanBucket", "Loanoverdue",new { Area="Collector"})" id="btnBack" class="btn btn-primary">Back</a>
+                        }
+                        else if (Model.BackActionName == "PaymentHistory")
+                        {
+                            <input type="button" id="btnBack" value="Back" class="btn btn-primary" onclick="PaymentHistory(@Model.ApplicationNo)" />
+                        }
+                        else
+                        {
+                            <input type="button" id="btnBack" value="Back" class="btn btn-primary" onclick="ResetIsPickedApprover()" />
+                        }
+                    }
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="clearfix"></div>
+
+@if (Model.ApplicationNo != 0)
+{
+    <div class="col-md-12">
+        <table class="table table-bordered dataTable no-footer table-striped">
+            <tr>
+                <th colspan="2" width="40%"><h4>Application No: <span id="spnAppNo">@Model.ApplicationNo</span></h4></th>
+                <th style="vertical-align:middle !important;" width="20%">Remarks</th>
+            </tr>
+            <tr class="alert alert-info">
+                <th colspan="3"><h4><span>Personal Information</span></h4></th>
+            </tr>
+            <tr>
+                <td><label>Name</label></td>
+                <td>
+                    @Model.Name
+                    <input type="hidden" name="Name" value="@Model.Name" />
+                </td>
+                <td>@Model.personal_name_remark</td>
+            </tr>
+            <tr>
+                <td><label>Date Of Birth</label></td>
+                <td>
+                    @Model.DOB
+                </td>
+                <td>@Model.personal_birth_date_remark</td>
+            </tr>
+            <tr>
+                <td><label>Personal Email Address</label></td>
+                <td>
+                    @Model.PersonalEmail
+                    <input type="hidden" name="PersonalEmail" value="@Model.PersonalEmail" />
+                </td>
+                <td>@Model.personal_email_remark</td>
+            </tr>
+            <tr>
+                <td><label>Personal Contact No.</label></td>
+                <td>
+                    @Model.PersonalContactNo
+                </td>
+                <td>@Model.personal_contact_no_remark</td>
+            </tr>
+            <tr>
+                <td><label>Present/Current Address</label></td>
+                <td>
+                    @{
+                        var _Address = String.Empty;
+                        if (!String.IsNullOrWhiteSpace(Model.Address))
+                        {
+                            _Address += Model.Address.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.Street))
+                        {
+                            _Address += Model.Street.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.BarangayName))
+                        {
+                            _Address += Model.BarangayName.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.CityName))
+                        {
+                            _Address += Model.CityName.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.ProvinceName))
+                        {
+                            _Address += Model.ProvinceName.ToUpper();
+                            _Address += ",";
+                        }
+                        if (!String.IsNullOrWhiteSpace(Model.ZipCode))
+                        {
+                            _Address += Model.ZipCode.ToUpper();
+                        }
+                    }
+                    @_Address
+                </td>
+                <td>@Model.personal_perma_address_remark</td>
+            </tr>
+            <tr>
+                <td><label>Nearest Landmark/Main Rd.</label></td>
+                <td>
+                    @Model.nearest_landmark
+                </td>
+                <td>@Model.nearest_landmark_remark</td>
+            </tr>
+            <tr>
+                <td><label>SSS No.</label></td>
+                <td>
+                    @Model.SSS_No
+                </td>
+                <td>@Model.SSS_No_remark</td>
+            </tr>
+            <tr>
+                <td><label>Rented/ Owned/ Mortgage?</label></td>
+                <td>
+                    @(Model.HomeStatus.FirstOrDefault(x => x.Value == Model.home_status.ToString()).Text)
+                </td>
+                <td>@Model.rented_mortgage_owned_remark</td>
+            </tr>
+            <tr>
+                <td><label>Permanent Address</label></td>
+                <td>
+                    @Model.Permanent_address
+                </td>
+                <td>@Model.Permanent_address_remark</td>
+            </tr>
+            <tr>
+                <td><label>Do you intend to transfer residence in the next 30 days?</label></td>
+                <td>
+                    @Model.tansfer_residence
+                </td>
+                <td>@Model.tansfer_residence_remark</td>
+            </tr>
+            <tr>
+                <td><label>Home Phone No.</label></td>
+                <td>
+                    @Model.HomePhone
+                </td>
+                <td>@Model.personal_house_ph_remark</td>
+            </tr>
+            <tr>
+                <td><label>Civil Status</label></td>
+                <td>
+                    <input id="CivilStatus" type="hidden" name="CivilStatus" value="@Model.CivilStatus" />
+                    @Model.CivilStatusText
+                </td>
+                <td>@Model.personal_civil_remark</td>
+            </tr>
+            <tr>
+                <td><label>Spouse Name (if married)</label></td>
+                <td>
+                    @Model.spouse_name
+                </td>
+                <td>@Model.spouse_name_remark</td>
+            </tr>
+            <tr>
+                <td><label>Spouse Occupation (if married)</label></td>
+                <td>
+                    @Model.spouse_occupation
+                </td>
+                <td>@Model.spouse_occupation_remark</td>
+            </tr>
+            <tr>
+                <td><label>Number of Dependents</label></td>
+                <td>
+                    @Model.number_of_dependent
+                </td>
+                <td>@Model.number_of_dependent_remark</td>
+            </tr>
+            <tr>
+                <td><label>Mother's Maiden Name and Work</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        @Model.MotherMaidenName
+                    </div>
+                    <div class="col-sm-6">
+                        @Model.mother_work
+                    </div>
+                </td>
+                <td>@Model.personal_mother_maiden_name_remark</td>
+            </tr>
+            <tr>
+                <td><label>Father's Name and Work</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        @Model.father_name
+                    </div>
+                    <div class="col-sm-6">
+                        @Model.father_work
+                    </div>
+                </td>
+                <td>@Model.father_name_work_remark</td>
+            </tr>
+            <tr>
+                <td><label>Are You Living with Mother? Address</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        @Html.DropDownListFor(x => x.living_with_mother, new SelectList(Model.YesNoList, "Value", "Text"), new { @id = "living_with_mother", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                    </div>
+                    <div class="col-sm-6">
+                        @Model.MotherAddress"
+                    </div>
+                </td>
+                <td>@Model.personal_mother_perma_add_remark</td>
+            </tr>
+            <tr>
+                <td><label>How many Siblings and Work</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        @Model.sibling_count
+                    </div>
+                    <div class="col-sm-6">
+                        @Model.sibling_works
+                    </div>
+                </td>
+                <td>@Model.sibling_works_remark</td>
+            </tr>
+            <tr>
+                <td><label>Occupation</label></td>
+                <td>
+                    @Html.DropDownListFor(x => x.occupation, new SelectList(Model.OccupationModelList, "id", "occupation_name"), "--Select--", new { @class = "form-control" })
+                </td>
+                <td>@Model.occupation_remark</td>
+            </tr>
+            <tr class="alert alert-info">
+                <th colspan="3"><h4><span>Employement Details</span></h4></th>
+            </tr>
+            <tr>
+                <td><label>Company Name/ Nature of Business</label></td>
+                <td>
+                    @Model.CompanyName
+                </td>
+                <td>@Model.personal_company_name_remark</td>
+            </tr>
+            <tr>
+                <td><label>Company Address</label></td>
+                <td>
+                    @Model.CompanyAddress
+                </td>
+                <td>@Model.personal_company_address_remark</td>
+            </tr>
+            <tr>
+                <td><label>Office Contact</label></td>
+                <td>
+                    @Model.Company_Phoneno
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><label>Job Title/ Dept./ Function/ Tenurity</label></td>
+                <td>
+                    @Model.Designation
+                </td>
+                <td>@Model.personal_job_title_remark</td>
+            </tr>
+            <tr>
+                <td><label>Gross Monthly Income w/ Incentive and Allowance</label></td>
+                <td>
+                    @Model.GrossIncome
+                </td>
+                <td>@Model.personal_monthly_income_remark</td>
+            </tr>
+            <tr>
+                <td><label>Net Monthly Income (w/ Deduction)</label></td>
+                <td>
+                    @Model.net_income
+                </td>
+                <td>@Model.net_income_remark</td>
+            </tr>
+            <tr>
+                <td><label>Schedule & BTC</label></td>
+                <td>
+                    @Model.MorningTime &amp; @Model.NoonTime
+                </td>
+                <td>@Model.scheduled_and_btc_remark</td>
+            </tr>
+            <tr>
+                <td><label>Pay Date</label></td>
+                @if (Model.payDate2 == "32")
+                {
+                    <td>@Model.payDate1,None </td>
+                }
+                else
+                {
+                    <td>
+                        @Model.payDate1,
+                        @Model.payDate2
+                    </td>
+                }
+
+                <td>@Model.pay_date_remark</td>
+            </tr>
+            <tr>
+                <td><label>Do you have pending resignation?</label></td>
+                <td>
+                    @Html.DropDownListFor(x => x.pending_resignation, new SelectList(Model.YesNoList, "Value", "Text"), new { @id = "pending_resignation", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                </td>
+                <td>@Model.pending_resignation_remark</td>
+            </tr>
+            <tr>
+                <td><label>Other Source of Income? Remittance/ Business</label></td>
+                <td>
+                    @Model.other_source_of_income
+                </td>
+                <td>@Model.other_source_of_income_remark</td>
+            </tr>
+            <tr class="alert alert-info">
+                <th colspan="3"><h4><span>Loan Details</span></h4></th>
+            </tr>
+            <tr>
+                <td><label>Ask how did they know Cash Mart/ First time</label></td>
+                <td>
+                    @Model.know_about_cashmart
+                </td>
+                <td>@Model.know_about_cashmart_remark</td>
+            </tr>
+            <tr>
+                <td><label>Any PENDING Loans from other landing co.</label></td>
+                <td>
+                    @Model.pending_loan_fron_otherland
+                </td>
+                <td>@Model.pending_loan_fron_otherland_remark</td>
+            </tr>
+            <tr>
+                <td><label>Any Bank Loans/ credit Card</label></td>
+                <td>
+                    @Model.bank_loan_or_credit_card
+                </td>
+                <td>@Model.bank_loan_or_credit_card_remark</td>
+            </tr>
+            <tr>
+                <td><label>Requested Loan Amount</label></td>
+                <td>
+                    @Model.AdditionalRequestedLoanAmount
+                </td>
+                <td>@Model.personal_req_loan_amt_remark</td>
+
+            </tr>
+            <tr>
+                <td><label>Requested Term</label></td>
+                <td>
+                    @Model.AdditionalRequested_Term
+                </td>
+                <td>@Model.personal_req_loan_term_remark</td>
+            </tr>
+            <tr>
+                <td><label>Purpose of Loan</label></td>
+                <td>
+                    @Model.AdditionalLoanPurpose
+                </td>
+                <td>@Model.AdditionalLoanPurpose_Remark</td>
+            </tr>
+            <tr>
+                <td><label>Bank Name</label></td>
+                <td>
+                    @Html.DropDownListFor(x => x.BankName, new SelectList(Model.BankMasterModelList, "bank_name_with_bank_code", "bank_name_with_bank_code"), "--Select Bank--", new { @class = "form-control", @id = "ddlBank" })
+                    @Html.ValidationMessageFor(x => x.BankName, null, new { @style = "color:red;" })
+                </td>
+                <td>@Model.personal_bank_name_remark</td>
+            </tr>
+            <tr>
+                <td><label>Bank Account No.</label></td>
+                <td>
+                    @Model.BankAccNo
+                </td>
+                <td>@Model.personal_bank_ac_no_remark</td>
+            </tr>
+            <tr class="alert alert-info">
+                <th colspan="3"><h4><span>Reference Verification</span></h4></th>
+            </tr>
+            <tr>
+                <td><h4>Family</h4><label>Name</label></td>
+                <td>
+                    @Model.family_name1
+                </td>
+                <td>@Model.family_name1_remark</td>
+            </tr>
+            <tr>
+                <td><label>Address</label></td>
+                <td>
+                    @Model.family_address1
+                </td>
+                <td>@Model.family_address1_remark</td>
+            </tr>
+            <tr>
+                <td><label>Contact Number</label></td>
+                <td>
+                    @Model.family_contact1
+                </td>
+                <td>@Model.family_contact1_remark</td>
+            </tr>
+            <tr>
+                <td><label>Relation to Borrower</label></td>
+                <td>
+                    @Model.family_relation1
+                </td>
+                <td>@Model.family_relation1_remark</td>
+            </tr>
+            <tr>
+                <td><h4>Family</h4><label>Name</label></td>
+                <td>
+                    @Model.family_name2
+                </td>
+                <td>@Model.family_name2_remark</td>
+            </tr>
+            <tr>
+                <td><label>Address</label></td>
+                <td>
+                    @Model.family_address2
+                </td>
+                <td>@Model.family_address2_remark</td>
+            </tr>
+            <tr>
+                <td><label>Contact Number</label></td>
+                <td>
+                    @Model.family_contact2
+                </td>
+                <td>@Model.family_contact2_remark</td>
+            </tr>
+            <tr>
+                <td><label>Relation to Borrower</label></td>
+                <td>
+                    @Model.family_relation2
+                </td>
+                <td>@Model.family_relation2_remark</td>
+            </tr>
+            <tr>
+                <td><h4>Optional</h4><label>Name</label></td>
+                <td>
+                    @Model.optional_name
+                </td>
+                <td>@Model.optional_name_remark</td>
+            </tr>
+            <tr>
+                <td><label>Address</label></td>
+                <td>
+                    @Model.optional_address
+                </td>
+                <td>@Model.optional_address_remark</td>
+            </tr>
+            <tr>
+                <td><label>Contact Number</label></td>
+                <td>
+                    @Model.optional_contact
+                </td>
+                <td>@Model.optional_contact_remark</td>
+            </tr>
+            <tr>
+                <td><label>Relation to Borrower</label></td>
+                <td>
+                    @Model.optional_relation
+                </td>
+                <td>@Model.optional_relation_remark</td>
+            </tr>
+
+
+        </table>
+    </div>
+    <div class="col-md-6">
+        <table id="tblCheckerHistory" border="1" class="table table-bordered dataTable no-footer table-striped">
+            @{
+                <tr>
+                    <th>Verifier Name : </th>
+                    <td colspan="3">@Model.username</td>
+                </tr>
+                <tr>
+                    <th colspan="4" style="text-align:center">Remark History</th>
+                </tr>
+                <tr>
+                    <th>Application No</th>
+                    <th>Date</th>
+                    <th>Remark</th>
+                    <th>Remark By</th>
+                </tr>
+                if (Model.RemarkModelList != null && Model.RemarkModelList.Count > 0)
+                {
+                    foreach (var item in Model.RemarkModelList)
+                    {
+                        var remarkOn = item.createdon.ToString("dd-MM-yyyy hh:mm tt");
+                        <tr>
+                            <td>@item.application_id</td>
+                            <td>@remarkOn</td>
+                            <td>@item.remark</td>
+                            <td>@item.createdbyname</td>
+                        </tr>
+                    }
+                }
+            }
+        </table>
+    </div>
+    <div class="col-md-6">
+        <table id="ApproverLoanDetails" class="table table-bordered table-responsive table-striped">
+            <tr><th colspan="2">Approved Loan Details</th></tr>
+            <tr>
+                <td style="width:300px">Approved Loan Amount</td>
+                <td style="width:400px"><label>@Model.ApprovedLoanAmount</label></td>
+
+            </tr>
+            <tr>
+                <td style="width:300px">Term</td>
+                <td style="width:400px"><label>@Model.AdditionalRequested_Term</label></td>
+            </tr>
+            <tr>
+                <td style="width:300px">Interest Rate</td>
+                <td style="width:400px"><label>@Model.ApprovedInterestRate</label></td>
+            </tr>
+            <tr>
+                <td style="width:300px">Maturity Date</td>
+                <td style="width:400px"><label>@Model.ApprovedMaturityDate</label></td>
+            </tr>
+            <tr>
+                <td style="width:300px">Total Amount Due</td>
+                <td style="width:400px"><label>@Model.ApprovedTotalDueAmount</label></td>
+            </tr>
+
+        </table>
+        @{
+            if (Model.BackActionName != "PreTermBucket" && Model.BackActionName != "ReLoanBucket" && Model.BackActionName != "PaymentHistory")
+            {
+                <div id="ControlButton">
+                    <center>
+                        <input type="button" id="Approve" class="btn btn-primary" onclick="Approve(@Model.ApplicationNo,@Model.userid)" value="Approve" />
+                        <button type="button" class="btn btn-primary btn-flat" id="btn_notification">Manual Notify</button>
+                        <input type="button" id="Decline" class="btn btn-danger " onclick="Decline(@Model.ApplicationNo)" value="Decline" />
+                    </center>
+                </div>
+            }
+        }
+
+    </div>
+}
+else
+{
+    <div class="row">
+        <center><h3>No Record Found</h3></center>
+    </div>
+
+}
+
+
+<script type="text/javascript">
+    $(window).scroll(function () {
+        var height = $(window).scrollTop();
+        if (height > 100) {
+            $('#back2Top').fadeIn();
+        } else {
+            $('#back2Top').fadeOut();
+        }
+    });
+    function Approve(id, user_id) {
+        $.ajax({
+            data: { id: id, user_id: user_id },
+            url: '@Url.Action("ApproveLoanRequest","Approver")',
+            success: function (data) {
+                if (data) {
+                    alert("Approved Successfully");
+                    window.location.href = '@Url.Action("ApproverLoanRequestBucket", "Approver")';
+                }
+                else
+                    alert("Error");
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    }
+    function PaymentHistory(obj) {
+        var url = '@Url.Action("PaymentHistory", "Loanoverdue", new { Area = "Collector" })?Id=' + obj +'&ActionName=LoanPaymentBucket';
+        window.location.href = url;
+    }
+    function showremark() {
+        $("#remarks").show();
+    }
+    $(document).ready(function () {
+        $("#remarks").hide();
+        $('select').attr('disabled', 'disabled');
+        $('#ddlNotificationtemplate').removeAttr('disabled');
+        $("#btn_notification").click(function () {
+            NotifyModal();
+        });
+    });
+    function Decline(id) {
+        var remark = $("#txtRemarks").val();
+        $.ajax({
+            data: { remark: remark, id: id },
+            url: '@Url.Action("DeclineLoanRequest","Approver")',
+            success: function (data) {
+                if (data) {
+                    alert("Loan Request Declined");
+                    window.location.href = '@Url.Action("ApproverLoanRequestBucket", "Approver")';
+                }
+                else
+                    alert("Error");
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    }
+    function CLicktocall(data) {
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("ClicktoCall", "Approver", new { area = "Approver" })',
+            dataType: 'json',
+            data: { ContactNumber: data },
+            success: function (result) {
+                if (result) {
+                    availability = false;
+                }
+            }
+        });
+    }
+    function ResetIsPickedApprover() {
+        var appNo = @Request.QueryString["Id"];
+        $.ajax({
+            url: '@Url.Action("ResetIsPickedApprover", "Approver")',
+            type: "POST",
+            data: { appNo: appNo },
+            success: function (result) {
+                if (result == "True") {
+                    window.location.href = '@Url.Action("ApproverLoanRequestBucket", "Approver")';
+                }
+                else
+                    window.location.reload(1);
+            }
+        });
+    }
+    $(document).ready(function () {
+        var action = "@Model.BackActionName"
+        if (action != "ApproverLoanBucket") {
+            $('#Approve').hide();
+            $('#Decline').hide();
+        }
+    });
+     function NotifyModal() {
+        var modalNotify = document.getElementById('modalNotify');
+        modalNotify.style.display = "block";
+    }
+    function SendNotify() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: { notificationtoken: '@Model.notificationtoken', message: $("#txtnotifydefinition").val(), UserName: '@Convert.ToString(Request.Cookies["AgentName"].Value)', PanelName: '@Convert.ToString(Request.Cookies["RoleType"].Value)', MobileNo: '@Model.PersonalContactNo', ApplicationNo: '@Model.ApplicationNo' },
+            url: '@Url.Action("SendManulNotification", "Home", new { Area = "" })',
+            success: function (data)
+            {
+                if (data) {
+                    alert("Notification Send Succussfully..");
+                    $('#modalNotify').toggle();
+                }
+            }
+        });
+    };
+    function GetNotificationValue() {
+        var Id = $('#ddlNotificationtemplate').val();
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("GetNotificationValues", "LoanRequestBucket", new { area = "Checker" })',
+            dataType: 'json',
+            data: { Id: Id },
+            success: function (sms) {
+                if (sms != null) {
+                    $("#txtnotifydefinition").val(sms.NotificationTemplateDefinition);
+                    $("#txtnotifydescription").val(sms.NotificationTemplateDesc);
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+
+            }
+            });
+    };
+    function RefreshNotifyModel() {
+        $('#modalNotify').toggle();
+        $("#ddlNotificationtemplate").val('');
+        $("#txtnotifydefinition").val('');
+        $("#txtnotifydescription").val('');
+    }
+</script>
+<style>
+    .ClsCheckBox {
+        width: 50px;
+        padding-left: 3%;
+    }
+</style>

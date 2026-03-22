@@ -1,0 +1,77 @@
+﻿@using Loan_CRM.Models;
+@{
+    ViewBag.Title = "UploadData";
+    if (Request.Cookies[CookiesKey.RoleType] != null && Request.Cookies[CookiesKey.RoleType].Value.ToLower() == RoleType.AdminUser)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    }
+}
+
+@using (Html.BeginForm("UploadData", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+    <div class="col-md-4">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <span>Add Old Data</span>
+            </div>
+            <div class="panel-body">
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="file">Upload Excel:</label>
+                        <input type="file" name="Data" id="filetxt" /><br><br>
+                    </div>
+
+                </div>
+
+                <div class="panel-footer">
+                    <div>
+                        <input type="submit" name="CommandName" value="Upload" class="btn btn-primary" onclick="return ValidateUploadDocument();" />
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+}
+<script type="text/javascript">
+    function ValidateUploadDocument() {
+        //
+        var fileName = $("#filetxt").val().toString();
+        if (fileName == '' || fileName == undefined) {
+            alert("No file uploaded");
+            return false;
+
+        }
+        else {
+            return true;
+        }
+        console.log(fileName);
+    }
+</script>

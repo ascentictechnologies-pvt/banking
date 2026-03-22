@@ -1,0 +1,275 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+@using Loan_CRM.Models;
+@{
+    ViewBag.Title = "AgencyReport";
+    if (Request.Cookies[CookiesKey.RoleType] != null && Request.Cookies[CookiesKey.RoleType].Value.ToLower() == RoleType.AdminUser)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    }
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+@using (Html.BeginForm("AgencyReport", "Admin", FormMethod.Post))
+{
+    <div class="row">
+        <div class="col-md-12">
+            <h3>Agency Report</h3>
+        </div>
+        <div class="row">
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label><span style="color: #ff0000;">*</span>From Date</label>
+                    <input type="text" name="fromdate" id="txtFromDate" class="form-control" readonly placeholder="Enter Start Date" onclick="RemoveValidation(this);" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label><span style="color: #ff0000;">*</span>To Date</label>
+                    <input type="text" name="todate" id="txtToDate" class="form-control" readonly placeholder="Enter End Date" onclick="RemoveValidation(this);" />
+                </div>
+            </div>
+
+            <div class="col-md-6" style="padding-top: 2%;">
+                <input type="submit" id="btn_submit" class="btn btn-primary" value="Search" />
+                <input type="button" class="btn btn-primary" id="btnExcel" value="Export to Excel" />
+                <a href="@Url.Action("TLSales","Loanoverdue",new { Area="Collector"})" class="btn btn-danger pull-right">Back</a>
+            </div>
+        </div>
+        <div class="col-md-12" id="divEXport" style="">
+            <div class="clearfix"></div>
+            <table id="tblRecord" class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Application No</th>
+                        <th>Name</th>
+                        <th>Address</th>
+                        <th>Escalate Date</th>
+                        <th>Date Past Due</th>
+                        <th>Maturity Date</th>
+                        <th>Date of Loan</th>
+                        <th>Outstanding Balance</th>
+                        <th>Total Amount Due</th>
+                        <th>Email Address</th>
+                        <th>Payment Reference</th>
+                        <th>Mobile No</th>
+                        <th>Move to Defaulter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model.ApplicationRecordList != null && Model.ApplicationRecordList.Count > 0)
+                        {
+                            foreach (var item in Model.ApplicationRecordList)
+                            {
+                                <tr>
+                                    <td>@item.ApplicationNo</td>
+                                    <td>@item.Name</td>
+                                    <td>@item.Address</td>
+                                    <td>@item.EscalateDate</td>
+                                    <td>@item.DatePastDue</td>
+                                    <td>@item.MaturityDate</td>
+                                    <td>@item.DateofLoan</td>
+                                    <td>@item.Outstanding_Balance</td>
+                                    <td>@item.TotalAmount_Due</td>
+                                    <td>@item.PersonalEmail</td>
+                                    <td>@item.PaymentReference</td>
+                                    <td>@item.PersonalContactNo</td>
+                                    <td><input type="button" value="Defaulter" class="btn btn-primary" onclick="return MoveToAgency(@item.ApplicationNo);" /></td>
+                                </tr>
+
+                            }
+                        }
+
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js"></script>
+<link href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.datatables.net/responsive/2.1.1/css/responsive.bootstrap.min.css" rel="stylesheet" />
+<script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap4.min.js "></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        ////
+        var view = '@Model.ViewID';
+
+        if (view == '1') {
+            ////
+
+            $("#tblRecord").DataTable({
+                "pageLength": 10,
+                "lengthChange": false,
+                "filter": true,});
+            }
+
+        else {
+            ////
+            $("#tblRecord").DataTable({
+                "serverSide": true, // for process server side
+                "filter": true, // this is for disable filter (search box)
+                "orderMulti": false, // for disable multiple column at once
+                "pageLength": 10,
+                "lengthChange": false,
+                "bInfo": false,
+
+
+                "ajax": {
+                    "url": '@Url.Action("GetAgencyData", "Admin", new { Area = "Admin" })',
+                    "type": "POST",
+                    "datatype": "json",
+
+                    error: function (data) {
+                        console.log(`Error :` + data);
+                    }
+                },
+
+
+                "columns": [
+                    { "data": "ApplicationNo", "name": "ApplicationNo" },
+                    { "data": "Name", "name": "Name" },
+                    { "data": "Address", "name": "Address" },
+                    { "data": "EscalateDate", "name": "EscalateDate" },
+                    { "data": "DatePastDue", "name": "DatePastDue" },
+                    { "data": "MaturityDate", "name": "MaturityDate" },
+                    { "data": "DateofLoan", "name": "DateofLoan" },
+                    { "data": "Outstanding_Balance", "name": "Outstanding_Balance" },
+                    { "data": "TotalAmount_Due", "name": "TotalAmount_Due" },
+                    { "data": "PersonalEmail", "name": "PersonalEmail" },
+                    { "data": "PaymentReference", "name": "PaymentReference" },
+                    { "data": "PersonalContactNo", "name": "PersonalContactNo" },
+                    {
+                        "render": function (data, type, full, meta) { return '<input type="button" value="Defaulter" class="btn btn-primary" onclick="return MoveToAgency(' + full.ApplicationNo + ');" />'; }
+                    }
+                ]
+
+            })
+        }
+    $("#btn_submit").click(function () {
+
+        var flag = true;
+        var FromDate = $("#txtFromDate").val().trim();
+        var ToDate = $("#txtToDate").val().trim();
+        if (FromDate == '') {
+            $("#txtFromDate").addClass('has-error');
+            flag = false;
+        }
+        if (ToDate == '') {
+            $("#txtToDate").addClass('has-error');
+            flag = false;
+        }
+        return flag;
+       });
+
+    $("#txtFromDate").datepicker({
+        dateFormat: 'dd-mm-yy',
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-100:+0",
+        maxDate: new Date()
+       });
+
+    $('#txtFromDate').change(function () {
+        var from = $('#txtFromDate').datepicker('getDate');
+        var date_diff = Math.ceil((from.getTime() - Date.parse(new Date())) / 86400000);
+        var maxDate_d = date_diff + 14 + 'd';
+        date_diff = date_diff + 'd';
+        $('#txtToDate').val('').removeAttr('disabled').removeClass('hasDatepicker').datepicker({
+            dateFormat: 'dd-mm-yy',
+            minDate: date_diff,
+            maxDate: maxDate_d
+        });
+    });
+    $("#txtToDate").datepicker({
+        dateFormat: "dd-mm-yy",
+        changeMonth: true,
+        changeYear: true,
+        yearRange: "-100:+0"
+    });
+    });
+
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+
+    function MoveToAgency(AppId) {
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("MovedToDefaulter", "Admin", new { area = "Admin" })',
+            dataType: 'json',
+            data: { ApplicationId: AppId },
+            success: function (result) {
+                if (result) {
+                    alert("Moved to Defaulter successfully.");
+                    window.location.reload(1);
+                }
+                else {
+                    alert("Movement to Defaulter Unsuccessfully.");
+                    window.location.reload(1);
+                }
+            },
+            error: function (data) {
+                console.log(`Error :` + data);
+            }
+        });
+    };
+
+    $("#btnExcel").click(function (e) {
+        ////
+            var dt = new Date();
+            var day = dt.getDate();
+            var month = dt.getMonth() + 1;
+            var year = dt.getFullYear();
+            var hour = dt.getHours();
+        var mins = dt.getMinutes();
+        var sec = dt.getSeconds();
+            //
+        var table_div = document.getElementById('tblRecord');
+            var postfix = day + "." + month + "." + year + "_" + hour + "." + mins + "." + sec;
+            //creating a temporary HTML link element (they support setting file names)
+            var a = document.createElement('a');
+            //getting data from our div that contains the HTML table
+            var data_type = 'data:application/vnd.ms-excel';
+
+            var table_html = table_div.outerHTML.replace(/ /g, '%20');
+            a.href = data_type + ', ' + table_html;
+            //setting the file name
+            a.download = 'AgencyReport' + postfix + '.xls';
+            //triggering the function
+            a.click();
+            //just in case, prevent default behaviour
+            e.preventDefault();
+        });
+</script>

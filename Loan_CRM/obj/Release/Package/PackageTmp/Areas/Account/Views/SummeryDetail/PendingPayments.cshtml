@@ -1,0 +1,261 @@
+﻿@using System.Configuration;
+
+@model Loan_CRM.Models.DisbursementModel
+@{
+    ViewBag.Title = "Pending Payment";
+    Layout = "~/Views/Shared/_LayoutAccount.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+@using (Html.BeginForm())
+{
+    <div id="MsgDiv">
+        @if (TempData["msg"] != null)
+        {
+            if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+            else
+            {
+                <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                    <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+                </div>
+            }
+        }
+    </div>
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">Pending Payments</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <a href="@Url.Action("GetAccountApproverData", "AccountApprover",new { Area="Account"})" class="btn btn-primary btn-flat pull-right" style="margin-bottom: 10px">Back</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="clearfix"></div>
+    <div id="tableDiv">
+        <table id="tbl" class="table table-bordered table-responsive table-striped">
+            <thead>
+                <tr>
+                    <th width="10%">Contract No</th>
+                    <th>Reference No</th>
+                    <th>Client Name</th>
+                    <th style="width: 8%;">Date of payment</th>
+                    <th>Amortization</th>
+                    <th>Late Penalties</th>
+                    <th>Total</th>
+                    <th>Payment channel</th>
+                    <th>Proof of payment</th>
+                    <th>Checker Remark</th>
+                    <th>Remarks</th>
+                    <th style="width: 18%;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var Result = false;
+       $("#tbl").DataTable({
+     "processing": true, // for show progress bar
+            "serverSide": true,
+            "filter": true,
+            "orderMulti": false, // for disable multiple column at once
+            "pageLength": 10,
+            "lengthChange": false,
+            "bInfo": false,
+                "ajax": {
+                    "url": '@Url.Action("GetPendingPayments", "SummeryDetail", new { Area = "Account" })',
+                    "type": "POST",
+                    "datatype": "json",
+
+                    error: function (data) {
+                        console.log(`Error :` + data);
+                    //    window.location.reload(1);
+                    }
+                },
+                "columns": [
+                    { "data": "ReferenceNumber", "name": "ReferenceNumber" },
+                    { "data": "ContractNumber", "name": "ContractNumber" },
+                    { "data": "Name", "name": "Name" },
+                    { "data": "DateofPayment", "name": "DateofPayment" },
+                    { "data": "Amortization", "name": "Amortization" },
+                    { "data": "LatePenalties", "name": "LatePenalties" },
+                    { "data": "TotalAmount", "name": "TotalAmount" },
+                    { "data": "PaymentChannel", "name": "PaymentChannel" },
+                    { "data": "proofofpayment", "name": "proofofpayment" },
+                    { "data": "checker_remark", "name": "checker_remark" },
+                    {
+                        "render": function (data, type, full, meta) {
+                            return '<textarea id="txtRemarks_' + full.ApplicationNo + '" class="form-control" value="' + full.remarks+'" onfocus="RemoveValidation(this)"></textarea>';
+                        }
+                    },
+                    {
+                        "render": function (data, type, full, meta) { return '<input type="button" value="Approve" class="btn btn-primary" onclick="ApprovePendingPayment(' + full.PaymentId + ',' + full.ApplicationNo + ',' + full.LatePenalties + ',' + full.Amortization + ',' + full.EmiPayment + ',' + full.user_id + ',\'' + full.PaymentChannel + '\',\'' + full.ContractNumber+'\');"/><input type="button" value="DisApprove" class="btn btn-danger" onclick="DisapprovePendingPayment(' + full.PaymentId + ',' + full.ApplicationNo + ',' + full.LatePenalties + ',' + full.EmiPayment +');"/>'; }
+                    }
+                ]
+        });
+    });
+    function ApprovePendingPayment(payId, AppNo, LatePanelty, TotalAmt, EmiPayment, user_id, PaymentChannel, ContractNumber) {
+
+            var Remarks = $("#txtRemarks_" + AppNo + "").val();
+            var flag = true;
+            if (flag) {
+                $.ajax({
+                    type: 'Post',
+                    url: '@Url.Action("ApprovePendingPayment", "SummeryDetail")',
+                    data: { paidAmt: TotalAmt, penaltyAmount: LatePanelty, remark: Remarks, payId: payId, appNo: AppNo, EmiPayment: EmiPayment, user_id: user_id, PaymentChannel: PaymentChannel, ContractNumber: ContractNumber},
+                    datatype: 'json',
+                    success: function (result) {
+                        if (result == true) {
+                            alert("Request Approved");
+                            UpdateIsPickedAccount();
+
+                        }
+                         window.location.href = '@Url.Action("PendingPayments", "SummeryDetail")';
+                    },
+                    error: function (data) {
+                        console.log(`Error :` + data);
+                    //    window.location.href = '@Url.Action("PendingPayments", "SummeryDetail")';
+                    }
+                });
+            }
+        }
+
+        function DisapprovePendingPayment(payId, AppNo, LatePanelty, EmiPayment) {
+
+            var Remarks = $("#txtRemarks_" + AppNo + "").val();
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("DeletePendingPayment", "SummeryDetail")',
+                data: { penaltyAmount: LatePanelty, remark: Remarks, payId: payId, EmiPayment: EmiPayment },
+                datatype: 'json',
+                success: function (result) {
+                    if (result == true) {
+                        alert("Request Disapproved");
+                        UpdateIsPickedAccount();
+
+                    }
+                    window.location.href = '@Url.Action("PendingPayments", "SummeryDetail")';
+                },
+                error: function (data) {
+                    console.log(`Error :` + data);
+                }
+            });
+        }
+        function UpdateIsPickedAccount() {
+            var appNo = $("#spanAppNo").text();
+            $.ajax({
+                url: '@Url.Action("UpdateIsPickedAccount", "SummeryDetail")',
+                type: "POST",
+                data: { appNo: appNo },
+                success: function (result) {
+
+                    if (result == "True") {
+                        window.location.href = '@Url.Action("AccountSummery", "SummeryDetail")';
+                    }
+                }
+            });
+        }
+        function RemoveValidation(obj) {
+            var id = obj.id;
+            $("#" + id).removeClass("has-error");
+        }
+        function RequestReject(id) {
+
+            var r = confirm("Are you sure to Reject?");
+            if (r == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DoReject", "SummeryDetail")',
+                    data: { id: id },
+                    success: function (data) {
+                        if (data) {
+                            window.location.reload(1);
+                        }
+                    },
+                    error: function (data) {
+                        console.log(`Error :` + data);
+                    }
+                });
+            }
+
+
+        function RequestApprove(id) {
+
+            var r = confirm("Are you sure to Approve?");
+            if (r == true) {
+                $.ajax({
+                    type: 'POST',
+                    url: '@Url.Action("DoApprove", "SummeryDetail")',
+                    data: { id: id },
+                    success: function (data) {
+                        if (data) {
+                            window.location.reload(1);
+                        }
+                    },
+                    error: function (data) {
+                        console.log(`Error :` + data);
+                    }
+                });
+            }
+        }
+        }
+
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+
+    .table-responsive {
+        min-height: .01%;
+        overflow-x: auto;
+    }
+
+    .table-bordered {
+        border: 1px solid #ddd;
+    }
+
+    .table {
+        width: 100%;
+        max-width: 100%;
+        margin-bottom: 20px;
+    }
+
+    table {
+        background-color: transparent;
+    }
+
+    table {
+        border-spacing: 0;
+        border-collapse: collapse;
+    }
+</style>
+

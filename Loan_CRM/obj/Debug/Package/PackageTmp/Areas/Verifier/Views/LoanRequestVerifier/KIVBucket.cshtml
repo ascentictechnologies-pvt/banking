@@ -1,0 +1,129 @@
+﻿@using System.Configuration;
+@{
+    ViewBag.Title = "KIV Bucket";
+    Layout = "~/Views/Shared/_LayoutVerifer.cshtml";
+    @Styles.Render("~/Content/DataTable");
+    @Scripts.Render("~/Script/DataTable");
+}
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+@using (Html.BeginForm())
+{
+    <div class="pull-left">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <b style="font-size:20px;">Loan Request Verifier Bucket(KIV)</b>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="pull-right">
+        <table class="table table-bordered table-striped">
+            <tbody>
+                <tr>
+                    <td style="text-align:center">
+                        <input type="button" value="Back" class="btn btn-primary" onclick="location.href='@Url.Action("Index","LoanRequestVerifier")'" />
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+<div id="loadingDiv">
+    <img src="../../../Content/images/Loader.gif" class="classname" loop=infinite />
+</div>
+<div class="clearfix"></div>
+<div>
+    <table id="tblVerifyKIV" class="data-verification table table-bordered dataTable no-footer"></table>
+</div>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        GetData();
+    });
+
+    function GetData() {
+        var _data = '';
+        $.ajax({
+            type: 'GET',
+            url: '@Url.Action("GetKIVBucketData", "LoanRequestVerifier")',
+            datatype: 'json',
+            beforeSend: function () {
+                $("#loadingDiv").show();
+            },
+            success: function (response) {
+                if (response != null) {
+                    var _data = '';
+                    _data += "<thead><tr><th>Application No</th><th>Name</th><th>Date Applied</th><th>Date Forwarded</th><th>Best Call Morning</th><th>Best Call Noon</th><th>Checked By</th><th>Details</th></tr></thead><tbody>";
+                    $.each(response, function (i, data) {
+
+                        _data += "<tr><td>" + data.ApplicationNo + "</td><td>" + data.First_Name + " " + data.Middle_Name + " " + data.Last_Name + "</td><td>" + data.CreatedOn + "</td><td>" + data.CheckedOn + "</td><td>" + data.MorningTime + "</td><td>" + data.NoonTime + "</td><td>" + data.userfullname + "</td>";
+
+                        _data += "<td><input type='button' value='Detail' class='btn btn-primary' id='btnDetail' onclick='GetDetail(" + data.ApplicationNo + "," + data.PersonalContactNo + ")' /></td></tr>";
+                    });
+                    _data += "</tbody>";
+                    $(".data-verification").html(_data);
+                    $(".data-verification").DataTable().destroy();
+                    $("#loadingDiv").hide();
+                    setTimeout(GetData, @Convert.ToInt32(ConfigurationManager.AppSettings["GridRefreshTime"]));
+                    $(".data-verification").DataTable()
+                }
+
+                else {
+                    window.location.reload(1);
+                }
+            },
+            error: function (response) {
+                window.location.reload(1);
+            }
+        });
+
+    }
+
+
+    function GetDetail(obj, ContactNumber) {
+
+        var url = '@Url.Action("VerificationWindow", "LoanRequestVerifier")?Id=' + obj + '&phoneNumber=' + ContactNumber+'&ActionName=KIVBucket';;
+        window.location.href = url;
+    }
+
+</script>
+<style>
+    .classname {
+        position: absolute;
+        z-index: 10;
+        top: 300px;
+        left: 600px;
+    }
+</style>
+
+
+
+
+
+
+

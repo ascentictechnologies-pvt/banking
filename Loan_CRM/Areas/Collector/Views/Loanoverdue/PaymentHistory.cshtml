@@ -1,0 +1,755 @@
+﻿@using System.Configuration;
+@model Loan_CRM.Areas.Collector.Models.PaymentInformation
+@{
+    /**/
+
+    ViewBag.Title = "Payment History";
+    Layout = "~/Views/Shared/_LayoutCollector.cshtml";
+    var balanceamount = Model.balanceamt;
+}
+
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<script src="~/Content/js/ValidateNumericText.js"></script>
+<script src="~/Content/js/ValidateCharcterText.js"></script>
+<script src="~/Content/js/emailvalidation.js"></script>
+<script src="~/Content/js/jquery.js"></script>
+<script src="~/Content/js/jquery-ui.js"></script>
+<link href="~/Content/jquery-ui.css" rel="stylesheet">
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+<div id="modalDefault" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+    <div class="modal-content">
+        <div class="modal-header">
+            <span class="close" onclick="$('#modalDefault').toggle();">&times;</span>
+            <h4>Select Defaulter Officer</h4>
+        </div>
+        <div class="modal-body" id="modalDefaultUser" style="padding-top: 4%;">
+            <table class="table table-bordered table-striped" id="divDefaulter">
+            </table>
+            <div class="clearfix"></div>
+        </div>
+        <div class="modal-footer">
+            <input type="button" class="btn btn-primary btn-flat" id="btnSetDefualter" value="Yes" />
+            <input type="button" class="btn btn-primary btn-flat" value="No" onclick="$('#modalDefault').toggle();" />
+        </div>
+    </div>
+</div>
+@using (Html.BeginForm("PaymentHistory", "Loanoverdue", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    <div id="modalPreterm" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="RefreshPreTermModel()">&times;</span>
+                <h3>Preterm</h3>
+            </div>
+            <div class="modal-body">
+                <table class="table table-bordered table-striped">
+                    <tr>
+                        <td>
+                            <label>Loan Amount</label>
+                        </td>
+                        <td>
+                            <input type="number" name="LoanAmount" id="txtLoanAmount" onchange="CalculateTotalAmount()" class="form-control" onfocus="RemoveValidation(this);" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Term</label>
+                        </td>
+                        <td>
+                            <select class="form-control" onfocus="RemoveValidation(this);" name="TermName" id="ddlTermName" onchange=" GetDataAccToTerm()"><option value="-1">Select</option></select>
+                            <input type="hidden" class="form-control" name="TermValue" id="txtTerm_ValuePreterm" readonly />
+                            <input type="hidden" class="form-control" name="AdminFee" id="txtAdminFeePreterm" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Interest Rate</label>
+                        </td>
+                        <td>
+                            <input type="text" class="form-control" name="ApprovedInterestRate" id="txtInterestRate" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Maturity Date</label>
+                        </td>
+                        <td>
+                            <input type="date" name="MaturityDate" id="txtMaturityDate" onfocus="RemoveValidation(this);" class="form-control" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Preterm Deduction</label>
+                        </td>
+                        <td>
+                            <input type="number" name="PretermDeduction" id="txtPretermDeduction" class="form-control" readonly />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Exact Loan Amount Perceived</label>
+                        </td>
+                        <td>
+                            <input type="number" name="ExactLoanAmountPerceived" id="txtExactLoanAmountPerceived" onfocus="RemoveValidation(this);" class="form-control" min="1" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label>Total Amount Due</label>
+                        </td>
+                        <td>
+                            <input type="number" name="TotalAmountDue" id="txtTotalAmountDue" class="form-control" readonly />
+                        </td>
+                    </tr>
+                </table>
+
+
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary btn-flat" id="btnPretermSubmit" value="Submit" onclick="InsertPreterm()" />
+                <input type="button" class="btn btn-danger btn-flat" id="btnPretermCancel" value="Cancel" onclick="RefreshPreTermModel()" />
+            </div>
+        </div>
+    </div>
+
+    <div id="modalReloan" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="$('#modalReloan').toggle();">&times;</span>
+                <h3>Reloan</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group spc">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label>Loan Amount</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="LoanAmount" id="txtLoanAmountReloan" onkeyup="CalculateReloan()" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label>Term</label>
+                        </div>
+                        <div class="col-md-6">
+                            <select class="form-control" name="TermName" id="ddlTermNameReloan" onchange="GetDataAccToTermReloan()"><option value="-1">Select</option></select>
+                            <input type="hidden" class="form-control" name="ApprovedTerm" id="txtTerm_ValueReloan" readonly />
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-group spc">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label>Interest Rate</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="text" class="form-control" name="ApprovedInterestRate" id="txtInterestRateReloan" readonly />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label>Maturity Date</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="date" name="MaturityDate" id="txtMaturityDateReloan" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label>Reloan Deduction</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="ReloanDeduction" id="txtReloanDeduction" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label>Exact Loan Amount Perceived</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="ExactLoanAmountPerceived" id="txtExactLoanAmountPerceivedReloan" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-12">
+                        <div class="col-md-6">
+                            <label>Total Amount Due</label>
+                        </div>
+                        <div class="col-md-6">
+                            <input type="number" name="TotalAmountDue" id="txtTotalAmountDueReloan" class="form-control" />
+                        </div>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary btn-flat" id="btnReloanSubmit" value="Submit" onclick="InsertReloan()" />
+                <input type="button" class="btn btn-danger btn-flat" id="btnReloanCancel" value="Cancel" onclick="$('#modalReloan').toggle();" />
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12">
+        <input type="button" class="btn btn-primary pull-right" id="btn_Back" value="Back" onclick="location.href='@Url.Action("LoanDetail","Loanoverdue")?Id=' + @Model.applicationno+ '&ActionName=@Request.QueryString["ActionName"]'" />
+    </div>
+    <div style="padding-top:2%;">
+        <div class="col-md-12">
+            @{
+                if (Model.ReduceLoanCount == 0)
+                {
+                    <button type="button" class="btn btn-primary btn-flat" id="btn_ReduceLoan" onclick='ReduceLoan("@Model.applicationno")'>ReduceLoan</button>
+                }
+            }
+            <button type="button" class="btn btn-primary btn-flat" id="btn_Disqualify" onclick='Disqualify("@Model.applicationno")'>Disqualify</button>
+            <button type="button" class="btn btn-primary btn-flat" id="btn_Preterm" onclick='GetPreterm("@Model.applicationno ", "@Model.balanceamt")'>Preterm</button>
+
+            <button type="button" class="btn btn-primary btn-flat" id="btn_Default" onclick='Default("@Model.applicationno")'>Default</button>
+            <button type="button" class="btn btn-primary btn-flat" id="btn_VerificationWindow" onclick='VerificationWindow("@Model.applicationno")'>Verification Window</button>
+
+
+        </div>
+    </div>
+    <div style="padding-top:2%;" class="col-md-12">
+        <table class="table table-bordered table-striped">
+            @{
+                for (int i = 0; i < 5; i++)
+                {
+                    <tr>
+                        @if (i == 0)
+                        {
+                            <th>@Model.Referenceno</th>
+                        }
+                        @if (i == 1)
+                        {
+                            <th>Due Date</th>
+                        }
+                        @if (i == 2)
+                        {
+                            <th>Ammortization</th>
+                        }
+                        @if (i == 3)
+                        {
+                            <th>Payment Date</th>
+                        }
+                        @if (i == 4)
+                        {
+                            <th>Amount Paid</th>
+                        }
+                        @{
+                            int count = i + 1;
+                            foreach (var item in Model.paymentinformation)
+                            {
+                                if (i == 0)
+                                {
+                                    <th>@count</th>
+                                }
+                                if (i == 1)
+                                {
+                                    <td>@item.Dueedate</td>
+                                }
+                                if (i == 2)
+                                {
+                                    <td>@item.amortization</td>
+                                }
+                                if (i == 3)
+                                {
+                                    if (Convert.ToDecimal(item.Paidamount) > 0)
+                                    {
+                                        <td>@item.paymentdate</td>
+                                    }
+                                    else
+                                    {
+                                        <td></td>
+                                    }
+                                }
+                                if (i == 4)
+                                {
+                                    <td>@item.Paidamount</td>
+                                }
+                                count = count + 1;
+                            }
+                        }
+                    </tr>
+                }
+            }
+        </table>
+    </div>
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#btnSetDefualter").click(function () {
+            var Application_No=@Model.applicationno;
+            var selectedVal = "";
+            var userid = $("input[type='radio']:checked").val();
+            var Msg = confirm("Do You want to Proceed?");
+            if (Msg) {
+                $.ajax({
+                    url: '@Url.Action("DefaulterUser", "Loanoverdue")',
+                    type: 'POST',
+                    data: { application_no: Application_No, defaulteruser_id: userid},
+                    success: function (data) {
+                        if (data) {
+                            alert("Data Successfully Inserted");
+                            $('#modalDefault').toggle();
+                            return true;
+                        }
+                        else {
+                            alert("Data not updated");
+                        $('#modalDefault').toggle();
+                            return true;
+                        }
+
+                    },
+                    error: function (data) {
+                        window.location.reload(1);
+                    }
+                });
+            }
+            else {
+                return false;
+            }
+        });
+    });
+    function RefreshPreTermModel() {
+        window.location.reload();
+    }
+        function Default(id) {
+            var _data = '';
+            var btn = document.getElementById('btn_Default');
+            var modalDefault = document.getElementById('modalDefault');
+            $.ajax({
+                url: '@Url.Action("DefaultRecordDetails", "Loanoverdue")',
+                type: 'POST',
+                data: {},
+                success: function (data) {
+                    var str = '';
+                    if (data.length > 0) {
+                        $.each(data, function (key, value) {
+                            str += '<tr><td width="10px"><input type="radio" name="dfaulterName" value="' + value.userid + '" id="rbtn' + value.userid + '" class="radio" /></td><td><label style="margin-top:2px;">' + value.userfullname + '</label></td></tr>';
+                        });
+                        $("#divDefaulter").html(str);
+                    }
+                    modalDefault.style.display = "block";
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+</script>
+<script type="text/javascript">
+    var _ApplicationNo = 0;
+    $(document).ready(function () {
+
+        BindTermNameReloan();
+    });
+
+    function VerificationWindow(obj) {
+        var url = '@Url.Action("ViewDetailsForApproval", "Loanoverdue", new { Area = "Collector" })?Id=' + obj+'&ActionName=@Request.QueryString["ActionName"]';
+        window.location.href = url;
+    }
+
+     @*function Reloan(id) {
+         var r = confirm("Are you sure for Reloan?");
+            if (r == true) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("ReLoan", "Loanoverdue")',
+                        data: { id: id },
+                        success: function (data) {
+                            console.log(data);
+
+                            if (data) {
+                                alert("Reloan has been approved");
+                                $('#btn_Reloan').hide();
+                            }
+                        },
+                        error: function (data) {
+                            window.location.reload(1);
+                        }
+                    });
+            }
+    }*@
+
+    function Disqualify(id) {
+         var r = confirm("Are you sure to Disqualify?");
+            if (r == true) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("Disqualify", "Loanoverdue")',
+                        data: { id: id },
+                        success: function (data) {
+                            console.log(data);
+
+                            if (data) {
+                                alert("The loan has been disqualified");
+                                $('#btn_Reloan').hide();
+                            }
+                        },
+                        error: function (data) {
+                            window.location.reload(1);
+                        }
+                    });
+            }
+    }
+
+    function ReduceLoan(id) {
+            var r = confirm("Are you sure to Reduce Loan?");
+            if (r == true) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '@Url.Action("ReduceLoan", "Loanoverdue")',
+                        data: { id: id },
+                        success: function (data) {
+                            console.log(data);
+
+                            if (data) {
+                                alert("Loan has been reduced");
+                                var url = '@Url.Action("PaymentHistory", "Loanoverdue")?Id=' + id + '&ActionName=LoanPaymentBucket';;
+                                window.location.href = url;
+                            }
+                        },
+                        error: function (data) {
+                            window.location.reload(1);
+                        }
+                    });
+            }
+    }
+
+    function GetPreterm(AppId,balance) {
+        //
+        var applicationno = AppId;
+        _ApplicationNo = AppId;
+        var BalanceAmount = balance;
+        var modalPreterm = document.getElementById('modalPreterm');
+        $("#txtPretermDeduction").val(BalanceAmount);
+
+        modalPreterm.style.display = "block";
+        BindTermName();
+    }
+
+    function GetReloan(AppId, balance) {
+        var applicationno = AppId;
+        _ApplicationNo = AppId;
+        var BalanceAmount = balance;
+        var modalReloan = document.getElementById('modalReloan');
+        $("#txtReloanDeduction").val(BalanceAmount);
+
+        modalReloan.style.display = "block";
+    }
+
+    function GetDataAccToTerm() {
+        var termId = $("#ddlTermName option:selected").val();
+        if (termId != "-1") {
+            var temVal = termId.split('_');
+            termId = temVal[0];
+        }
+        if (termId != undefined) {
+            $.ajax({
+                url: '@Url.Action("GetDataAccToTerm", "LoanRequestVerifier", new { Area = "Verifier" })',
+                type: "POST",
+                data: { id: termId },
+                success: function (data) {
+                    if (data != null) {
+                        $("#txtTermType").val(data.TermTypeName);
+                        $("#txtInterestRate").val(data.Rate);
+                        $("#txtTerm_ValuePreterm").val(data.term_Value);
+                        $("#txtAdminFeePreterm").val(data.admin_fee);
+                        CalculateTotalAmount();
+                    }
+                    else {
+                        window.location.reload(1);
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+    }
+    function GetDataAccToTermReloan() {
+        var termId = $("#ddlTermNameReloan option:selected").val();
+        if (termId != undefined) {
+            $.ajax({
+                url: '@Url.Action("GetDataAccToTerm", "LoanRequestVerifier", new { Area = "Verifier" })',
+                type: "POST",
+                data: { id: termId },
+                success: function (data) {
+                    if (data != null) {
+                        $("#txtTermTypeReloan").val(data.TermTypeName);
+                        $("#txtInterestRateReloan").val(data.Rate);
+                        $("#txtTerm_ValueReloan").val(data.term_Value);
+                        if ($("#ApprovedLoanAmountReloan").val() != 0) {
+                        }
+                    }
+                    else {
+                        window.location.reload(1);
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+    }
+     function BindTermName() {
+            $.ajax({
+            url: "/LoanRequestVerifier/Get_TermName",
+            type: "POST",
+                success: function (data) {
+                    if (data != null) {
+                        $('#ddlTermName').empty();
+                        htmlText = '<option>Select</option>'
+                        for (var i = 0; i < data.length; i++) {
+                            htmlText += '<option value="' + data[i].Id + '_' + data[i].term_Id + '">' + data[i].term_Name + '</option>'
+                        }
+                        $('#ddlTermName').append(htmlText);
+                    }
+                    else {
+                        window.location.reload(1);
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                },
+            complete: function (data) {
+            }
+            });
+    }
+    function BindTermNameReloan() {
+        $.ajax({
+            url: "/LoanRequestVerifier/Get_TermName",
+            type: "POST",
+            success: function (data) {
+                if (data != null) {
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].term_Name, data[i].Id);
+                        $('#ddlTermNameReloan').append(opt);
+                    }
+                }
+                else {
+                    window.location.reload(1);
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+            },
+            complete: function (data) {
+                GetDataAccToTermReloan();
+            }
+        });
+    }
+
+    function CalculatePreterm() {
+        //
+        var LoanAmount = $("#txtLoanAmount").val();
+        var TotalAmount = $("#txtTotalAmountDue").val();
+        var PretermDeduction = $("#txtPretermDeduction").val();
+        if (LoanAmount == "" || LoanAmount == NaN) {
+            LoanAmount = 0;
+        }
+        if (PretermDeduction == "" || PretermDeduction == NaN) {
+            PretermDeduction = 0;
+        }
+        var Total = parseFloat(TotalAmount) - parseFloat(PretermDeduction);
+        $("#txtExactLoanAmountPerceived").val(Total);
+        $("#txtTotalAmountDue").val(LoanAmount);
+    }
+
+    function CalculateReloan() {
+        var LoanAmount = $("#txtLoanAmountReloan").val();
+        var ReloanDeduction = $("#txtReloanDeduction").val();
+        if (LoanAmount == "" || LoanAmount == NaN) {
+            LoanAmount = 0;
+        }
+        if (ReloanDeduction == "" || ReloanDeduction == NaN) {
+            ReloanDeduction = 0;
+        }
+        var Total = parseFloat(LoanAmount) - parseFloat(ReloanDeduction);
+        $("#txtExactLoanAmountPerceivedReloan").val(Math.round(Total * 100) / 100);
+        $("#txtTotalAmountDueReloan").val(LoanAmount);
+    }
+    function CalculateTotalAmount() {
+        //
+        var loanAmount = $("#txtLoanAmount").val().trim();
+        if (loanAmount == '') {
+            $("#txtTotalAmountDue").val(0);
+        }
+        else {
+            var rate = $("#txtInterestRate").val();
+            var adminfee = $("#txtAdminFeePreterm").val();
+            loanAmountAfterDeduction = loanAmount - ((loanAmount * adminfee) / 100);
+            var amount = parseFloat(rate) / 100 * parseFloat(loanAmount);
+            var result = parseFloat(loanAmount) + parseFloat(amount);
+            $("#txtTotalAmountDue").val(Math.round(result * 100) / 100);
+            var deduction = $( "#txtPretermDeduction").val();
+            result = parseFloat(loanAmountAfterDeduction) - parseFloat(deduction);
+            $("#txtExactLoanAmountPerceived").val(Math.round(result * 100) / 100);
+        }
+
+    }
+    function InsertPreterm()
+    {
+
+        //
+        var LoanAmount = $("#txtLoanAmount").val();
+        var InterestRate = $("#txtInterestRate").val();
+        var TotalAmountDue = $("#txtTotalAmountDue").val();
+        var PretermDeduction = $("#txtPretermDeduction").val();
+        var ExtraLoanAmount = $("#txtExactLoanAmountPerceived").val();
+        var MaturityDate = $("#txtMaturityDate").val().trim();
+        var modalPreterm = document.getElementById('modalPreterm');
+        var btnPretermSubmit = document.getElementById('btnPretermSubmit');
+        var TermId = 0;
+        var TermType = 0;
+        var flag = 0;
+        //
+        var TermValue = $("#txtTerm_ValuePreterm").val();
+        var _termData = $("#ddlTermName option:selected").val();
+        console.log("_termData : " + _termData);
+        if (_termData != -"1") {
+            _termData = _termData.split('_');
+            TermId = _termData[0];
+            TermType = _termData[1];
+        }
+        console.log("TermId : " + TermId);
+        console.log("TermType : " + TermType);
+        if (LoanAmount == "") {
+            $("#txtLoanAmount").val('');
+            $("#txtLoanAmount").addClass('has-error');
+            flag++;
+        }
+        if (MaturityDate == "") {
+            //
+            $("#txtMaturityDate").val('');
+            $("#txtMaturityDate").addClass('has-error');
+            flag++;
+        }
+        if (ExtraLoanAmount <= 0) {
+            //
+            $("#txtExactLoanAmountPerceived").addClass('has-error');
+            flag++;
+        }
+        if (_termData == 'Select' ) {
+            //
+            $("#ddlTermName").val('Select');
+            $("#ddlTermName").addClass('has-error');
+            flag++;
+        }
+        if (flag > 0) {
+            return false;
+        }
+
+        else
+        {
+            modalPreterm.style.display = "block";
+            btnPretermSubmit.style.display = "none";
+          $.ajax({
+            data: { ApplicationNo: _ApplicationNo, LoanAmount: LoanAmount, InterestRate: InterestRate, TotalAmountDue: TotalAmountDue, PretermDeduction: PretermDeduction, MaturityDate: MaturityDate, TermValue: TermValue, TermId: TermId, TermType: TermType },
+                async:false,
+                url:'@Url.Action("AddPreterm", "Loanoverdue")',
+                success:function(data)
+                {
+                    alert(data);
+                    window.location.reload();
+                    var url = '@Url.Action("LoanPaymentBucket", "Loanoverdue", new { area = "Collector" })';
+                    window.location.href = url;
+                },
+              error: function (data) {
+                  window.location.reload(1);
+              }
+            });
+        }
+
+    }
+    function InsertReloan()
+    {
+        var LoanAmount = $("#txtLoanAmountReloan").val();
+        var InterestRate = $("#txtInterestRateReloan").val();
+        var TotalAmountDue = $("#txtTotalAmountDueReloan").val();
+        var ReloanDeduction = $("#txtReloanDeduction").val();
+        var MaturityDate = $("#txtMaturityDateReloan").val();
+        var TermId = $("#ddlTermNameReloan option:selected").val();
+        var TermValue = $("#txtTerm_ValueReloan").val();
+        var OldApplicationNo = '@Model.applicationno';
+        $.ajax({
+            data: { ApplicationNo: _ApplicationNo, LoanAmount: LoanAmount, InterestRate: InterestRate, TotalAmountDue: TotalAmountDue, ReloanDeduction: ReloanDeduction, MaturityDate: MaturityDate, TermValue: TermValue, TermId: TermId },
+                async:false,
+                url:'@Url.Action("AddReloan", "Loanoverdue")',
+                success:function(data)
+                {
+
+                    if (data) {
+                        alert("Added successfull");
+                        var url = '@Url.Action("PaymentHistory", "Loanoverdue")?Id=' + OldApplicationNo + '&ActionName=LoanDetail';;
+                        window.location.href = url;
+
+                    }
+                    else {
+                        alert("Unsuccessfull");
+                    }
+
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+            });
+    }
+    function RemoveValidation(obj) {
+        var id = obj.id;
+        $("#" + id).removeClass("has-error");
+    }
+</script>
+<style>
+    .classname {
+        position: absolute;
+        z-index: 10;
+        top: 300px;
+        left: 600px;
+    }
+
+    .has-error {
+        border-color: red;
+        color: red;
+    }
+</style>
+

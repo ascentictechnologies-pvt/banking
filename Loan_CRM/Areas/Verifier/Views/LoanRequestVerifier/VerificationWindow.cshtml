@@ -1,0 +1,1431 @@
+﻿@using System.Configuration
+@model Loan_CRM.Models.CompleteAppVerificationDetails
+
+@{
+    ViewBag.Title = "Verification Window";
+    Layout = "~/Views/Shared/_LayoutVerifer.cshtml";
+}
+<style>
+    #back2Top {
+        width: 40px;
+        line-height: 40px;
+        overflow: hidden;
+        z-index: 999;
+        display: none;
+        cursor: pointer;
+        -moz-transform: rotate(270deg);
+        -webkit-transform: rotate(270deg);
+        -o-transform: rotate(270deg);
+        -ms-transform: rotate(270deg);
+        transform: rotate(270deg);
+        position: fixed;
+        bottom: 50px;
+        right: 0;
+        background-color: #DDD;
+        color: #555;
+        text-align: center;
+        font-size: 30px;
+        text-decoration: none;
+    }
+
+        #back2Top:hover {
+            background-color: #DDF;
+            color: #000;
+        }
+</style>
+
+<div id="MsgDiv">
+    @if (TempData["msg"] != null)
+    {
+        if (Convert.ToString(TempData["msg"]).ToLower().Contains("wrong") || Convert.ToString(TempData["msg"]).ToLower().Contains("not") || Convert.ToString(TempData["msg"]).ToLower().Contains("exception"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-danger'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else if (Convert.ToString(TempData["msg"]).ToLower().Contains("duplicate") || Convert.ToString(TempData["msg"]).ToLower().Contains("already") || Convert.ToString(TempData["msg"]).ToLower().Contains("exist"))
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-warning'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+        else
+        {
+            <div onclick="$('#MsgDiv').hide(500);" class='alert alert-success'>
+                <label>@TempData["msg"]</label><a onclick="$('#MsgDiv').hide(500);" class="anchor pull-right"><i class="fa fa-window-close" aria-hidden="true"></i></a>
+            </div>
+        }
+    }
+</div>
+
+<div class="pull-left">
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                <td style="text-align:center">
+                    <b style="font-size:20px;">Verification Window</b>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+<div class="pull-right">
+    @Html.HiddenFor(x => x.userid)
+    <input type="hidden" name="GovUrl" value="@Model.GovUrl" />
+    <input type="hidden" name="CompUrl" value="@Model.CompUrl" />
+    <input type="hidden" name="IncomeUrl" value="@Model.IncomeUrl" />
+    <input type="hidden" name="BillUrl" value="@Model.BillUrl" />
+    <input type="hidden" name="OthUrl" value="@Model.OthUrl" />
+    <input type="hidden" name="ATMUrl" value="@Model.ATMUrl" />
+    <table class="table table-bordered table-striped">
+        <tbody>
+            <tr>
+                @if (Model.ApplicationNo > 0)
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("GetSmileData", "Home", new { Area = "" })?ApplicationNo=@Model.ApplicationNo' title="Employment Details" target="_blank">Employment Details</a></td>
+                }
+                @if (!String.IsNullOrWhiteSpace(Model.PersonalEmail))
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("GetOldData", "Home", new { Area = "" })?Emailid=@Model.PersonalEmail' title="Offline Loan History" target="_blank">Offline Loan History</a></td>
+                }
+                @if (Model.ApplicationNo > 0)
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("LoanHistory", "Home", new { Area = "" })?UserID=@Model.userid&ActionName=@Request.QueryString["ActionName"]&ApplicationNo=@Model.ApplicationNo' title="Loan History" target="_blank">Loan History</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.GovUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="GovermentID Document missing!">ID1</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.GovUrl' title="GovermentID Document" target="_blank">ID1</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.CompUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="Company Document missing!">ID2</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.CompUrl' title="Company Document" target="_blank">ID2</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.IncomeUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="Income Document missing!">PI</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.IncomeUrl' title="Income Document" target="_blank">PI</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.BillUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="Bill Document missing!">PB</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.BillUrl' title="Bill Document" target="_blank">PB</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.OthUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="Other Document missing!">O</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.OthUrl' title="Other Document" target="_blank">O</a></td>
+                }
+                @if (String.IsNullOrWhiteSpace(Model.ATMUrl))
+                {
+                    <td style="text-align:center"><a class="btn btn-danger" title="ATM Document missing!">A</a></td>
+                }
+                else
+                {
+                    <td style="text-align:center"><a class="btn btn-primary" title="ATM Document" href='@Url.Action("DownloadAttachment", "Home", new { Area = "" })?url=@Model.ATMUrl' target="_blank">A</a></td>
+                }
+                <td></td>
+                <td><input type="button" id="btnBack" value="Back" class="btn btn-primary" onclick="UpdateIsPickedVerifier()" /></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<a id="back2Top" title="Back to top" href="#">&#10148;</a>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "frmApplication", enctype = "multipart/form-data" }))
+{
+    <style type="text/css">
+        .checkcenter {
+            text-align: center;
+            align-items: center;
+            vertical-align: middle !important;
+        }
+    </style>
+    <div id="modalNotify" class="modal" style="width:70%; padding-left:30%; padding-top:5%">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="close" onclick="RefreshNotifyModel()">&times;</span>
+                <h3>Notification Template</h3>
+            </div>
+            <div class="modal-body">
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Name</label>
+                    </div>
+                    <div class="col-md-6">
+                        @Html.DropDownListFor(Model => Model.templatename, new SelectList(ViewBag.NotificationTemplateList, "id", "NotificationTemplateName"), new { @class = "form-control", @id = "ddlNotificationtemplate", @onchange = "GetNotificationValue();" })
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Description</label>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea class="form-control" id="txtnotifydescription" readonly></textarea>
+                    </div>
+                </div>
+                <div class="row form-group spc">
+                    <div class="col-md-6">
+                        <label>Notification Template Definition</label>
+                    </div>
+                    <div class="col-md-6">
+                        <textarea class="form-control" id="txtnotifydefinition" readonly></textarea>
+                    </div>
+                </div>
+
+                <div class="clearfix"></div>
+            </div>
+            <div class="modal-footer">
+                <input type="button" class="btn btn-primary btn-flat" id="btnPaySubmit" value="Send" onclick="SendNotify()" />
+                <input type="button" class="btn btn-danger btn-flat" id="btnPayCancel" value="Cancel" onclick="RefreshNotifyModel()" />
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <input type="hidden" name="ApplicationNo" value="@Model.ApplicationNo" />
+        <table class="table table-bordered dataTable no-footer table-striped">
+            <tr>
+                <th colspan="2"><h5><strong>Application No:</strong> <span id="spnAppNo">@Model.ApplicationNo</span></h5></th>
+                <th style="vertical-align:middle !important;" width="20%">Remarks</th>
+            </tr>
+            <tr class="alert alert-info">
+                <th style="text-align:center;width:20%"><h5><strong>Personal Information</strong></h5></th>
+                <th style="text-align:center;width:30%"><h5><strong>(System or Mannual Input)</strong></h5></th>
+                <th style="text-align:center"><h5><strong>Remarks</strong></h5></th>
+            </tr>
+            <tr>
+                <td><label>Facemap ID</label></td>
+                <td>
+                    <input type="text" class="form-control" value="@Model.transactionid" readonly />
+                    <input type="hidden" name="transactionid" value="@Model.transactionid" />
+                </td>
+                <td> </td>
+            </tr>
+            <tr>
+                <td><label>Name</label></td>
+                <td>
+                    <input type="text" class="form-control" value="@Model.Name" readonly />
+                    <input type="hidden" name="Name" value="@Model.Name" />
+                </td>
+                <td><input type="text" class="form-control" name="personal_name_remark" id="personal_name_remark" value="@Model.personal_name_remark" /> </td>
+            </tr>
+            <tr>
+                <td><label>Date Of Birth</label></td>
+                <td>
+                    <input type="text" class="form-control" value="@Model.DOB" readonly />
+                </td>
+                <td><input type="text" class="form-control" name="personal_birth_date_remark" id="personal_birth_date_remark" value="@Model.personal_birth_date_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Gender</label></td>
+                <td>
+                    @Html.DropDownListFor(x => x.gender, new SelectList(Model.GenderList, "Value", "Text"), new { @id = "gender", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><label>Personal Email Address</label></td>
+                <td>
+                    <input type="text" class="form-control" value="@Model.PersonalEmail" readonly />
+                    <input type="hidden" name="PersonalEmail" value="@Model.PersonalEmail" />
+                </td>
+                <td><input type="text" class="form-control" name="personal_email_remark" id="personal_email_remark" value="@Model.personal_email_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Personal Contact No.</label></td>
+                <td>
+                    <input type="text" class="form-control" value="@Model.PersonalContactNo" readonly />
+                    @Html.HiddenFor(x => x.PersonalContactNo)
+                </td>
+                <td><input type="text" class="form-control" name="personal_contact_no_remark" id="personal_contact_no_remark" value="@Model.personal_contact_no_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Present/Current Address</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="Address" value="@Model.Address.ToUpper()" id="Address" />
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" id="completeaddress" name="completeaddress" value="@Model.BarangayName.ToUpper(), @Model.CityName.ToUpper(), @Model.ProvinceName.ToUpper(), @Model.ZipCode " readonly />
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="personal_perma_address_remark" id="personal_perma_address_remark" value="@Model.personal_perma_address_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Nearest Landmark/Main Rd.</label></td>
+                <td>
+                    <input type="text" class="form-control" name="nearest_landmark" value="@Model.nearest_landmark" id="nearest_landmark" />
+                </td>
+                <td><input type="text" class="form-control" name="nearest_landmark_remark" id="nearest_landmark_remark" value="@Model.nearest_landmark_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Gov't ID Type</label></td>
+                <td>
+                    @Html.DropDownListFor(x => x.gov_doc_type, new SelectList(Model.GovDocList, "Value", "Text"), new { @id = "gov_doc_type", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                </td>
+                <td></td>
+            </tr>
+            <tr>
+                <td><label>SSS no./GSIS no./TIN no.</label></td>
+                <td>
+                    <input type="text" id="SSS_No" name="SSS_No" class="form-control NumericTextBox" value="@Model.SSS_No" maxlength="12" />
+                </td>
+                <td><input type="text" class="form-control" name="SSS_No_remark" id="SSS_No_remark" value="@Model.SSS_No_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Rented/ Owned/ Mortgage?</label></td>
+                <td>
+                    @Html.DropDownListFor(x => x.home_status, new SelectList(Model.HomeStatus, "Value", "Text"), new { @id = "home_status", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                </td>
+                <td><input type="text" class="form-control" name="rented_mortgage_owned_remark" id="rented_mortgage_owned_remark" value="@Model.rented_mortgage_owned_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Permanent Address</label></td>
+                <td>
+                    <input type="text" class="form-control" name="Permanent_address" value="@Model.Permanent_address" id="Permanent_address" />
+                </td>
+                <td><input type="text" class="form-control" name="Permanent_address_remark" id="Permanent_address_remark" value="@Model.Permanent_address_remark" /></td>
+            </tr>
+
+            <tr>
+                <td><label>Home Phone No.</label></td>
+                <td>
+                    <div class="input-group">
+                        <input type="text" class="form-control NumericTextBox" name="HomePhone" value="@Model.HomePhone" maxlength="11" id="txtHomePhoneNo" aria-describedby="button-addon2" />
+                        <div class="input-group-append">
+                            <input type="button" value="Call" id="btnHomeCall" class="btn btn-primary btn-outline-secondary" onclick="HomeCall();" />
+                        </div>
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="personal_house_ph_remark" id="personal_house_ph_remark" value="@Model.personal_house_ph_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Civil Status</label></td>
+                <td>
+                    <input id="CivilStatus" type="hidden" name="CivilStatus" value="@Model.CivilStatus" />
+                    <input type="text" class="form-control" value="@Model.CivilStatusText" readonly />
+                </td>
+                <td><input type="text" class="form-control" name="personal_civil_remark" id="personal_civil_remark" value="@Model.personal_civil_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Spouse Name (if married)</label></td>
+                <td>
+                    <input type="text" class="form-control" name="spouse_name" value="@Model.spouse_name" id="spouse_name" />
+                </td>
+                <td><input type="text" class="form-control" name="spouse_name_remark" id="spouse_name_remark" value="@Model.spouse_name_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Spouse Occupation (if married)</label></td>
+                <td>
+                    <input type="text" class="form-control" name="spouse_occupation" value="@Model.spouse_occupation" id="spouse_occupation" />
+                </td>
+                <td><input type="text" class="form-control" name="spouse_occupation_remark" id="spouse_occupation_remark" value="@Model.spouse_occupation_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Number of Dependents</label></td>
+                <td>
+                    <input type="text" class="form-control" name="number_of_dependent" value="@Model.number_of_dependent" id="number_of_dependent" maxlength="2" />
+                </td>
+                <td><input type="text" class="form-control" name="number_of_dependent_remark" id="number_of_dependent_remark" value="@Model.number_of_dependent_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Mother's Maiden Name and Work</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="MotherMaidenName" placeholder="Name" value="@Model.MotherMaidenName" id="MotherMaidenName" />
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="mother_work" value="@Model.mother_work" placeholder="Works" id="mother_work" />
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="personal_mother_maiden_name_remark" id="personal_mother_maiden_name_remark" value="@Model.personal_mother_maiden_name_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Father's Name and Work</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="father_name" placeholder="Father Name" value="@Model.father_name" id="father_name" />
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="father_work" value="@Model.father_work" placeholder="Works" id="father_work" />
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="father_name_work_remark" id="father_name_work_remark" value="@Model.father_name_work_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Are You Living with Mother? Address</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        @Html.DropDownListFor(x => x.living_with_mother, new SelectList(Model.YesNoList, "Value", "Text"), new { @id = "living_with_mother", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="MotherAddress" placeholder="Mother Address" value="@Model.MotherAddress" id="MotherAddress" />
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="personal_mother_perma_add_remark" id="personal_mother_perma_add_remark" value="@Model.personal_mother_perma_add_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>How many Siblings and Work</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="sibling_count" value="@Model.sibling_count" id="sibling_count" maxlength="2" />
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="sibling_works" placeholder="Works" value="@Model.sibling_works" id="sibling_works" />
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="sibling_works_remark" id="sibling_works_remark" value="@Model.sibling_works_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Company Industry</label></td>
+                <td>
+                    @Html.DropDownListFor(x => x.occupation, new SelectList(Model.OccupationModelList, "id", "occupation_name"), "--Select--", new { @class = "form-control", @id = "occupation" })
+                </td>
+                <td><input type="text" class="form-control" name="occupation_remark" id="occupation_remark" value="@Model.occupation_remark" /></td>
+            </tr>
+            <tr class="alert alert-info">
+                <th style="text-align:center"><h5><strong>Employement Details</strong></h5></th>
+                <th style="text-align:center"><h5><strong>(System or Mannual Input)</strong></h5></th>
+                <th style="text-align:center"><h5><strong>Remarks</strong></h5></th>
+            </tr>
+            <tr>
+                <td><label>Company Name/ Nature of Business</label></td>
+                <td>
+                    <input type="text" class="form-control" name="CompanyName" value="@Model.CompanyName" id="CompanyName" />
+                </td>
+                <td><input type="text" class="form-control" name="personal_company_name_remark" id="personal_company_name_remark" value="@Model.personal_company_name_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Company Address/ Office Contact</label></td>
+                <td>
+                    <input type="text" class="form-control" name="CompanyAddress" value="@Model.CompanyAddress" id="CompanyAddress" />
+                    <input type="text" class="form-control" name="CompanyAddress" value="@Model.Company_Phoneno" id="Company_Phoneno" readonly />
+
+                </td>
+                <td><input type="text" class="form-control" name="personal_company_address_remark" id="personal_company_address_remark" value="@Model.personal_company_address_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Job Title/ Dept./ Function/ Tenurity</label></td>
+                <td>
+                    <input type="text" name="Designation" value="@Model.Designation" class="form-control" id="Designation" />
+                </td>
+                <td><input type="text" class="form-control" name="personal_job_title_remark" id="personal_job_title_remark" value="@Model.personal_job_title_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Gross Monthly Income w/ Incentive and Allowance</label></td>
+                <td>
+                    <input type="text" class="form-control" name="GrossIncome" value="@Model.GrossIncome" id="GrossIncome" />
+                </td>
+                <td><input type="text" class="form-control" name="personal_monthly_income_remark" id="personal_monthly_income_remark" value="@Model.personal_monthly_income_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Net Monthly Income (w/ Deduction)</label></td>
+                <td>
+                    <input type="text" class="form-control" name="net_income" placeholder="" value="@Model.net_income" id="net_income" />
+                </td>
+                <td><input type="text" class="form-control" name="net_income_remark" id="net_income_remark" value="@Model.net_income_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Schedule & BTC</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="scheduled_and_btc" value="@Model.MorningTime" readonly />
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="text" class="form-control" name="scheduled_and_btc1" value="@Model.NoonTime" readonly />
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="scheduled_and_btc_remark" id="scheduled_and_btc_remark" value="@Model.scheduled_and_btc_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Pay Date</label></td>
+                <td>
+                    <div class="col-sm-6">
+                        @Html.DropDownListFor(x => x.payDate1, new SelectList(Model.PayDateList, "Value", "Text"), new { @id = "payDate1", @class = "form-control", @onfocus = "RemoveValidation(this);", @disabled = "@disabled" })
+                        @Html.HiddenFor(x => x.payDate1)
+                    </div>
+                    <div class="col-sm-6">
+                        @Html.DropDownListFor(x => x.payDate2, new SelectList(Model.PayDate2List, "Value", "Text"), new { @id = "payDate2", @class = "form-control", @onfocus = "RemoveValidation(this);", @disabled = "@disabled" })
+                        @Html.HiddenFor(x => x.payDate2)
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="pay_date_remark" id="pay_date_remark" value="@Model.pay_date_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Do you have pending resignation?</label></td>
+                <td>
+                    @Html.DropDownListFor(x => x.pending_resignation, new SelectList(Model.YesNoList, "Value", "Text"), new { @id = "pending_resignation", @class = "form-control", @onfocus = "RemoveValidation(this);" })
+                </td>
+                <td><input type="text" class="form-control" name="pending_resignation_remark" id="pending_resignation_remark" value="@Model.pending_resignation_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Other Source of Income? Remittance/ Business</label></td>
+                <td>
+                    <input type="text" class="form-control" name="other_source_of_income" value="@Model.other_source_of_income" id="other_source_of_income" />
+                </td>
+                <td><input type="text" class="form-control" name="other_source_of_income_remark" id="other_source_of_income_remark" value="@Model.other_source_of_income_remark" /></td>
+            </tr>
+            <tr class="alert alert-info">
+                <th style="text-align:center"><h5><strong>Loan Details</strong></h5></th>
+                <th style="text-align:center"><h5><strong>(System or Mannual Input)</strong></h5></th>
+                <th style="text-align:center"><h5><strong>Remarks</strong></h5></th>
+            </tr>
+            <tr>
+                <td><label>Ask how did they know Cash Mart/ First time</label></td>
+                <td>
+                    <input type="text" class="form-control" name="know_about_cashmart" value="@Model.know_about_cashmart" id="know_about_cashmart" />
+                </td>
+                <td><input type="text" class="form-control" name="know_about_cashmart_remark" id="know_about_cashmart_remark" value="@Model.know_about_cashmart_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Any PENDING Loans from other landing co.</label></td>
+                <td>
+                    <input type="text" class="form-control" name="pending_loan_fron_otherland" value="@Model.pending_loan_fron_otherland" id="pending_loan_fron_otherland" />
+                </td>
+                <td><input type="text" class="form-control" name="pending_loan_fron_otherland_remark" id="pending_loan_fron_otherland_remark" value="@Model.pending_loan_fron_otherland_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Any Bank Loans/ credit Card</label></td>
+                <td>
+                    <input type="text" class="form-control" name="bank_loan_or_credit_card" value="@Model.bank_loan_or_credit_card" id="bank_loan_or_credit_card" />
+                </td>
+                <td><input type="text" class="form-control" name="bank_loan_or_credit_card_remark" id="bank_loan_or_credit_card_remark" value="@Model.bank_loan_or_credit_card_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Requested Loan Amount</label></td>
+                <td>
+                    <input type="text" class="form-control" name="AdditionalRequestedLoanAmount" value="@Model.Loan_Amount" readonly id="AdditionalRequestedLoanAmount" />
+                </td>
+                <td><input type="text" class="form-control" name="personal_req_loan_amt_remark" id="personal_req_loan_amt_remark" value="@Model.personal_req_loan_amt_remark" /></td>
+
+            </tr>
+            <tr>
+                <td><label>Requested Term</label></td>
+                <td>
+                    <input type="text" class="form-control" value="@Model.AdditionalRequested_Term" readonly />
+                </td>
+                <td><input type="text" class="form-control" name="personal_req_loan_term_remark" id="personal_req_loan_term_remark" value="@Model.personal_req_loan_term_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Purpose of Loan</label></td>
+                <td>
+                    <input type="text" class="form-control" name="AdditionalLoanPurpose" value="@Model.AdditionalLoanPurpose" id="AdditionalLoanPurpose" />
+                </td>
+                <td><input type="text" class="form-control" name="AdditionalLoanPurpose_Remark" id="AdditionalLoanPurpose_Remark" value="@Model.AdditionalLoanPurpose_Remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Bank Name</label></td>
+                <td>
+                    @Html.DropDownListFor(x => x.BankName, new SelectList(Model.BankMasterModelList, "bank_name_with_bank_code", "bank_name_with_bank_code"), "--Select Bank--", new { @class = "form-control", @id = "ddlBank", @onchange = "GetBankName();" })
+                    @Html.ValidationMessageFor(x => x.BankName, null, new { @style = "color:red;" })
+                </td>
+                <td><input type="text" class="form-control " name="personal_bank_name_remark" id="personal_bank_name_remark" value="@Model.personal_bank_name_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Bank Account No.</label></td>
+                <td>
+                    <input type="text" min="0" class="form-control" name="BankAccNo" value="@Model.BankAccNo" id="BankAccNo" maxlength="16" />
+                </td>
+                <td><input type="text" class="form-control" name="personal_bank_ac_no_remark" id="personal_bank_ac_no_remark" value="@Model.personal_bank_ac_no_remark" /></td>
+            </tr>
+            <tr class="alert alert-info">
+                <th style="text-align:center"><h5><strong>Reference Verification</strong></h5></th>
+                <th style="text-align:center"><h5><strong>(System or Mannual Input)</strong></h5></th>
+                <th style="text-align:center"><h5><strong>Remarks</strong></h5></th>
+            </tr>
+            <tr>
+                <th style="text-align:center" colspan="3"><h5><span>Family</span></h5></th>
+            </tr>
+            <tr>
+                <td><label>Name</label></td>
+                <td>
+                    <input type="text" class="form-control" name="family_name1" value="@Model.family_name1" id="family_name1" />
+                </td>
+                <td><input type="text" class="form-control" name="family_name1_remark" id="family_name1_remark" value="@Model.family_name1_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Address</label></td>
+                <td>
+                    <input type="text" class="form-control" name="family_address1" value="@Model.family_address1" id="family_address1" />
+                </td>
+                <td><input type="text" class="form-control" name="family_address1_remark" id="family_address1_remark" value="@Model.family_address1_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Contact Number</label></td>
+                <td>
+                    <div class="col-md-6">
+                        <input type="text" maxlength="11" onkeyup="" class="form-control" name="family_contact1" value="@Model.family_contact1" id="family_contact1" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="button" value="Call" id="btnFamily1Call" class="btn btn-primary" onclick="Family1Call();" />
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="family_contact1_remark" id="family_contact1_remark" value="@Model.family_contact1_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Relation to Borrower</label></td>
+                <td>
+                    <input type="text" class="form-control" name="family_relation1" value="@Model.family_relation1" id="family_relation1" />
+                </td>
+                <td><input type="text" class="form-control" name="family_relation1_remark" id="family_relation1_remark" value="@Model.family_relation1_remark" /></td>
+            </tr>
+            <tr>
+                <th style="text-align:center" colspan="3"><h5><span>Family</span></h5></th>
+            </tr>
+            <tr>
+                <td><label>Name</label></td>
+                <td>
+                    <input type="text" class="form-control" name="family_name2" value="@Model.family_name2" id="family_name2" />
+                </td>
+                <td><input type="text" class="form-control" name="family_name2_remark" id="family_name2_remark" value="@Model.family_name2_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Address</label></td>
+                <td>
+                    <input type="text" class="form-control" name="family_address2" value="@Model.family_address2" id="family_address2" />
+                </td>
+                <td><input type="text" class="form-control" name="family_address2_remark" id="family_address2_remark" value="@Model.family_address2_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Contact Number</label></td>
+                <td>
+                    <div class="col-md-6">
+                        <input type="text" maxlength="11" class="form-control" name="family_contact2" value="@Model.family_contact2" id="family_contact2" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="button" value="Call" id="btnFamily2Call" class="btn btn-primary" onclick="Family2Call();" />
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="family_contact2_remark" id="family_contact2_remark" value="@Model.family_contact2_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Relation to Borrower</label></td>
+                <td>
+                    <input type="text" class="form-control" name="family_relation2" value="@Model.family_relation2" id="family_relation2" />
+                </td>
+                <td><input type="text" class="form-control" name="family_relation2_remark" id="family_relation1_remark" value="@Model.family_relation2_remark" /></td>
+            </tr>
+            <tr>
+                <th style="text-align:center" colspan="3"><h5><span>Optional</span></h5></th>
+            </tr>
+            <tr>
+                <td><label>Name</label></td>
+                <td>
+                    <input type="text" class="form-control" name="optional_name" value="@Model.optional_name" id="optional_name" />
+                </td>
+                <td><input type="text" class="form-control" name="optional_name_remark" id="optional_name_remark" value="@Model.optional_name_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Address</label></td>
+                <td>
+                    <input type="text" class="form-control" name="optional_address" value="@Model.optional_address" id="optional_address" />
+                </td>
+                <td><input type="text" class="form-control" name="optional_address_remark" id="optional_address_remark" value="@Model.optional_address_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Contact Number</label></td>
+                <td>
+                    <div class="col-md-6">
+                        <input type="text" maxlength="11" class="form-control" name="optional_contact" value="@Model.optional_contact" id="optional_contact" />
+                    </div>
+                    <div class="col-md-6">
+                        <input type="button" value="Call" id="btnOptionalCall" class="btn btn-primary" onclick="OptionalCall();" />
+                    </div>
+                </td>
+                <td><input type="text" class="form-control" name="optional_contact_remark" id="optional_contact_remark" value="@Model.optional_contact_remark" /></td>
+            </tr>
+            <tr>
+                <td><label>Relation to Borrower</label></td>
+                <td>
+                    <input type="text" class="form-control" name="optional_relation" value="@Model.optional_relation" id="optional_relation" />
+                </td>
+                <td><input type="text" class="form-control" name="optional_relation_remark" id="optional_relation_remark" value="@Model.optional_relation_remark" /></td>
+            </tr>
+        </table>
+    </div>
+    <div class="col-md-6">
+        <table border="1" class="table table-bordered table-responsive table-striped">
+            <tr>
+                <td></td>
+                <td><label>Credit Score</label></td>
+                <td></td>
+                <td><label>Default Probability</label></td>
+            </tr>
+            <tr>
+                <td>1</td>
+                <td>@Model.CredoModel.Score</td>
+                <td>1</td>
+                <td>@Model.CredoModel.Probability</td>
+            </tr>
+        </table>
+        <table id="ApproverLoanDetails" border="1" class="table table-bordered table-responsive table-striped">
+            <tr><th colspan="2">Approved Loan Details</th></tr>
+            <tr>
+                <td width="40%">Approve Loan Amount</td>
+                <td width="60%">
+                    <input type="number" min="0" class="form-control NumericTextBox" name="ApprovedLoanAmount" id="ApprovedLoanAmount" value="@Model.ApprovedLoanAmount" />
+                    <input type="hidden" name="ApprovedLoanAmount" value="@Model.ApprovedLoanAmount" />
+                </td>
+            </tr>
+            <tr>
+                <td>Term Name</td>
+                <td><select class="form-control" name="TermName" id="ddlTermName" onchange="GetDataAccToTerm()"><option value="-1">Select</option></select></td>
+            </tr>
+            <tr>
+                <td>Term Type</td>
+                <td><input type="text" class="form-control" name="ApprovedTermType" id="txtTermType" value="@Model.TermType" readonly /></td>
+            </tr>
+            <tr>
+                <td>Term Value</td>
+                <td>
+                    <input type="text" class="form-control" name="ApprovedTerm" id="txtTerm_Value" value="@Model.ApprovedTerm" readonly />
+                    <input type="hidden" name="ApprovedTermId" id="txtTerm_Id" />
+                </td>
+            </tr>
+
+            <tr>
+                <td>Interest Rate</td>
+                <td><input type="text" class="form-control" name="ApprovedInterestRate" id="txtInterestRate" value="@Model.ApprovedInterestRate" readonly /></td>
+            </tr>
+            <tr>
+                <td>Maturity Date</td>
+                <td><input type="text" class="form-control" name="ApprovedMaturityDate" id="txtApprovedMaturityDate" value="@Model.ApprovedMaturityDate" autocomplete="off" /></td>
+            </tr>
+            <tr>
+                <td>Total Amount Due</td>
+                <td><input type="text" class="form-control NumericTextBox" name="ApprovedTotalDueAmount" id="ApprovedTotalDueAmount" value="@Model.ApprovedTotalDueAmount" readonly /></td>
+            </tr>
+            <tr>
+                <td>Disbursement Date</td>
+                <td><input type="text" class="form-control" name="disbursement_date" id="disbursement_date" value="@Model.disbursement_date" readonly /></td>
+            </tr>
+        </table>
+        <table style="margin-top: 3%;" id="tblCheckerHistory" border="1" class="table table-bordered table-responsive table-striped">
+            @{
+
+                <tr>
+                    <th>Checker Name : </th>
+                    <td colspan="3">@Model.checker_name</td>
+                </tr>
+                <tr>
+                    <th colspan="4" style="text-align:center">Remark History</th>
+                </tr>
+                <tr>
+                    <th>Application No</th>
+                    <th>Date</th>
+                    <th>Remark</th>
+                    <th>Remark By</th>
+                </tr>
+                if (Model.RemarkModelList != null && Model.RemarkModelList.Count > 0)
+                {
+                    foreach (var item in Model.RemarkModelList)
+                    {
+                        var remarkOn = item.createdon.ToString("dd-MM-yyyy hh:mm tt");
+                        <tr>
+                            <td>@item.application_id</td>
+                            <td>@remarkOn</td>
+                            <td>@item.remark</td>
+                            <td>@item.createdbyname</td>
+                        </tr>
+                    }
+                }
+            }
+        </table>
+    </div>
+    <div class="col-md-6">
+        <table border="1" class="table table-bordered table-responsive table-striped">
+            <tr>
+                <td><label>Attach Gov't ID</label></td>
+                <td><label>Attach Company ID</label></td>
+            </tr>
+            <tr>
+                <td> <input type="file" id="govid" name="GovIdFile" onchange="return ValidateFile(this);" /> <span style="color: #ff0000;">*Max size 5 MB , jpg/jpeg/png or pdf</span></td>
+                <td> <input type="file" id="companyid" name="CompanyIdFile" onchange="return ValidateFile(this);" /><span style="color: #ff0000;">*Max size 5 MB , jpg/jpeg/png or pdf</span></td>
+            </tr>
+        </table>
+        <table border="1" class="table table-bordered table-responsive table-striped">
+            <tr>
+                <td><label>Attach Proof of Billing</label></td>
+                <td><label>Attach Proof of Income</label></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="file" id="billing" name="BillingIdFile" onchange="return ValidateFile(this);" />
+                    <span style="color: #ff0000;">*Max size 5 MB , jpg/jpeg/png or pdf</span>
+                </td>
+                <td>
+                    <input type="file" id="income" name="IncomeIdFile" onchange="return ValidateFile(this);" />
+                    <span style="color: #ff0000;">*Max size 5 MB , jpg/jpeg/png or pdf</span>
+                </td>
+            </tr>
+        </table>
+        <table border="1" class="table table-bordered table-responsive table-striped">
+            <tr>
+                <td><label>Attach Other File</label></td>
+                <td><label>Attach ATM Card Image File</label></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="file" id="otherfile" name="OtherIdFile" onchange="return ValidateFile(this);" />
+                    <span style="color: #ff0000;">*Max size 5 MB , jpg/jpeg/png or pdf</span>
+                </td>
+                <td>
+                    <input type="file" id="atm" name="AtmIdFile" onchange="return ValidateFile(this);" />
+                    <span style="color: #ff0000;">*Max size 5 MB , jpg/jpeg/png or pdf</span>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><input type="submit" class="btn btn-primary pull-right" name="CommandName" value="Save Upload Files" /></td>
+            </tr>
+        </table>
+        <table border="1" class="table table-bordered table-responsive table-striped">
+            <tr>
+                <td><input type="button" value="Call" id="btnCall" class="btn btn-primary" onclick="CLicktocall(@Model.PersonalContactNo);" /></td>
+                <td><button type="button" class="btn btn-primary btn-flat" id="btn_notification">Manual Notify</button></td>
+                <td><input type="submit" value="Save & Send Contract" name="SubmitButton" id="btnNext" class="btn btn-primary" /></td>
+                <td><input type="button" value="Decline" id="btndecline" class="btn btn-primary" /></td>
+            </tr>
+        </table>
+        <table style="margin-top: 3%;" id="tblRemarks" border="1" class="table table-bordered table-responsive table-striped">
+        </table>
+    </div>
+}
+<link href="https://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" rel="Stylesheet" />
+<script src="https://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+<script type="text/javascript">
+    $(window).scroll(function () {
+        var height = $(window).scrollTop();
+        if (height > 100) {
+            $('#back2Top').fadeIn();
+        } else {
+            $('#back2Top').fadeOut();
+        }
+    });
+
+    function keypressHandler(e) {
+        if (e.which == 13) {
+            e.preventDefault(); //stops default action: submitting form
+            $(this).blur();
+            $('#SubmitButton').focus().click(); //give your submit an ID
+        }
+    };
+
+    $('#frmApplication').keypress(keypressHandler);
+
+    $(document).ready(function () {
+        if ($("#ddlBank :selected").val() == "") {
+            $("#BankAccNo").attr('readonly', 'readonly');
+            $("#BankAccNo").val("");
+        } else {
+            $("#BankAccNo").removeAttr('readonly', 'readonly');
+        }
+        GetLastRemark();
+        $("#btn_notification").click(function () {
+            NotifyModal();
+        });
+        $("#btnNext").click(function () {
+            var TermName = $("#ddlTermName :selected").val();
+            var _Messag = "";
+            if ($("#ddlBank :selected").val() == "") { }
+            var ApprovedLoanAmount = ($("#ApprovedLoanAmount")).val();
+            if (ApprovedLoanAmount == 0 || ApprovedLoanAmount == "") {
+                _Messag += "Approved Loan Amount Missing\n";
+                //alert('Approved Loan Amount Missing');
+                //return false;
+            }
+            if ($("#ddlBank :selected").val() != "") {
+                if ($("#BankAccNo").val() == "") {
+                    _Messag += "Bank Name and Account No is Mandatory\n";
+                    //alert("Bank Name and Account No is Mandatory");
+                    $("#BankAccNo").addClass('has-error');
+                    $('html,body').animate({
+                        scrollTop: $("#BankAccNo").offset().top
+                    }, 800);
+                    //return false;
+                }
+            }
+            if ($("#occupation :selected").val() == "") {
+                $("#occupation").addClass('has-error');
+                _Messag += "Company Industry is Mandatory\n";
+                //alert("Company Industry is Mandatory");
+                $('html,body').animate({
+                    scrollTop: $("#occupation").offset().top
+                }, 800);
+                //return false;
+            }
+            if ($("#ddlBank :selected").val() == "") {
+                $("#ddlBank").addClass('has-error');
+                _Messag += "Bank Name is Mandatory\n";
+                //alert("Bank Name is Mandatory");
+                $('html,body').animate({
+                    scrollTop: $("#BankAccNo").offset().top
+                }, 800);
+                //return false;
+            }
+            if (TermName == "-1" || TermName == undefined) {
+                _Messag += "Approved Term not Selected\n";
+                //alert("Approved Term not Selected");
+                //return false;
+            }
+            if ($("#AdditionalLoanPurpose").val() == "") {
+                _Messag += "Purpose of Loan Mandatory\n";
+                //alert('Purpose of Loan Mandatory');
+                //return false;
+            }
+            if (_Messag != "") {
+                alert(_Messag);
+                return false;
+            }
+
+            //Check the Duplicate Contract
+            $.ajax({
+                url: '@Url.Action("CheckDuplicateApplicationNo", "LoanRequestVerifier")',
+                type: "POST",
+                async: false,
+                //dataType: "json",
+                data: {
+                    appno: @Model.ApplicationNo,
+                },
+                success: function (data) {
+                    if (data === 'False') {
+                        var _result = confirm("Are you sure to resend the new contract?");
+                        if (_result == false) {
+                            console.log(_result);
+                            return false;
+                        }
+                    }
+                }
+            });
+        });
+        $("#back2Top").click(function (event) {
+            event.preventDefault();
+            $("html, body").animate({
+                scrollTop: 0
+            }, "slow");
+            return false;
+        });
+        $("#personal_name_remark").focus();
+
+        BindTermType();
+        $(".form-control").focusin(function () {
+            $(this).removeClass("has-error");
+        });
+        $("#btndecline").click(function (event) {
+            window.location.href = '@Url.Action("UpdateReVerifyRequestDetail", "LoanRequestVerifier")?Id=@Model.ApplicationNo&user_id=@Model.userid&Actionname=@Convert.ToString(Session["_ActionName"])';
+        });
+        $("#txtCity").autocomplete({
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Home/City",
+                    type: "POST",
+                    dataType: "json",
+                    data: {
+                        Prefix: request.term
+                    },
+                    success: function (data) {
+                        response($.map(data, function (item) {
+                            return {
+                                label: item.city,
+                                value: item.city
+                            };
+                        }))
+                    }
+                })
+            },
+            messages: {
+                noResults: "",
+                results: ""
+            }
+        });
+    });
+    function NotifyModal() {
+        var modalNotify = document.getElementById('modalNotify');
+        modalNotify.style.display = "block";
+    }
+    function SendNotify() {
+        debugger;
+        $.ajax({
+            type: 'POST',
+            dataType: 'json',
+            data: { notificationtoken: '@Model.notificationtoken', message: $("#txtnotifydefinition").val(), UserName: '@Convert.ToString(Request.Cookies["AgentName"].Value)', PanelName: '@Convert.ToString(Request.Cookies["RoleType"].Value)', MobileNo: '@Model.PersonalContactNo', ApplicationNo: '@Model.ApplicationNo' },
+            url: '@Url.Action("SendManulNotification", "Home", new { Area = "" })',
+            success: function (data)
+            {
+                if (data) {
+                    alert("Notification Send Succussfully..");
+                    $('#modalNotify').toggle();
+                }
+            }
+        });
+    };
+    function GetNotificationValue() {
+        var Id = $('#ddlNotificationtemplate').val();
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("GetNotificationValues", "LoanRequestBucket", new { area = "Checker" })',
+            dataType: 'json',
+            data: { Id: Id },
+            success: function (sms) {
+                if (sms != null) {
+                    $("#txtnotifydefinition").val(sms.NotificationTemplateDefinition);
+                    $("#txtnotifydescription").val(sms.NotificationTemplateDesc);
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+
+            }
+        });
+    };
+    function RefreshNotifyModel() {
+        $('#modalNotify').toggle();
+        $("#ddlNotificationtemplate").val('');
+        $("#txtnotifydefinition").val('');
+        $("#txtnotifydescription").val('');
+    }
+    function CLicktocall(data) {
+        $.ajax({
+            async: false,
+            type: 'GET',
+            url: '@Url.Action("ClicktoCall", "LoanRequestVerifier", new { area = "Verifier" })',
+            dataType: 'json',
+            data: {
+                ContactNumber: data
+            },
+            success: function (result) {
+                console.log(result);
+                if (result) {
+                    availability = false;
+                }
+            },
+            error: function (result) {
+                window.location.reload(1);
+            }
+        });
+    }
+
+    function BindTermName() {
+        var Amount = $("#ApprovedLoanAmount").val();
+        $.ajax({
+            url: "/LoanRequestVerifier/GetTermName",
+            type: "POST",
+            data: {
+                Amount: Amount
+            },
+            success: function (data) {
+                if (data != null) {
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].term_Name, data[i].Id);
+                        $('#ddlTermName').append(opt);
+                    }
+                } else {
+                    window.location.reload(1);
+                }
+            },
+            error: function (data) {
+                console.log(data);
+              //  window.location.reload(1);
+            },
+            complete: function (data) {
+                $("#ddlTermName").val(@Model.TermName);
+                GetDataAccToTerm();
+            }
+        });
+    }
+
+    function BindTermType() {
+        $.ajax({
+            url: "/LoanRequestVerifier/GetTermType",
+            type: "POST",
+            success: function (data) {
+                if (data != null) {
+                    for (var i = 0; i < data.length; i++) {
+                        var opt = new Option(data[i].term_Type, data[i].Id);
+                        $('#ddlTermType').append(opt);
+                    }
+                } else {
+                    window.location.reload(1);
+                }
+            },
+            error: function (data) {
+                window.location.reload(1);
+            }
+        });
+    }
+
+    function AutoSave() {
+        var application = $("#frmApplication").serialize();
+        $.ajax({
+            url: '@Url.Action("AutoSave", "LoanRequestVerifier")',
+            type: "POST",
+            data: application,
+            success: function (data) {
+                if (data) {
+                    //window.location.reload(1);
+                } else {
+                    window.location.reload(1);
+                }
+            }
+        });
+    };
+    $(window).click(function (e) {
+        clearTimeout(this.downTimer);
+        this.downTimer = setTimeout(function () {
+            AutoSave();
+        }, @Convert.ToInt32(ConfigurationManager.AppSettings["VerifierAutoSave"]));
+    }).mouseup(function (e) {
+        clearTimeout(this.downTimer);
+    });
+
+    $(document).keypress(function () {
+        clearTimeout(this.downTimer);
+        this.downTimer = setTimeout(function () {
+            AutoSave();
+        }, @Convert.ToInt32(ConfigurationManager.AppSettings["VerifierAutoSave"]));
+    }).unbind('keyup');
+
+    $(document).keypress(function () {
+        clearTimeout(this.downTimer);
+        this.downTimer = setTimeout(function () {
+            AutoSave();
+        }, @Convert.ToInt32(ConfigurationManager.AppSettings["VerifierAutoSave"]));
+    }).unbind('keyup');
+
+    function GetDataAccToTerm() {
+        var termId = $("#ddlTermName option:selected").val();
+        if (termId != undefined) {
+            $.ajax({
+                url: '@Url.Action("GetDataAccToTerm", "LoanRequestVerifier")',
+                type: "POST",
+                data: {
+                    id: termId
+                },
+                success: function (data) {
+                    if (data != null) {
+                        $("#txtTermType").val(data.TermTypeName);
+                        $("#txtInterestRate").val(data.Rate);
+                        $("#txtTerm_Value").val(data.term_Value);
+                        $("#txtTerm_Id").val(data.approved_term);
+                        if ($("#ApprovedLoanAmount").val() != 0) {
+                            CalculateTotalAmount();
+                        }
+                    } else {
+                        window.location.reload(1);
+                    }
+                },
+                error: function (data) {
+                    window.location.reload(1);
+                }
+            });
+        }
+    }
+
+    function CalculateTotalAmount() {
+        var loanAmount = $("#ApprovedLoanAmount").val().trim();
+        if (loanAmount == '') {
+            $("#ApprovedTotalDueAmount").val(0);
+        } else {
+            var rate = $("#txtInterestRate").val();
+            var amount = parseFloat(rate) / 100 * parseFloat(loanAmount);
+            var result = parseFloat(loanAmount) + parseFloat(amount);
+            $("#ApprovedTotalDueAmount").val(Math.round(result * 100) / 100);
+        }
+    }
+
+    function GetBankName() {
+        if ($("#ddlBank :selected").val() == "") {
+            $("#BankAccNo").attr('readonly', 'readonly');
+            $("#BankAccNo").val("");
+        } else {
+            $("#BankAccNo").attr("readonly", false);
+        }
+    }
+
+    $('#ApprovedLoanAmount').keyup(function () {
+            BindTermName();
+    });
+
+    function UpdateIsPickedVerifier() {
+        var appNo = $("#spnAppNo").text();
+        $.ajax({
+            url: '@Url.Action("UpdateIsPickedVerifierFalse", "LoanRequestVerifier")',
+            type: "POST",
+            data: {
+                appNo: appNo
+            },
+            success: function (result) {
+                if (result == "Index") {
+                    window.location.href = '@Url.Action("Index", "LoanRequestVerifier")';
+                } else if (result == "KIVBucket") {
+                    window.location.href = '@Url.Action("KIVBucket", "LoanRequestVerifier")';
+                } else {
+                    window.location.href = '@Url.Action("GetLoanRequestForVerification", "LoanRequestVerifier")';
+                }
+            },
+            error: function (result) {
+                window.location.reload(1);
+            }
+        })
+    }
+
+    function ValidateFile(e) {
+        if (e != "" || e != null) {
+            var IsValidExtension = false;
+            var file = e;
+            var fileSize = file.files[0].size;
+            var isValidFile = false;
+            IsValidExtension = CheckExtension(e);
+            if (IsValidExtension) {
+                if (fileSize !== 0 && fileSize <= (5 * 1024 * 1024)) {
+                    isValidFile = true;
+                } else if (!isValidFile) {
+                    alert("File Size Should not exceed 5 MB");
+                    var id = e.id;
+                    $("#" + id).val('');
+                }
+            }
+        } else {
+            return false;
+        }
+    }
+
+    function CheckExtension(e) {
+        if (e != "") {
+            var validFilesTypes = ["jpg", "png", "jpeg", "pdf"];
+            var file = e;
+            var path = file.value;
+            var ext = path.substring(path.lastIndexOf(".") + 1, path.length).toLowerCase();
+            var isValidFile = false;
+            for (var i = 0; i < validFilesTypes.length; i++) {
+                if (ext == validFilesTypes[i]) {
+                    isValidFile = true;
+                    break;
+                }
+            }
+            if (!isValidFile) {
+                alert("Upload Image types file only");
+                var id = e.id;
+                $("#" + id).val('');
+            }
+            return isValidFile;
+        } else
+            return false;
+    }
+
+    function HomeCall() {
+        var Number = $("#txtHomePhoneNo").val();
+        var flag = 0;
+        if (Number == '') {
+            flag++;
+            $("#txtHomePhoneNo").addClass('has-error');
+        }
+        if (Number.length < 10 || Number.length > 11) {
+            flag++;
+            $("#txtHomePhoneNo").addClass('has-error');
+        }
+        if (flag > 0) {
+            return false;
+        } else {
+            CLicktocall(Number);
+        }
+    }
+
+  function Family1Call() {
+  	var Number = $("#family_contact1").val();
+  	var flag = 0;
+  	if (Number == '') {
+  		flag++;
+  		$("#family_contact1").addClass('has-error');
+  	}
+  	if (Number.length < 10 || Number.length > 11) {
+  		flag++;
+  		$("#family_contact1").addClass('has-error');
+  	}
+  	if (flag > 0) {
+  		return false;
+  	} else {
+  		CLicktocall(Number);
+  	}
+  }
+
+  function Family2Call() {
+  	var Number = $("#family_contact2").val();
+  	var flag = 0;
+  	if (Number == '') {
+  		flag++;
+  		$("#family_contact2").addClass('has-error');
+  	}
+  	if (Number.length < 10 || Number.length > 11) {
+  		flag++;
+  		$("#family_contact2").addClass('has-error');
+  	}
+  	if (flag > 0) {
+  		return false;
+  	} else {
+  		CLicktocall(Number);
+  	}
+  }
+
+  function AlphaNumbericValidation(data) {
+
+  	if (data.value !== "") {
+  		if (/^[a-zA-Z0-9]*$/.test(data.value)) {} else {
+  			alert("Only Alpha Numeric Characters Are Allowed!");
+  			$("#" + data.id).val("");
+  			$("#" + data.id).focus();
+
+  		}
+
+  	}
+
+  };
+
+  function RemoveValidation(obj) {
+  	var id = obj.id;
+  	$("#" + id).removeClass("has-error");
+  	$("#" + id + "_lbl").text('');
+  }
+
+  function OptionalCall() {
+  	var Number = $("#optional_contact").val();
+  	var flag = 0;
+  	if (Number == '') {
+  		flag++;
+  		$("#optional_contact").addClass('has-error');
+  	}
+  	if (Number.length < 10 || Number.length > 11) {
+  		flag++;
+  		$("#optional_contact").addClass('has-error');
+  	}
+  	if (flag > 0) {
+  		return false;
+  	} else {
+  		CLicktocall(Number);
+  	}
+  }
+  $("#txtApprovedMaturityDate").datepicker({
+  	dateFormat: "dd-mm-yy",
+  	changeMonth: true,
+  	changeYear: true,
+  	yearRange: "-100:+10",
+  	onSelect: function(dateText, inst) {
+  		clearTimeout(this.downTimer);
+  		this.downTimer = setTimeout(function() {
+  			AutoSave();
+  		}, @Convert.ToInt32(ConfigurationManager.AppSettings["VerifierAutoSave"]));
+  	}
+  });
+  $("#number_of_dependent").keyup(function(event) {
+  	if (event.keyCode == 46 || event.keyCode == 8) {
+  		// let it happen, don't do anything
+  	} else if (/\D/g.test(this.value)) {
+  		// Filter non-digits from input value.
+  		this.value = this.value.replace(/\D/g, '');
+  	}
+  });
+  $("#sibling_count").keyup(function(event) {
+  	if (event.keyCode == 46 || event.keyCode == 8) {
+  		// let it happen, don't do anything
+  	} else if (/\D/g.test(this.value)) {
+  		// Filter non-digits from input value.
+  		this.value = this.value.replace(/\D/g, '');
+  	}
+  });
+  $("#GrossIncome").keyup(function(event) {
+  	if (event.keyCode == 46 || event.keyCode == 8) {
+  		// let it happen, don't do anything
+  	} else if (/\D/g.test(this.value)) {
+  		// Filter non-digits from input value.
+  		this.value = this.value.replace(/\D/g, '');
+  	}
+  });
+  $("#net_income").keyup(function(event) {
+  	if (event.keyCode == 46 || event.keyCode == 8) {
+  		// let it happen, don't do anything
+  	} else if (/\D/g.test(this.value)) {
+  		// Filter non-digits from input value.
+  		this.value = this.value.replace(/\D/g, '');
+  	}
+  });
+  $("#family_contact1").keyup(function(event) {
+  	if (event.keyCode == 46 || event.keyCode == 8) {
+  		// let it happen, don't do anything
+  	} else if (/\D/g.test(this.value)) {
+  		// Filter non-digits from input value.
+  		this.value = this.value.replace(/\D/g, '');
+  	}
+  });
+  $("#family_contact2").keyup(function(event) {
+  	if (event.keyCode == 46 || event.keyCode == 8) {
+  		// let it happen, don't do anything
+  	} else if (/\D/g.test(this.value)) {
+  		// Filter non-digits from input value.
+  		this.value = this.value.replace(/\D/g, '');
+  	}
+  });
+  $("#optional_contact").keyup(function(event) {
+  	if (event.keyCode == 46 || event.keyCode == 8) {
+  		// let it happen, don't do anything
+  	} else if (/\D/g.test(this.value)) {
+  		// Filter non-digits from input value.
+  		this.value = this.value.replace(/\D/g, '');
+  	}
+  });
+  $("#BankAccNo").keyup(function(event) {
+  	if (event.keyCode == 46 || event.keyCode == 8) {
+  		// let it happen, don't do anything
+  	} else if (/\D/g.test(this.value)) {
+  		// Filter non-digits from input value.
+  		this.value = this.value.replace(/\D/g, '');
+  	}
+  });
+  $("#sibling_count").keyup(function(event) {
+  	if (event.keyCode == 46 || event.keyCode == 8) {
+  		// let it happen, don't do anything
+  	} else if (/\D/g.test(this.value)) {
+  		// Filter non-digits from input value.
+  		this.value = this.value.replace(/\D/g, '');
+  	}
+  });
+
+  function GetLastRemark() {
+  	var tblRemarks = $("#tblRemarks");
+  	$.ajax({
+  		url: '@Url.Action("GetLastPaymentRemark", "LoanRequestVerifier")',
+  		type: "POST",
+  		data: {
+  			ApplicationNo: @Model.ApplicationNo,
+  			UserId: @Model.userid,
+  		},
+  		success: function(result) {
+  			tblRemarks.append('<thead><tr><th style="text-align:center">Payment Remark History</th></tr></thead><tbody><tr><td>' + result + '</td></tr></tbody>')
+  		},
+  		error: function(result) {
+  			window.location.reload(1);
+  		}
+  	})
+  }
+</script>
+<style>
+    .has-error {
+        border-color: red;
+    }
+</style>

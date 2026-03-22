@@ -1,0 +1,15 @@
+﻿@model Loan_CRM.Models.ApplicationRecordVM
+@using Loan_CRM.Helper
+
+@using (Html.BeginCollectionItem("ApplicationRecordList"))
+{
+    <tr>
+        <td>@Html.CheckBoxFor(x => x.is_selected,new { Class="checkBoxClass"}) @Html.HiddenFor(x => x.ApplicationNo) @Html.HiddenFor(x => x.Id)@Html.HiddenFor(x => x.Barangay_id)@Html.HiddenFor(x => x.SSS_No)@Html.HiddenFor(x => x.Occupation)</td>
+        <td>@Model.ApplicationNo</td>
+        <td>@Model.DateApplied</td>
+        <td>@Model.First_Name @Model.Middle_Name @Model.Last_Name</td>
+        <td>@Model.PersonalEmail</td>
+        <td>@Model.PersonalContactNo</td>
+    </tr>
+}
+

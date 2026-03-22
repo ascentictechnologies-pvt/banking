@@ -1,0 +1,168 @@
+﻿@using System.Configuration;
+@using Loan_CRM.Models;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Styles.Render("~/Content/css")
+    @Scripts.Render("~/bundle/datepicker")
+    @Styles.Render("~/Content/Datepicker")
+</head>
+<body class="hold-transition layout-top-nav" style="padding-top: 0px;">
+    @{
+        if ((Request.Cookies[CookiesKey.UserId] != null && Request.Cookies[CookiesKey.UserId].Value != null) || (Request.Cookies[CookiesKey.AgentName] != null && Request.Cookies[CookiesKey.AgentName].Value != null) || (Request.Cookies[CookiesKey.RoleType] != null && Request.Cookies[CookiesKey.RoleType].Value != null) || (Request.Cookies[CookiesKey.IPAddress] != null && Request.Cookies[CookiesKey.IPAddress].Value != null))
+        {
+            <header class="main-header">
+                <nav class="navbar navbar-static-top" style=" background-color:#337ab7">
+                    <div class="container">
+                        <div class="navbar-header">
+                            <a href="@Url.Action("CustomerInfoBucket","Admin")" class="navbar-brand" style="color:white"><b>CashMart</b></a>
+                        </div>
+                        <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                            <ul class="nav navbar-nav" id="nav">
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color:white">Reports<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="@Url.Action("AllRecordExport","Admin")">Aging Report</a></li>
+                                        <li><a href="@Url.Action("CollectionDisbursementReport","Admin")">Collection Disbursement Report</a></li>
+                                        <li><a href="@Url.Action("CheckerReport","Admin")">Checker Report</a></li>
+                                        <li><a href="@Url.Action("VerifierReport","Admin")">Verifier Report</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color:white">Delete Applications<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="@Url.Action("DeleteDuplicate","Admin")">Delete Duplicate</a></li>
+                                        <li><a href="@Url.Action("DeclinedApplication","Admin")">Delete Declined</a></li>
+                                        <li><a href="@Url.Action("IsOrrApplication","Admin")"> Delete ORR Declined</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color:white">Template<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="@Url.Action("EMailTemplate","Admin")">Email Template</a></li>
+                                        <li><a href="@Url.Action("SMSTemplate","Admin")">SMS Template</a></li>
+                                        <li><a href="@Url.Action("NotificationTemplate","Admin")">Notification Template</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color:white">Edit Details<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="@Url.Action("CustomerInfoBucket","Admin")">Edit Customer Details</a></li>
+                                        <li><a href="@Url.Action("NewReferenceApproval","Admin")">Approve Edited Reference No</a></li>
+                                        <li><a href="@Url.Action("termmaster","Admin")">Edit Repayment Plans</a></li>
+                                        <li><a href="@Url.Action("SSSNoMaster","Admin")">Edit SSS Details</a></li>
+                                        <li><a href="@Url.Action("OccupationMaster","Admin")">Edit Occupation Details</a></li>
+                                        <li><a href="@Url.Action("BarangayMaster","Admin")">Edit Barangay Details</a></li>
+                                        <li><a href="@Url.Action("Advisory","Admin")">Advisory</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color:white">Reassign Leads<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="@Url.Action("ReassignCheckerLead","Admin")">Checker Reassignment</a></li>
+                                        <li><a href="@Url.Action("ReassignVerifierLead","Admin")">Verifier Reassignment</a></li>
+                                        <li><a href="@Url.Action("ReassignCollection","Admin")">Collector Reassignment</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color:white">Transfer Leads<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="@Url.Action("TransferToChecker","Admin")">Fresh Bulk Leads to Checker</a></li>
+                                        <li><a href="@Url.Action("TransferWithDepartments","Admin")">Transfer Within Departments</a></li>
+                                    </ul>
+                                </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" style="color:white">Team<span class="caret"></span></a>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="@Url.Action("TeamCreation","Admin")">Team Creation</a></li>
+                                    </ul>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("UploadData","Admin")" style="color:white">Old Data</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </nav>
+            </header>
+            <div class="container body-content">
+                <div> @RenderBody()</div>
+                <div class="clearfix"></div>
+                <hr />
+                <footer class="main-footer">
+                    <div class="pull-left">
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center">
+                                        <strong>Copyright &copy; @DateTime.Now.Year <a href="https://cashmart.ph/">Cashmart </a>.</strong> All rights
+                                        reserved.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pull-right">
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <tr>
+                                    <td><a href="#"><strong>Version :-4.0.3.0 (20 Sept, 2024)</strong></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </footer>
+
+            </div>
+        }
+        else if (!String.IsNullOrEmpty(Convert.ToString(TempData["msg"])))
+        {
+            <h2>@Convert.ToString(TempData["msg"])</h2>
+            <div style="display:none;"> @RenderBody()</div>
+        }
+        else
+        {
+            <div class="container body-content">
+                <h2>Multiple Users Logged-in on Single Browser</h2><h2>Please Use Single User at a time</h2>
+
+                <div style="display:none;"> @RenderBody()</div>
+                <div class="clearfix"></div>
+                <hr />
+                <footer class="main-footer">
+                    <div class="pull-left">
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <tr>
+                                    <td style="text-align:center">
+                                        <strong>Copyright &copy; @DateTime.Now.Year <a href="https://cashmart.ph/">Cashmart </a>.</strong> All rights
+                                        reserved.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pull-right">
+                        <table class="table table-bordered table-striped">
+                            <tbody>
+                                <tr>
+                                    <td><a href="#"><strong>Version :-4.0.3.0 (20 Sept, 2024)</strong></a></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </footer>
+            </div>
+        }
+    }
+
+    <script type="text/javascript">
+        @RenderSection("scripts", required: false)
+    </script>
+</body>
+</html>
